@@ -1,51 +1,178 @@
-import { motion } from "framer-motion";
-import { Terminal, Play, Save } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+	BookOpen,
+	Target,
+	ChevronRight,
+	Activity,
+	ChevronLeft,
+	Shield,
+} from "lucide-react";
+import { BattlefieldContent } from "./ui/slides/BattlefieldContent";
+import { MechanicsContent } from "./ui/slides/MechanicsContent";
+import { StrategyContent } from "./ui/slides/StrategyContent";
+import { ProblemContent } from "./ui/slides/ProblemContent";
+import { SpecsContent } from "./ui/slides/SpecsContent";
+import { TrainingContent } from "./ui/slides/TrainingContent";
 
 export function TestingEnv() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-card border border-border rounded-xl p-0 shadow-sm max-w-4xl mx-auto overflow-hidden flex flex-col h-[500px]"
-    >
-      <div className="bg-background/50 border-b border-border p-3 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm text-secondary">
-          <Terminal size={14} />
-          <span className="font-mono">strategy_v1.py</span>
-        </div>
-        <div className="flex items-center gap-2">
-           <button className="p-1.5 rounded hover:bg-background text-secondary hover:text-foreground transition-colors">
-              <Save size={14} />
-           </button>
-           <button className="bg-foreground text-background text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 hover:opacity-90">
-              <Play size={10} fill="currentColor" /> Run Test
-           </button>
-        </div>
-      </div>
+	const [currentSlide, setCurrentSlide] = useState(0);
 
-      <div className="flex-1 bg-[#1e1e1e] p-4 text-sm font-mono text-[#d4d4d4] overflow-auto">
-        <div className="flex">
-          <div className="text-[#6e6e6e] text-right pr-4 select-none">
-            1<br/>2<br/>3<br/>4<br/>5<br/>6
-          </div>
-          <div>
-            <span className="text-[#c586c0]">def</span> <span className="text-[#dcdcaa]">main</span>():<br/>
-            &nbsp;&nbsp;<span className="text-[#6a9955]"># Initialize generic strategy</span><br/>
-            &nbsp;&nbsp;<span className="text-[#9cdcfe]">target</span> = <span className="text-[#ce9178]">"EnemyBase"</span><br/>
-            &nbsp;&nbsp;<span className="text-[#c586c0]">if</span> <span className="text-[#9cdcfe]">target</span>.<span className="text-[#dcdcaa]">is_visible</span>():<br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-[#9cdcfe]">weapon</span>.<span className="text-[#dcdcaa]">fire</span>()<br/>
-            &nbsp;&nbsp;<span className="text-[#c586c0]">else</span>:<br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-[#9cdcfe]">radar</span>.<span className="text-[#dcdcaa]">scan</span>()
-          </div>
-        </div>
-      </div>
+	const slides = [
+		{ id: "mission", title: "Mission Briefing", component: <ProblemContent /> },
+		{ id: "arena", title: "The Arena", component: <BattlefieldContent /> },
+		{ id: "mechanics", title: "Core Mechanics", component: <MechanicsContent /> },
+		{ id: "strategy", title: "Strategic Intel", component: <StrategyContent /> },
+		{ id: "specs", title: "Tech Specs", component: <SpecsContent /> },
+		{ id: "training", title: "Training Sim", component: <TrainingContent /> },
+	];
 
-      <div className="bg-black/20 border-t border-border p-3 h-32 font-mono text-xs text-secondary overflow-y-auto">
-        <div className="text-emerald-500 mb-1">➜ System initialized.</div>
-        <div className="mb-1">Loading assets... [OK]</div>
-        <div className="mb-1">Connecting to simulation server... [OK]</div>
-        <div className="animate-pulse">_</div>
-      </div>
-    </motion.div>
-  );
+	const nextSlide = () => {
+		setCurrentSlide((prev) => (prev + 1) % slides.length);
+	};
+
+	const prevSlide = () => {
+		setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+	};
+
+	return (
+		<div className="w-full h-[80vh] flex bg-[#050505] border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm">
+			{/* --- LEFT PANEL: Rules (1/4 ratio) --- */}
+			<div className="w-1/4 flex flex-col border-r border-white/10 bg-black/40 relative">
+				<div className="p-6 border-b border-white/10 bg-white/5">
+					<h2 className="text-xl font-bold uppercase tracking-[0.2em] text-white flex items-center gap-3">
+						<BookOpen className="text-emerald-500" size={24} />
+						Rulebook
+					</h2>
+					<p className="text-white/40 font-mono text-xs mt-2">TACTICAL MANUAL v2.4</p>
+				</div>
+
+				<div className="flex-1 overflow-y-auto p-6 custom-scrollbar text-white/80 space-y-8">
+					<section className="space-y-3">
+						<h4 className="text-emerald-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+							<Target size={14} /> The Arena
+						</h4>
+						<p className="text-xs leading-relaxed text-white/60">
+							A circular network of <strong>26 nodes</strong>.
+							<br />
+							<span className="text-emerald-500/80">• P1 Base:</span> Node 1
+							<br />
+							<span className="text-red-500/80">• P2 Base:</span> Node 14
+							<br />
+							<span className="text-purple-400/80">• Power Nodes:</span> 4, 7, 11, 17, 20, 24
+						</p>
+					</section>
+
+					<section className="space-y-3">
+						<h4 className="text-emerald-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+							<Activity size={14} /> Actions
+						</h4>
+						
+						<div className="space-y-4">
+							<div className="bg-white/5 p-3 rounded border-l border-emerald-500/50">
+								<strong className="text-white block text-xs font-mono mb-1">HARVEST</strong>
+								<p className="text-xs text-white/50">
+									Gain energy from owned nodes.
+									<br/>
+									<span className="opacity-70">Home/Power: +5E | Normal: +1E</span>
+								</p>
+							</div>
+
+							<div className="bg-white/5 p-3 rounded border-l border-blue-500/50">
+								<strong className="text-white block text-xs font-mono mb-1">EXPAND</strong>
+								<p className="text-xs text-white/50">
+									Claim empty nodes. Higher bid wins.
+									<br/>
+									<span className="opacity-70">Cost: 5E (Normal) / 15E (Power)</span>
+								</p>
+							</div>
+
+							<div className="bg-white/5 p-3 rounded border-l border-red-500/50">
+								<strong className="text-white block text-xs font-mono mb-1">CONQUER</strong>
+								<p className="text-xs text-white/50">
+									Attack enemy nodes.
+									<br/>
+									<span className="opacity-70">Cost: 8E/20E + Defense Tax</span>
+								</p>
+							</div>
+						</div>
+					</section>
+
+					<section className="space-y-3">
+						<h4 className="text-emerald-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+							<Shield size={14} /> Defense
+						</h4>
+						<p className="text-xs leading-relaxed text-white/60">
+							Own adjacent nodes to boost defense.
+							<br />
+							<span className="text-white/40">+1 Defense per friendly neighbor.</span>
+						</p>
+					</section>
+				</div>
+                
+                {/* Decorative Footer for Left Panel */}
+                <div className="p-4 border-t border-white/10 bg-white/5 text-[10px] items-center flex justify-between text-white/30 font-mono">
+                    <span>SECURE CON.</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+			</div>
+
+			{/* --- RIGHT PANEL: Slides (3/4 ratio) --- */}
+			<div className="w-3/4 flex flex-col bg-black/60 relative">
+				{/* Slide Content */}
+				<div className="flex-1 overflow-hidden relative">
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={currentSlide}
+							initial={{ opacity: 0, x: 20 }}
+							animate={{ opacity: 1, x: 0 }}
+							exit={{ opacity: 0, x: -20 }}
+							transition={{ duration: 0.3 }}
+							className="absolute inset-0 p-12 overflow-y-auto custom-scrollbar"
+						>
+							<div className="max-w-4xl mx-auto">
+								<div className="flex items-center gap-4 mb-8 text-white/40 uppercase tracking-widest text-sm font-mono">
+									<span>0{currentSlide + 1}</span>
+									<div className="h-px w-12 bg-white/20"></div>
+									<span>{slides[currentSlide].title}</span>
+								</div>
+								{slides[currentSlide].component}
+							</div>
+						</motion.div>
+					</AnimatePresence>
+				</div>
+
+				{/* Pagination Controls */}
+				<div className="h-20 border-t border-white/10 bg-black/40 flex items-center justify-between px-8 backdrop-blur-md">
+					<button
+						onClick={prevSlide}
+						className="flex items-center gap-3 text-white/40 hover:text-white transition-colors group px-4 py-2 hover:bg-white/5 rounded-lg"
+					>
+						<ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+						<span className="font-mono text-sm uppercase tracking-wider">Previous</span>
+					</button>
+
+					<div className="flex gap-2">
+						{slides.map((_, idx) => (
+							<button
+								key={idx}
+                                onClick={() => setCurrentSlide(idx)}
+								className={`h-1.5 rounded-full transition-all duration-300 ${
+									currentSlide === idx ? "w-8 bg-emerald-500" : "w-1.5 bg-white/20 hover:bg-white/40"
+								}`}
+							/>
+						))}
+					</div>
+
+					<button
+						onClick={nextSlide}
+						className="flex items-center gap-3 text-white/40 hover:text-white transition-colors group px-4 py-2 hover:bg-white/5 rounded-lg"
+					>
+						<span className="font-mono text-sm uppercase tracking-wider">Next</span>
+						<ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+					</button>
+				</div>
+			</div>
+		</div>
+	);
 }

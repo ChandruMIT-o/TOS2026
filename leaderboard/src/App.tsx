@@ -4,6 +4,7 @@ import { Registration } from "./components/Registration";
 import { TestingEnv } from "./components/TestingEnv";
 import { Leaderboard } from "./components/Leaderboard";
 import LetterGlitch from "./components/LetterGlitch";
+import { TacticalGrid } from "./components/TacticalGrid";
 import { motion, AnimatePresence } from "framer-motion";
 
 function App() {
@@ -93,14 +94,19 @@ function App() {
 			className="min-h-screen text-slate-200 flex flex-col font-sans relative overflow-hidden cursor-crosshair bg-[#050505]"
 		>
 			{/* Background Layer */}
-			<div className="fixed inset-0 z-0 opacity-80">
-				<LetterGlitch
-					glitchSpeed={100}
-					glitchColors={glitchColors}
-					characters={glitchChars}
-					outerVignette={true}
-				/>
-			</div>
+			{/* Background Layer */}
+			{activeTab === "testing" ? (
+				<TacticalGrid />
+			) : (
+				<div className="fixed inset-0 z-0 opacity-80">
+					<LetterGlitch
+						glitchSpeed={100}
+						glitchColors={glitchColors}
+						characters={glitchChars}
+						outerVignette={true}
+					/>
+				</div>
+			)}
 
 			{/* Decorative Overlay: Vignette & Scanlines */}
 			<div className="fixed inset-0 z-[1] pointer-events-none bg-[radial-gradient(circle_at_center,transparent_10%,#000000_120%)]" />
@@ -168,7 +174,15 @@ function App() {
 				</div>
 
 				{/* Main Content "Glass Panel" */}
-				<main className="flex-1 max-w-3xl w-full relative group">
+				<main
+					className={`flex-1 w-full relative group ${
+						activeTab === "testing"
+							? "max-w-[98vw] px-0"
+							: activeTab === "leaderboard"
+							? "max-w-4xl"
+							: "max-w-3xl"
+					}`}
+				>
 					<AnimatePresence mode="popLayout">
 						<motion.div
 							key={activeTab}
@@ -190,7 +204,13 @@ function App() {
 							transition={{ duration: 0.4, ease: "circOut" }}
 							className="relative w-full overflow-hidden"
 						>
-							<div className="relative bg-[#0a0a0a]/98 backdrop-blur-xl border border-white/10 p-6 md:p-10 shadow-2xl rounded-sm">
+							<div
+								className={`relative ${
+									activeTab === "testing"
+										? ""
+										: "bg-[#0a0a0a]/98 backdrop-blur-xl border border-white/10 p-6 md:p-10 shadow-2xl rounded-sm"
+								}`}
+							>
 								{/* Decorative Brackets */}
 								<div
 									className="absolute top-0 left-0 w-5 h-5 border-l-3 border-t-3 transition-colors duration-500"
