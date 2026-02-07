@@ -62,9 +62,9 @@ export default function ChallengePage() {
 				<div className="flex items-center gap-4">
 					<div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]" />
 					<h1 className="font-bold tracking-widest uppercase text-sm">
-						AlgoArena{" "}
+						ToS{" "}
 						<span className="text-muted-foreground">
-							// Protocol 7
+							// EDITION 4
 						</span>
 					</h1>
 				</div>

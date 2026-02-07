@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Play } from "lucide-react";
 import { Button } from "../../ui/Button";
+import { TestRunButton } from "../controls/TestRunButton";
 
 // Import Panels
 import { RuleBook } from "../panels/RuleBook";
@@ -19,7 +19,6 @@ import type {
 	LeaderboardEntry,
 	ValidationStatus,
 } from "../../../types/challenge";
-import { cn } from "../../../../lib/utils";
 
 interface ChallengeLayoutProps {
 	strategyName: string;
@@ -100,20 +99,10 @@ export function ChallengeLayout({
 			<div className="flex flex-col items-center justify-center">
 				<div className="h-full w-[1px] bg-border/50 absolute z-0 pointer-events-none" />
 				<div className="relative z-10">
-					<Button
-						onClick={handleTestRun}
-						size="icon"
+					<TestRunButton
+						onRun={handleTestRun}
 						disabled={isRunning}
-						className={cn(
-							"h-14 w-14 rounded-full shadow-[0_0_20px_rgba(var(--primary),0.3)] border-4 border-background",
-							isRunning && "animate-pulse",
-						)}
-					>
-						<Play fill="currentColor" className="ml-1" />
-					</Button>
-					<div className="mt-2 text-[10px] text-center font-mono text-muted-foreground uppercase tracking-wider bg-background px-1">
-						{isRunning ? "Running..." : "Test Run"}
-					</div>
+					></TestRunButton>
 				</div>
 			</div>
 

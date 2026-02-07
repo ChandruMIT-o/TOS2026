@@ -6,54 +6,17 @@ import { Leaderboard } from "./components/Leaderboard";
 import LetterGlitch from "./components/LetterGlitch";
 import { TacticalGrid } from "./components/TacticalGrid";
 import { motion, AnimatePresence } from "framer-motion";
+import { charList, colorPairs } from "./Config";
+import { HomeTab } from "./components/HomeTab";
 
 function Home() {
-	const [activeTab, setActiveTab] = useState("registration");
+	const [activeTab, setActiveTab] = useState("home");
 
 	const tabs = [
+		{ id: "home", label: "Briefing" },
 		{ id: "registration", label: "Registration" },
 		{ id: "testing", label: "Testing Env" },
 		{ id: "leaderboard", label: "Leaderboard" },
-	];
-
-	const charList = [
-		"☰☱☲☳☴☵☶☷",
-		"▤▥▦▧▨▩",
-		"♚♛♜♝♞♟♔♕♖♗♘♙",
-		"▖▗▘▙▚▛▜▝▞▟■",
-		"◐◑◒◓◔◕",
-		"◰◱◲◳◴◵◶◷",
-		"10",
-		"✻✼❄❅❆❇❈❉❊❋",
-		"⣿⣷⣯⣟⡿⢿⣻⣽",
-		"αβγδεζηθικλμ",
-		"⚀⚁⚂⚃⚄⚅",
-		"ᚠᚡᚢᚣᚤᚥᚦᚧᚨᚩᚪᚫ",
-		"◢◣◤◥",
-		"♠♥♦♣♤♢♧♡",
-		"அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ",
-		"┌┐└┘├┤┬┴┼─",
-	];
-
-	const colorPairs = [
-		["#6afbcb", "#00b8ff", "#d600ff"], // Cyberpunk Neon
-		["#ff92b3", "#ff9900", "#ff00cc"], // Sunset Neon
-		["#7dff9a", "#00ff00", "#003b00"], // Matrix Green
-		["#ff7fcc", "#ff00ff", "#9900ff"], // Electric Purple
-		["#62fafa", "#0099ff", "#0000ff"], // Ice Blue
-		["#ffff7d", "#ffcc00", "#ff9900"], // High Voltage
-		["#ffa5a5", "#ff0000", "#990000"], // Red Alert
-		["#9dff85", "#ffffff", "#00ff00"], // Acid Green
-		["#ff6a00", "#ffcc00", "#fff200"], // Firestorm
-		["#00ffe1", "#00aaff", "#0055ff"], // Aqua Plasma
-		["#b388ff", "#7c4dff", "#651fff"], // Deep Violet
-		["#ff4081", "#f50057", "#c51162"], // Hot Pink
-		["#18ffff", "#00e5ff", "#00b0ff"], // Cyan Beam
-		["#76ff03", "#64dd17", "#33691e"], // Toxic Slime
-		["#ffd740", "#ffab00", "#ff6f00"], // Amber Glow
-		["#69f0ae", "#00e676", "#00c853"], // Mint Pulse
-		["#40c4ff", "#2979ff", "#1a237e"], // Electric Blue
-		["#ff5252", "#ff1744", "#d50000"], // Crimson Flash
 	];
 
 	const [glitchColors, setGlitchColors] = useState(colorPairs[0]);
@@ -94,7 +57,6 @@ function Home() {
 			className="min-h-screen text-slate-200 flex flex-col font-sans relative overflow-hidden cursor-crosshair bg-[#050505]"
 		>
 			{/* Background Layer */}
-			{/* Background Layer */}
 			{activeTab === "testing" ? (
 				<TacticalGrid />
 			) : (
@@ -107,10 +69,6 @@ function Home() {
 					/>
 				</div>
 			)}
-
-			{/* Decorative Overlay: Vignette & Scanlines */}
-			<div className="fixed inset-0 z-[1] pointer-events-none bg-[radial-gradient(circle_at_center,transparent_10%,#000000_120%)]" />
-			<div className="fixed inset-0 z-[1] pointer-events-none opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
 			{/* Main Interface */}
 			<div className="relative z-10 flex flex-col items-center w-full min-h-screen p-4 md:p-8">
@@ -125,7 +83,7 @@ function Home() {
 					</div>
 
 					<div
-						className="relative px-12 py-6 border-y border-white/90 bg-black/35 backdrop-blur-md w-full text-center group transition-colors duration-500"
+						className="relative px-12 py-6 border-y border-white/90 bg-black/30 backdrop-blur-[2px] w-full text-center group transition-colors duration-500"
 						style={{ borderColor: `${primaryColor}33` }} // 33 is approx 20% opacity
 					>
 						{/* Decorative Brackets */}
@@ -176,7 +134,7 @@ function Home() {
 				{/* Main Content "Glass Panel" */}
 				<main
 					className={`flex-1 w-full relative group ${
-						activeTab === "testing"
+						activeTab === "testing" || activeTab === "home"
 							? "max-w-[98vw] px-0"
 							: activeTab === "leaderboard"
 								? "max-w-4xl"
@@ -238,6 +196,9 @@ function Home() {
 
 								{/* Content Render */}
 								<div className="relative z-10">
+									{activeTab === "home" && (
+										<HomeTab primaryColor={primaryColor} />
+									)}
 									{activeTab === "registration" && (
 										<Registration
 											primaryColor={primaryColor}
