@@ -3,18 +3,17 @@ import {
 	Clock,
 	Cpu,
 	ShieldAlert,
-	Eye,
 	Unlock,
 	Terminal,
 	Activity,
 	FileCode,
 	ArrowRight,
-	Zap,
 } from "lucide-react";
 import { InfiniteTicker, ScrambleText, BrutalistCard } from "./HomeTabDesign";
 
 type HomeTabProps = {
 	primaryColor: string;
+	stringList: string;
 };
 
 // --- ANIMATION VARIANTS (Fixed TS Error) ---
@@ -31,7 +30,7 @@ const textReveal: Variants = {
 	show: { y: "0%", transition: { ease: [0.33, 1, 0.68, 1], duration: 0.6 } },
 };
 
-export function HomeTab({ primaryColor }: HomeTabProps) {
+export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 	return (
 		<div className="relative bg-[#050505] min-h-screen text-slate-200 font-sans selection:bg-white selection:text-black overflow-hidden">
 			<motion.div
@@ -75,8 +74,12 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 							className="text-xl md:text-2xl font-bold text-white border-l-4 pl-4"
 							style={{ borderColor: primaryColor }}
 						>
-							<ScrambleText text="No Code." /> <br />
-							<ScrambleText text="Build an Idea." />
+							<ScrambleText CHARS={stringList} text="No Code." />{" "}
+							<br />
+							<ScrambleText
+								CHARS={stringList}
+								text="Build an Idea."
+							/>
 						</div>
 					</div>
 				</div>
@@ -84,7 +87,7 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 				{/* --- 2. TICKER --- */}
 				<div className="-mx-8">
 					<InfiniteTicker
-						text="EDITION IV // STRATEGY REQUIRED // NO CODE // 10:00 - 16:00"
+						text="EDITION IV // STRATEGY REQUIRED // NO CODE // 09:00 - 16:00"
 						primaryColor={primaryColor}
 					/>
 				</div>
@@ -94,16 +97,22 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 					{/* CARD: Execution */}
 					<BrutalistCard primaryColor={primaryColor} delay={0.1}>
 						<div className="flex justify-between items-start mb-8">
-							<Cpu size={28} className="text-white" />
-							<span className="font-mono text-[10px] border border-white/20 px-1 text-white/40">
+							<Cpu size={28} style={{ color: primaryColor }} />
+							<span
+								className="font-mono text-sm border border-white/20 px-1 text-white/40"
+								style={{ color: primaryColor }}
+							>
 								01
 							</span>
 						</div>
 						<div>
 							<h4 className="font-bold text-xl uppercase mb-2 text-white">
-								Execution
+								<ScrambleText
+									text="Execution"
+									CHARS={stringList}
+								/>
 							</h4>
-							<p className="text-sm text-white/60 leading-relaxed">
+							<p className="text-s text-white/60 leading-relaxed">
 								Your strategy will compete in the tournament,
 								and you can monitor your standing on a
 								periodically updated leaderboard.
@@ -114,16 +123,25 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 					{/* CARD: Simulation */}
 					<BrutalistCard primaryColor={primaryColor} delay={0.2}>
 						<div className="flex justify-between items-start mb-8">
-							<Activity size={28} className="text-white" />
-							<span className="font-mono text-[10px] border border-white/20 px-1 text-white/40">
+							<Activity
+								size={28}
+								style={{ color: primaryColor }}
+							/>
+							<span
+								className="font-mono text-sm border border-white/20 px-1 text-white/40"
+								style={{ color: primaryColor }}
+							>
 								02
 							</span>
 						</div>
 						<div>
 							<h4 className="font-bold text-xl uppercase mb-2 text-white">
-								Sim & Lifeline
+								<ScrambleText
+									text="Sim & Lifeline"
+									CHARS={stringList}
+								/>
 							</h4>
-							<p className="text-sm text-white/60 leading-relaxed">
+							<p className="text-s text-white/60 leading-relaxed">
 								You may test your approach in a "Testing
 								Tournament" and modify your strategy once using
 								a single "lifeline."
@@ -136,22 +154,34 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 						<BrutalistCard
 							primaryColor={primaryColor}
 							delay={0.3}
-							className="h-full bg-white/5"
+							className="h-full"
 						>
-							<div className="flex items-center gap-3 mb-6 opacity-50">
-								<Clock size={20} />
-								<span className="font-mono uppercase tracking-widest text-xs">
-									Timeline Sync
+							<div className="flex justify-between items-start gap-3 mb-6">
+								<Clock
+									size={28}
+									style={{ color: primaryColor }}
+								/>
+								<span
+									className="font-mono text-sm border border-white/20 px-1 text-white/40"
+									style={{ color: primaryColor }}
+								>
+									03
 								</span>
 							</div>
 
-							<div className="flex flex-col md:flex-row gap-8 items-center h-full">
+							<div className="flex flex-col md:flex-row gap-8 items-end  h-full">
 								<div className="flex-1">
+									<h4 className="font-bold text-xl uppercase mb-2 text-white">
+										<ScrambleText
+											text="On 21st Feb"
+											CHARS={stringList}
+										/>
+									</h4>
 									<p className="text-lg font-light text-white/90 mb-4">
 										A rolling event held throughout the day
 										(tentatively scheduled from{" "}
 										<span className="font-bold text-white bg-white/10 px-2">
-											10:00 to 16:00
+											09:00 to 16:00
 										</span>
 										).
 									</p>
@@ -160,7 +190,7 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 										<span>DEADLINE: 1600 HRS</span>
 									</div>
 								</div>
-								<div className="w-full md:w-1/3 text-sm text-white/60 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pl-4 md:pt-0">
+								<div className="flex-1 w-full md:w-1/3 text-s text-white/60 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pl-4 md:pt-0">
 									Participants will arrive, learn the game
 									mechanics, draft their strategy in plain
 									English, and upload it. The entire process
@@ -177,18 +207,30 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 							delay={0.4}
 							className="h-full"
 						>
-							<div className="mb-6">
+							<div className="flex justify-between items-start gap-3 mb-6">
 								<FileCode
-									size={32}
+									size={28}
 									style={{ color: primaryColor }}
 								/>
+								<span
+									className="font-mono text-sm border border-white/20 px-1 text-white/40"
+									style={{ color: primaryColor }}
+								>
+									04
+								</span>
 							</div>
 							<h3 className="text-lg font-bold uppercase mb-6 tracking-wide">
-								Access
+								<ScrambleText
+									text="Access"
+									CHARS={stringList}
+								/>
 								<br />
-								Requirements
+								<ScrambleText
+									text="Requirements"
+									CHARS={stringList}
+								/>
 							</h3>
-							<ul className="space-y-6 font-mono text-xs">
+							<ul className="space-y-6 font-mono text-sm">
 								<li className="group cursor-default">
 									<span className="block text-white/30 mb-1 group-hover:text-white transition-colors">
 										Skill_Check
@@ -231,13 +273,13 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 							</div>
 
 							<h3 className="text-2xl md:text-4xl font-black uppercase text-white mb-2">
-								Protocol:{" "}
+								Protocol{" "}
 								<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
 									Unrestricted
 								</span>
 							</h3>
-							<p className="text-white/60 font-mono text-xs uppercase tracking-widest mb-8">
-								Warning: Ethics protocols disabled
+							<p className="text-white/60 font-mono text-xl uppercase tracking-widest mb-8">
+								Warning: All rules disabled
 							</p>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -248,6 +290,7 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 										<ScrambleText
 											text="encouraged"
 											className="font-bold text-red-400"
+											CHARS={stringList}
 										/>
 										.
 									</p>
@@ -265,7 +308,11 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 									].map((item) => (
 										<div
 											key={item}
-											className="border border-white/10 bg-black/40 p-3 text-center text-[10px] uppercase font-bold text-white/60 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all cursor-pointer"
+											style={{
+												color: primaryColor,
+												borderColor: primaryColor,
+											}}
+											className="border border-white/10 bg-black/40 p-3 text-center text-xs uppercase font-bold text-white/60 hover:text-white transition-all cursor-pointer"
 										>
 											{item}
 										</div>
@@ -282,13 +329,24 @@ export function HomeTab({ primaryColor }: HomeTabProps) {
 						className="h-full"
 					>
 						<div className="flex justify-between items-start mb-6">
-							<ShieldAlert size={24} className="text-white" />
-							<Eye size={16} className="text-white/40" />
+							<ShieldAlert
+								size={28}
+								style={{ color: primaryColor }}
+							/>
+							<span
+								className="font-mono text-sm border border-white/20 px-1 text-white/40"
+								style={{ color: primaryColor }}
+							>
+								05
+							</span>
 						</div>
-						<h4 className="font-bold text-sm uppercase mb-4 text-white border-b border-white/10 pb-2">
-							System Integrity
+						<h4 className="font-bold text-xl uppercase mb-4 text-white border-b border-white/10 pb-2">
+							<ScrambleText
+								text="System Integrity"
+								CHARS={stringList}
+							/>
 						</h4>
-						<div className="space-y-4 text-xs text-white/70">
+						<div className="space-y-4 text-s text-white/70">
 							<p>
 								The simulation code will be{" "}
 								<span className="text-white font-bold">

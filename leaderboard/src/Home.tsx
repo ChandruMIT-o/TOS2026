@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Tabs } from "./components/Tabs";
 import { Registration } from "./components/Registration";
 import { TestingEnv } from "./components/TestingEnv";
@@ -8,9 +8,12 @@ import { TacticalGrid } from "./components/TacticalGrid";
 import { motion, AnimatePresence } from "framer-motion";
 import { charList, colorPairs } from "./Config";
 import { HomeTab } from "./components/HomeTab";
+import TargetCursor from "./components/TargetCursor";
 
 function Home() {
 	const [activeTab, setActiveTab] = useState("home");
+	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
+	const contentRef = useRef<HTMLDivElement>(null);
 
 	const tabs = [
 		{ id: "home", label: "Briefing" },
@@ -39,6 +42,38 @@ function Home() {
 		return () => clearInterval(interval);
 	}, [changeBackground, glitchColors, glitchChars]);
 
+	// Scroll Detection for Performance Mode
+	useEffect(() => {
+		const handleScroll = () => {
+			if (activeTab !== "home" && activeTab !== "testing") {
+				if (isPerformanceMode) setIsPerformanceMode(false);
+				return;
+			}
+
+			if (!contentRef.current) return;
+
+			const { height } = contentRef.current.getBoundingClientRect();
+			const vh = window.innerHeight;
+			const scrollY = window.scrollY;
+
+			// Check if tab section is tall enough (occupies > 90% of viewport)
+			const isTall = height > vh * 0.9;
+
+			if (isTall && scrollY > 70) {
+				if (!isPerformanceMode) setIsPerformanceMode(true);
+			} else {
+				if (isPerformanceMode) setIsPerformanceMode(false);
+			}
+		};
+
+		window.addEventListener("scroll", handleScroll);
+		window.addEventListener("resize", handleScroll); // Check on resize too
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+			window.removeEventListener("resize", handleScroll);
+		};
+	}, [activeTab, isPerformanceMode]);
+
 	const handleBackgroundClick = (e: React.MouseEvent) => {
 		const target = e.target as HTMLElement;
 		if (
@@ -54,10 +89,17 @@ function Home() {
 	return (
 		<div
 			onClick={handleBackgroundClick}
-			className="min-h-screen text-slate-200 flex flex-col font-sans relative overflow-hidden cursor-crosshair bg-[#050505]"
+			className="min-h-screen text-slate-200 flex flex-col font-sans relative overflow-hidden cursor-hidden bg-[#050505]"
 		>
+			<TargetCursor
+				spinDuration={2}
+				hideDefaultCursor
+				parallaxOn
+				hoverDuration={0.2}
+			/>
 			{/* Background Layer */}
-			{activeTab === "testing" ? (
+			{activeTab === "testing" ||
+			(activeTab === "home" && isPerformanceMode) ? (
 				<TacticalGrid />
 			) : (
 				<div className="fixed inset-0 z-0 opacity-80">
@@ -83,7 +125,7 @@ function Home() {
 					</div>
 
 					<div
-						className="relative px-12 py-6 border-y border-white/90 bg-black/30 backdrop-blur-[2px] w-full text-center group transition-colors duration-500"
+						className="cursor-target relative px-12 py-6 border-y border-white/90 bg-black/30 backdrop-blur-[2px] w-full text-center group transition-colors duration-500"
 						style={{ borderColor: `${primaryColor}33` }} // 33 is approx 20% opacity
 					>
 						{/* Decorative Brackets */}
@@ -133,12 +175,14 @@ function Home() {
 
 				{/* Main Content "Glass Panel" */}
 				<main
-					className={`flex-1 w-full relative group ${
-						activeTab === "testing" || activeTab === "home"
-							? "max-w-[98vw] px-0"
-							: activeTab === "leaderboard"
-								? "max-w-4xl"
-								: "max-w-3xl"
+					className={`flex-1 w-full relative group transition-all duration-100 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+						activeTab === "testing" && isPerformanceMode
+							? "w-full max-w-none px-0"
+							: activeTab === "home" || activeTab === "testing"
+								? "max-w-[98vw] px-0"
+								: activeTab === "leaderboard"
+									? "max-w-4xl"
+									: "max-w-3xl"
 					}`}
 				>
 					<AnimatePresence mode="popLayout">
@@ -163,41 +207,66 @@ function Home() {
 							className="relative w-full overflow-hidden"
 						>
 							<div
+								ref={contentRef}
 								className={`relative ${
-									activeTab === "testing"
+									activeTab === "testing" ||
+									(activeTab === "home" && isPerformanceMode)
 										? ""
 										: "bg-[#0a0a0a]/98 backdrop-blur-xl border border-white/10 p-6 md:p-10 shadow-2xl rounded-sm"
 								}`}
 							>
-								{/* Decorative Brackets */}
-								<div
-									className="absolute top-0 left-0 w-5 h-5 border-l-3 border-t-3 transition-colors duration-500"
-									style={{ borderColor: primaryColor }}
-								/>
-								<div
-									className="absolute top-0 right-0 w-5 h-5 border-r-3 border-t-3 transition-colors duration-500"
-									style={{ borderColor: primaryColor }}
-								/>
-								<div
-									className="absolute bottom-0 left-0 w-5 h-5 border-l-3 border-b-3 transition-colors duration-500"
-									style={{ borderColor: primaryColor }}
-								/>
-								<div
-									className="absolute bottom-0 right-0 w-5 h-5 border-r-3 border-b-3 transition-colors duration-500"
-									style={{ borderColor: primaryColor }}
-								/>
-								{/* Glowing border accent based on active color */}
-								<div
-									className="absolute top-0 left-0 w-full h-[1px] opacity-50"
-									style={{
-										background: `linear-gradient(90deg, transparent, ${primaryColor}, transparent)`,
-									}}
-								/>
+								{/* Decorative Brackets & Glow - Hide in testing */}
+								{activeTab !== "testing" && (
+									<>
+										<div
+											className="absolute top-0 left-0 w-5 h-5 border-l-3 border-t-3 transition-colors duration-500"
+											style={{
+												borderColor: primaryColor,
+											}}
+										/>
+										<div
+											className="absolute top-0 right-0 w-5 h-5 border-r-3 border-t-3 transition-colors duration-500"
+											style={{
+												borderColor: primaryColor,
+											}}
+										/>
+										<div
+											className="absolute bottom-0 left-0 w-5 h-5 border-l-3 border-b-3 transition-colors duration-500"
+											style={{
+												borderColor: primaryColor,
+											}}
+										/>
+										<div
+											className="absolute bottom-0 right-0 w-5 h-5 border-r-3 border-b-3 transition-colors duration-500"
+											style={{
+												borderColor: primaryColor,
+											}}
+										/>
+										{/* Glowing border accent */}
+										<div
+											className="absolute top-0 left-0 w-full h-[1px] opacity-50"
+											style={{
+												background: `linear-gradient(90deg, transparent, ${primaryColor}, transparent)`,
+											}}
+										/>
+										{/* Background Grid Pattern inside container */}
+										<div
+											className="absolute inset-0 z-0 opacity-[0.03]"
+											style={{
+												backgroundImage: `linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)`,
+												backgroundSize: "40px 40px",
+											}}
+										/>
+									</>
+								)}
 
 								{/* Content Render */}
 								<div className="relative z-10">
 									{activeTab === "home" && (
-										<HomeTab primaryColor={primaryColor} />
+										<HomeTab
+											primaryColor={primaryColor}
+											stringList={glitchChars}
+										/>
 									)}
 									{activeTab === "registration" && (
 										<Registration
@@ -209,15 +278,6 @@ function Home() {
 										<Leaderboard />
 									)}
 								</div>
-
-								{/* Background Grid Pattern inside container */}
-								<div
-									className="absolute inset-0 z-0 opacity-[0.03]"
-									style={{
-										backgroundImage: `linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)`,
-										backgroundSize: "40px 40px",
-									}}
-								/>
 							</div>
 						</motion.div>
 					</AnimatePresence>

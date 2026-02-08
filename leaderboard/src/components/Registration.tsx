@@ -101,7 +101,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 							onChange={(e) =>
 								setTeamName(e.target.value.toUpperCase())
 							}
-							className="bg-black/40 border border-white/10 placeholder:text-white/50 focus:outline-none focus-visible:outline-none focus:border-none focus:ring-0 transition-all duration-300 tracking-widest h-16 text-xl px-4"
+							className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/50 focus:outline-none focus-visible:outline-none focus:border-none focus:ring-0 transition-all duration-300 tracking-widest h-16 text-xl px-4"
 						/>
 						{/* Corner Accent */}
 						<div className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 border-emerald-500/30" />
@@ -137,7 +137,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 										type="button"
 										onClick={() => setPlayerCount(1)}
 										className={cn(
-											"flex-1 flex items-center justify-center gap-3 py-4 rounded-sm text-sm uppercase tracking-wider font-bold transition-all duration-300 relative z-10",
+											"cursor-target flex-1 flex items-center justify-center gap-3 py-4 rounded-sm text-sm uppercase tracking-wider font-bold transition-all duration-300 relative z-10",
 											playerCount === 1
 												? "bg-white/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] border border-emerald-500/20"
 												: "text-white/40 hover:text-white/80 hover:bg-white/5",
@@ -159,7 +159,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 										type="button"
 										onClick={() => setPlayerCount(2)}
 										className={cn(
-											"flex-1 flex items-center justify-center gap-3 py-4 rounded-sm text-sm uppercase tracking-wider font-bold transition-all duration-300 relative z-10",
+											"cursor-target flex-1 flex items-center justify-center gap-3 py-4 rounded-sm text-sm uppercase tracking-wider font-bold transition-all duration-300 relative z-10",
 											playerCount === 2
 												? "bg-white/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)] border border-emerald-500/20"
 												: "text-white/40 hover:text-white/80 hover:bg-white/5",
@@ -194,7 +194,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 										onChange={(e) =>
 											setPlayer1(e.target.value)
 										}
-										className="bg-black/40 border border-white/10 placeholder:text-white/50 focus:outline-none focus-visible:outline-none focus:border-none focus:ring-0 transition-all duration-300 tracking-widest h-16 text-xl px-4"
+										className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/50 focus:outline-none focus-visible:outline-none focus:border-none focus:ring-0 transition-all duration-300 tracking-widest h-16 text-xl px-4"
 									/>
 								</div>
 
@@ -213,7 +213,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 											onChange={(e) =>
 												setPlayer2(e.target.value)
 											}
-											className="bg-black/40 border border-white/10 placeholder:text-white/50 focus:outline-none focus-visible:outline-none focus:border-none focus:ring-0 transition-all duration-300 tracking-widest h-16 text-xl px-4"
+											className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/50 focus:outline-none focus-visible:outline-none focus:border-none focus:ring-0 transition-all duration-300 tracking-widest h-16 text-xl px-4"
 										/>
 									</motion.div>
 								)}

@@ -20,7 +20,7 @@ export function Tabs({
 	onTabChange,
 }: TabsProps) {
 	return (
-		<div className="relative flex p-1 bg-black/60 border border-white/10 w-fit mx-auto mb-12 backdrop-blur-sm rounded-sm">
+		<div className="cursor-hidden relative flex p-1 bg-black/60 border border-white/10 w-fit max-w-full overflow-x-auto mx-auto mb-12 backdrop-blur-sm rounded-sm">
 			{/* Optional: Decorative Grid Background behind tabs */}
 
 			{tabs.map((tab) => {
@@ -31,7 +31,7 @@ export function Tabs({
 						key={tab.id}
 						onClick={() => onTabChange(tab.id)}
 						className={cn(
-							"relative px-8 py-3 text-sm font-bold uppercase tracking-[0.2em] font-mono transition-colors duration-300 z-10 outline-none",
+							"cursor-target cursor-hidden relative px-4 py-2 md:px-8 md:py-3 text-xs md:text-sm font-bold uppercase tracking-widest md:tracking-[0.2em] font-mono transition-colors duration-300 z-10 outline-none whitespace-nowrap",
 							isActive
 								? "text-emerald-400"
 								: "text-white/40 hover:text-white/70",
