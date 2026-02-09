@@ -27,6 +27,8 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 	);
 	const tickerFnRef = useRef<(() => void) | null>(null);
 	const activeStrengthRef = useRef({ current: 0 });
+	const xTo = useRef<gsap.QuickToFunc | null>(null);
+	const yTo = useRef<gsap.QuickToFunc | null>(null);
 
 	const isMobile = useMemo(() => {
 		const hasTouchScreen =
@@ -44,7 +46,8 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 
 	const moveCursor = useCallback((x: number, y: number) => {
 		if (!cursorRef.current) return;
-		gsap.to(cursorRef.current, { x, y, duration: 0.1, ease: "power3.out" });
+		xTo.current?.(x);
+		yTo.current?.(y);
 	}, []);
 
 	useEffect(() => {
@@ -76,6 +79,15 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 			yPercent: -50,
 			x: window.innerWidth / 2,
 			y: window.innerHeight / 2,
+		});
+
+		xTo.current = gsap.quickTo(cursor, "x", {
+			duration: 0.1,
+			ease: "power3.out",
+		});
+		yTo.current = gsap.quickTo(cursor, "y", {
+			duration: 0.1,
+			ease: "power3.out",
 		});
 
 		const createSpinTimeline = () => {
@@ -113,14 +125,10 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 					targetCornerPositionsRef.current![i].y - cursorY;
 				const finalX = currentX + (targetX - currentX) * strength;
 				const finalY = currentY + (targetY - currentY) * strength;
-				const duration =
-					strength >= 0.99 ? (parallaxOn ? 0.2 : 0) : 0.05;
-				gsap.to(corner, {
+
+				gsap.set(corner, {
 					x: finalX,
 					y: finalY,
-					duration: duration,
-					ease: duration === 0 ? "none" : "power1.out",
-					overwrite: "auto",
 				});
 			});
 		};
@@ -210,7 +218,8 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 			];
 
 			isActiveRef.current = true;
-			gsap.ticker.add(tickerFnRef.current!);
+			isActiveRef.current = true;
+			gsap.ticker.add(tickerFnRef.current!, false, false);
 
 			gsap.to(activeStrengthRef.current, {
 				current: 1,

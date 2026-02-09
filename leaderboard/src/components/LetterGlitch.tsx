@@ -129,22 +129,47 @@ const LetterGlitch: React.FC<LetterGlitchProps> = ({
 		[getRandomChar, getRandomColor],
 	);
 
+	// Optimization: Use refs for dimensions to avoid layout thrashing
+	const canvasSize = useRef({ width: 0, height: 0 });
+
 	const drawLetters = useCallback(() => {
 		if (!context.current || letters.current.length === 0) return;
 		const ctx = context.current;
-		const { width, height } = canvasRef.current!.getBoundingClientRect();
+		const { width, height } = canvasSize.current;
+
+		// Optimization: Clear using cached dimensions
 		ctx.clearRect(0, 0, width, height);
 		ctx.font = `${fontSize}px monospace`;
 		ctx.textBaseline = "top";
 
 		const cols = grid.current.columns;
-		letters.current.forEach((letter, index) => {
-			const x = (index % cols) * charWidth;
-			const y = Math.floor(index / cols) * charHeight;
+		const lettersArr = letters.current;
+		const len = lettersArr.length;
+
+		for (let i = 0; i < len; i++) {
+			const letter = lettersArr[i];
+
+			// Optimization: Integrate smooth color transitions into the draw loop
+			if (smooth && letter.colorProgress < 1) {
+				letter.colorProgress += 0.05;
+				if (letter.colorProgress > 1) letter.colorProgress = 1;
+
+				const t = letter.colorProgress;
+				const start = letter.color;
+				const end = letter.targetColor;
+
+				letter.color.r = start.r + (end.r - start.r) * t;
+				letter.color.g = start.g + (end.g - start.g) * t;
+				letter.color.b = start.b + (end.b - start.b) * t;
+			}
+
+			const x = (i % cols) * charWidth;
+			// Optimization: Avoid repeated Math.floor
+			const y = ((i / cols) | 0) * charHeight;
 			ctx.fillStyle = `rgb(${Math.floor(letter.color.r)}, ${Math.floor(letter.color.g)}, ${Math.floor(letter.color.b)})`;
 			ctx.fillText(letter.char, x, y);
-		});
-	}, []);
+		}
+	}, [smooth, fontSize, charWidth, charHeight]);
 
 	const updateLetters = useCallback(() => {
 		if (!letters.current.length) return;
@@ -171,53 +196,25 @@ const LetterGlitch: React.FC<LetterGlitchProps> = ({
 		}
 	}, [getRandomChar, getRandomColor, smooth]);
 
-	const handleSmoothTransitions = useCallback(() => {
-		let needsRedraw = false;
-		const len = letters.current.length;
-
-		for (let i = 0; i < len; i++) {
-			const letter = letters.current[i];
-			if (letter.colorProgress < 1) {
-				letter.colorProgress += 0.05;
-				if (letter.colorProgress > 1) letter.colorProgress = 1;
-
-				const t = letter.colorProgress;
-				const start = letter.color;
-				const end = letter.targetColor;
-
-				letter.color.r = start.r + (end.r - start.r) * t;
-				letter.color.g = start.g + (end.g - start.g) * t;
-				letter.color.b = start.b + (end.b - start.b) * t;
-
-				needsRedraw = true;
-			}
-		}
-
-		if (needsRedraw) {
-			drawLetters();
-		}
-	}, [drawLetters]);
-
 	const animate = useCallback(() => {
 		const now = Date.now();
+		let needsRedraw = false;
+
+		// 1. Glitch Update
 		if (now - lastGlitchTime.current >= glitchSpeed) {
 			updateLetters();
-			drawLetters();
+			needsRedraw = true;
 			lastGlitchTime.current = now;
 		}
 
-		if (smooth) {
-			handleSmoothTransitions();
+		// 2. Smooth Transition & Draw
+		// If smooth is on, we always redraw because colors might be transitioning
+		if (smooth || needsRedraw) {
+			drawLetters();
 		}
 
 		animationRef.current = requestAnimationFrame(animate);
-	}, [
-		glitchSpeed,
-		smooth,
-		updateLetters,
-		drawLetters,
-		handleSmoothTransitions,
-	]);
+	}, [glitchSpeed, smooth, updateLetters, drawLetters]);
 
 	const resizeCanvas = useCallback(() => {
 		const canvas = canvasRef.current;
@@ -232,6 +229,9 @@ const LetterGlitch: React.FC<LetterGlitchProps> = ({
 
 		canvas.style.width = `${rect.width}px`;
 		canvas.style.height = `${rect.height}px`;
+
+		// Optimization: Store caching dimensions
+		canvasSize.current = { width: canvas.width, height: canvas.height };
 
 		if (context.current) {
 			context.current.setTransform(dpr, 0, 0, dpr, 0, 0);

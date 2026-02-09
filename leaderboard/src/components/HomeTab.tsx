@@ -1,23 +1,7 @@
 import { motion, type Variants } from "framer-motion";
-import {
-	Clock,
-	Cpu,
-	ShieldAlert,
-	Unlock,
-	Terminal,
-	Activity,
-	FileCode,
-	ArrowRight,
-} from "lucide-react";
-import { InfiniteTicker, ScrambleText, BrutalistCard } from "./HomeTabDesign";
-
-// Asset Imports
-import path3 from "../assets/path3.svg";
-import path4 from "../assets/path4.svg";
-import path5 from "../assets/path5.svg";
-import path6 from "../assets/path6.svg";
-import path7 from "../assets/path7.svg";
-import path8 from "../assets/path8.svg";
+import { ArrowUpRight, Terminal } from "lucide-react";
+import { InfiniteTicker, ScrambleText } from "./HomeTabDesign";
+import { HomeBento } from "./HomeBento";
 
 type HomeTabProps = {
 	primaryColor: string;
@@ -39,8 +23,6 @@ const textReveal: Variants = {
 };
 
 export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
-	const bgVectors = [path3, path4, path5, path6, path7, path8];
-
 	return (
 		<div className="relative bg-[#050505] min-h-screen text-slate-200 font-sans selection:bg-white selection:text-black overflow-hidden">
 			<motion.div
@@ -65,7 +47,7 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 						<div className="overflow-hidden pb-2">
 							<motion.h1
 								variants={textReveal}
-								className="text-5xl sm:text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none md:leading-[0.9] text-white mix-blend-difference"
+								className="text-[2.5rem] sm:text-[2.7rem] md:text-[5rem] font-black uppercase tracking-tighter leading-none md:leading-[0.9] text-white mix-blend-difference"
 							>
 								Tournament <br />
 								<span className="text-white/20">
@@ -102,371 +84,122 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 					/>
 				</div>
 
-				{/* --- 3. MAIN GRID --- */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
-					{/* CARD: Execution */}
-					<BrutalistCard
-						primaryColor={primaryColor}
-						delay={0.1}
-						bgVector={path3}
-						bgVectors={bgVectors}
-					>
-						<div className="flex justify-between items-start mb-8">
-							<Cpu size={28} style={{ color: primaryColor }} />
-							<span
-								className="font-mono text-sm border border-white/20 px-1 text-white/40"
-								style={{ color: primaryColor }}
-							>
-								01
-							</span>
-						</div>
-						<div>
-							<h4 className="font-bold text-xl uppercase mb-2 text-white">
-								<ScrambleText
-									text="Execution"
-									CHARS={stringList}
-								/>
-							</h4>
-							<p className="text-s text-white/60 leading-relaxed">
-								Your strategy will compete in the tournament,
-								and you can monitor your standing on a
-								periodically updated leaderboard.
-							</p>
-						</div>
-					</BrutalistCard>
-
-					{/* CARD: Simulation */}
-					<BrutalistCard
-						primaryColor={primaryColor}
-						delay={0.2}
-						bgVector={path4}
-						bgVectors={bgVectors}
-					>
-						<div className="flex justify-between items-start mb-8">
-							<Activity
-								size={28}
-								style={{ color: primaryColor }}
-							/>
-							<span
-								className="font-mono text-sm border border-white/20 px-1 text-white/40"
-								style={{ color: primaryColor }}
-							>
-								02
-							</span>
-						</div>
-						<div>
-							<h4 className="font-bold text-xl uppercase mb-2 text-white">
-								<ScrambleText
-									text="Sim & Lifeline"
-									CHARS={stringList}
-								/>
-							</h4>
-							<p className="text-s text-white/60 leading-relaxed">
-								You may test your approach in a "Testing
-								Tournament" and modify your strategy once using
-								a single "lifeline."
-							</p>
-						</div>
-					</BrutalistCard>
-
-					{/* CARD: Operations (Spans 2 cols) */}
-					<div className="lg:col-span-2">
-						<BrutalistCard
-							primaryColor={primaryColor}
-							delay={0.3}
-							className="h-full"
-							bgVector={path5}
-							bgVectors={bgVectors}
+				{/* --- INFO STRIP --- */}
+				<div className="w-full bg-slate-200 text-black border-y border-black">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-black">
+						{/* 1. EVENT IDENTITY */}
+						<a
+							href="https://tekhora26.live"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer"
 						>
-							<div className="flex justify-between items-start gap-3 mb-6">
-								<Clock
-									size={28}
-									style={{ color: primaryColor }}
-								/>
-								<span
-									className="font-mono text-sm border border-white/20 px-1 text-white/40"
-									style={{ color: primaryColor }}
-								>
-									03
+							<div className="absolute top-6 right-6 md:top-8 md:right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+								<ArrowUpRight size={24} />
+							</div>
+							<div>
+								<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+									Event_ID
+								</span>
+								<h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9] mt-1">
+									Tekhora
+									<br />
+									2026
+								</h3>
+							</div>
+							<div className="flex items-center gap-2 mt-4 font-mono text-xs font-bold uppercase tracking-widest">
+								<span className="w-2 h-2 bg-black rounded-full group-hover:bg-white" />
+								Team Size: 1-2
+							</div>
+						</a>
+
+						{/* 2. DATE & TIME (Big Data) */}
+						<div className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
+							<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+								T - Minus
+							</span>
+							<div className="flex items-baseline gap-1 mt-auto">
+								<span className="text-6xl md:text-7xl font-black tracking-tighter leading-none">
+									21
+								</span>
+								<div className="flex flex-col font-bold leading-none">
+									<span className="text-xl uppercase">
+										FEB
+									</span>
+									<span className="text-lg opacity-50">
+										09:30
+									</span>
+								</div>
+							</div>
+						</div>
+
+						{/* 3. PRIZE POOL (High Impact) */}
+						<div className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
+							<div className="flex justify-between items-start">
+								<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+									Total_Bounty
+								</span>
+								<span className="font-mono text-xs font-bold border border-black px-1 group-hover:border-white group-hover:bg-white group-hover:text-black transition-all">
+									FEE: ₹60
 								</span>
 							</div>
+							<div className="mt-auto">
+								<div className="flex items-baseline gap-5">
+									<span className="text-5xl font-black tracking-tighter">
+										₹3.5k
+									</span>
+									<span className="text-sm font-bold uppercase rotate-[-90deg] origin-left translate-y-2 opacity-50">
+										Win
+									</span>
+								</div>
+								<div className="w-full h-px bg-black/20 group-hover:bg-white/20 my-2" />
+								<div className="flex justify-between items-center text-sm font-bold uppercase">
+									<span>Runner Up</span>
+									<span>₹2000</span>
+								</div>
+							</div>
+						</div>
 
-							<div className="flex flex-col md:flex-row gap-8 items-end  h-full">
-								<div className="flex-1">
-									<h4 className="font-bold text-xl uppercase mb-2 text-white">
-										<ScrambleText
-											text="On 21st Feb"
-											CHARS={stringList}
+						{/* 4. CONTACTS (Actionable) */}
+						<div className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
+							<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+								Link_Start
+							</span>
+
+							<div className="space-y-3 mt-auto">
+								{[
+									{ name: "Chandru", phone: "7667634519" },
+									{ name: "Mirsha", phone: "9940358967" },
+								].map((contact, i) => (
+									<a
+										key={i}
+										href={`tel:${contact.phone}`}
+										className="flex items-center justify-between border-b border-black/20 group-hover:border-white/30 pb-1 cursor-pointer hover:pl-2 transition-all"
+									>
+										<div className="flex flex-col leading-none">
+											<span className="font-bold uppercase text-lg">
+												{contact.name}
+											</span>
+											<span className="font-mono text-xs opacity-60">
+												{contact.phone}
+											</span>
+										</div>
+										<ArrowUpRight
+											size={20}
+											className="opacity-0 group-hover:opacity-100 transition-opacity"
 										/>
-									</h4>
-									<p className="text-lg font-light text-white/90 mb-4">
-										A rolling event held throughout the day
-										(tentatively scheduled from{" "}
-										<span className="font-bold text-white bg-white/10 px-2">
-											09:00 to 16:00
-										</span>
-										).
-									</p>
-									<div className="flex items-center gap-2 text-xs font-mono text-white/50">
-										<ArrowRight size={12} />
-										<span>DEADLINE: 1600 HRS</span>
-									</div>
-								</div>
-								<div className="flex-1 w-full md:w-1/3 text-s text-white/60 border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pl-4 md:pt-0">
-									Participants will arrive, learn the game
-									mechanics, draft their strategy in plain
-									English, and upload it. The entire process
-									takes approximately 30 minutes.
-								</div>
+									</a>
+								))}
 							</div>
-						</BrutalistCard>
-					</div>
-
-					{/* CARD: Access Level (Tall) */}
-					<div className="lg:row-span-1">
-						<BrutalistCard
-							primaryColor={primaryColor}
-							delay={0.4}
-							className="h-full"
-							bgVector={path6}
-							bgVectors={bgVectors}
-						>
-							<div className="flex justify-between items-start gap-3 mb-6">
-								<FileCode
-									size={28}
-									style={{ color: primaryColor }}
-								/>
-								<span
-									className="font-mono text-sm border border-white/20 px-1 text-white/40"
-									style={{ color: primaryColor }}
-								>
-									04
-								</span>
-							</div>
-							<h3 className="text-lg font-bold uppercase mb-6 tracking-wide">
-								<ScrambleText
-									text="Access"
-									CHARS={stringList}
-								/>
-								<br />
-								<ScrambleText
-									text="Requirements"
-									CHARS={stringList}
-								/>
-							</h3>
-							<ul className="space-y-6 font-mono text-sm">
-								<li className="group cursor-default">
-									<span className="block text-white/30 mb-1 group-hover:text-white transition-colors">
-										Skill_Check
-									</span>
-									<span className="text-white/80">
-										// No coding skills are required.
-									</span>
-								</li>
-								<li className="group cursor-default">
-									<span className="block text-white/30 mb-1 group-hover:text-white transition-colors">
-										Unit_Size
-									</span>
-									<span className="text-white/80">
-										// Participation is open to teams of 1
-										or 2 members.
-									</span>
-								</li>
-								<li className="group cursor-default">
-									<span className="block text-white/30 mb-1 group-hover:text-white transition-colors">
-										Scope
-									</span>
-									<span className="text-white/80">
-										// The tournament consists of a single
-										game scenario.
-									</span>
-								</li>
-							</ul>
-						</BrutalistCard>
-					</div>
-
-					{/* CARD: THE CHEAT SHEET (Danger Zone) */}
-					<div className="lg:col-span-2 lg:row-span-1">
-						<BrutalistCard
-							primaryColor={primaryColor}
-							delay={0.5}
-							className="h-full bg-gradient-to-br from-[#1a0505] to-black border-red-900/30"
-							bgVector={path8}
-							bgVectors={bgVectors}
-						>
-							<div className="absolute top-4 right-4 animate-pulse">
-								<Unlock size={20} className="text-red-500" />
-							</div>
-
-							<h3 className="text-2xl md:text-4xl font-black uppercase text-white mb-2">
-								Protocol{" "}
-								<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-									Unrestricted
-								</span>
-							</h3>
-							<p className="text-white/60 font-mono text-xl uppercase tracking-widest mb-8">
-								Warning: All rules disabled
-							</p>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-								<div>
-									<p className="text-lg leading-relaxed text-white/90 mb-4">
-										Tactics conventionally considered
-										"cheating" are not only permitted but{" "}
-										<ScrambleText
-											text="encouraged"
-											className="font-bold text-red-400"
-											CHARS={stringList}
-										/>
-										.
-									</p>
-									<p className="text-xs text-white/40 italic">
-										"You are even free to collude with the
-										event coordinators."
-									</p>
-								</div>
-								<div className="grid grid-cols-2 gap-3 w-full mt-4">
-									{[
-										{
-											label: "AI Assistance",
-											id: "SYS-01",
-										},
-										{
-											label: "Google Search",
-											id: "NET-02",
-										},
-										{
-											label: "External Consult",
-											id: "LNK-03",
-										},
-										{ label: "Collusion", id: "ERR-04" },
-									].map((item) => (
-										<motion.button
-											key={item.label}
-											initial="idle"
-											whileHover="hover"
-											className="relative group overflow-hidden border border-white/10 bg-black/40 p-3 text-left transition-all"
-											style={{
-												// We use a CSS variable for the hover color so we can use it in pseudo-elements
-												// @ts-ignore
-												"--active-color": primaryColor,
-											}}
-										>
-											{/* 1. Background Sweep Animation */}
-											<motion.div
-												variants={{
-													idle: {
-														x: "-100%",
-														opacity: 0,
-													},
-													hover: {
-														x: "0%",
-														opacity: 0.1,
-													},
-												}}
-												transition={{
-													duration: 0.3,
-													ease: "circOut",
-												}}
-												className="absolute inset-0 bg-[var(--active-color)]"
-											/>
-
-											{/* 2. Border Glow (Pseudo-element replacement) */}
-											<div className="absolute inset-0 border border-[var(--active-color)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-											{/* Content Container */}
-											<div className="relative z-10 flex flex-col gap-1">
-												{/* 3. Tech ID (The "Brutalist" Detail) */}
-												<div className="flex justify-between items-center">
-													<span
-														className="text-[0.6rem] font-mono tracking-widest uppercase opacity-40 group-hover:opacity-80 transition-opacity"
-														style={{
-															color: primaryColor,
-														}}
-													>
-														{item.id}
-													</span>
-
-													{/* 4. Status LED */}
-													<motion.div
-														variants={{
-															idle: {
-																backgroundColor:
-																	"#333",
-																boxShadow:
-																	"none",
-															},
-															hover: {
-																backgroundColor:
-																	primaryColor,
-																boxShadow: `0 0 8px ${primaryColor}`,
-															},
-														}}
-														className="w-1.5 h-1.5 rounded-full"
-													/>
-												</div>
-
-												{/* 5. Scramble Title */}
-												<div className="text-xs font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
-													{/* Re-using your ScrambleText component here automatically handles the hover effect */}
-													<ScrambleText
-														text={item.label}
-													/>
-												</div>
-											</div>
-
-											{/* Corner Accent (Decor) */}
-											<div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-[var(--active-color)] transition-colors" />
-										</motion.button>
-									))}
-								</div>
-							</div>
-						</BrutalistCard>
-					</div>
-
-					{/* CARD: Integrity */}
-					<BrutalistCard
-						primaryColor={primaryColor}
-						delay={0.6}
-						className="h-full"
-						bgVector={path7}
-						bgVectors={bgVectors}
-					>
-						<div className="flex justify-between items-start mb-6">
-							<ShieldAlert
-								size={28}
-								style={{ color: primaryColor }}
-							/>
-							<span
-								className="font-mono text-sm border border-white/20 px-1 text-white/40"
-								style={{ color: primaryColor }}
-							>
-								05
-							</span>
 						</div>
-						<h4 className="font-bold text-xl uppercase mb-4 text-white border-b border-white/10 pb-2">
-							<ScrambleText
-								text="System Integrity"
-								CHARS={stringList}
-							/>
-						</h4>
-						<div className="space-y-4 text-s text-white/70">
-							<p>
-								The simulation code will be{" "}
-								<span className="text-white font-bold">
-									open-source
-								</span>{" "}
-								and visible to all, but opposing players'
-								strategies will remain confidential.
-							</p>
-							<p className="pt-2 border-t border-white/5">
-								No two identical strategies are permitted. A
-								dedicated system is in place to detect and
-								reject duplicate submissions.
-							</p>
-						</div>
-					</BrutalistCard>
+					</div>
 				</div>
+
+				{/* --- 3. MAIN GRID --- */}
+				<HomeBento
+					primaryColor={primaryColor}
+					stringList={stringList}
+				/>
 
 				{/* --- 4. BOTTOM TICKER --- */}
 				<div className="-mx-8">

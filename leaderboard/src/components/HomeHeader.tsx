@@ -16,7 +16,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ primaryColor }) => {
 			</div>
 
 			<div
-				className="cursor-target relative px-12 py-6 border-y border-white/90 bg-black/30 backdrop-blur-[2px] w-full text-center group transition-colors duration-500"
+				className="cursor-target relative px-12 py-6 border-y border-white/90 bg-black/50 backdrop-blur-[2px] w-full text-center group transition-colors duration-500"
 				style={{ borderColor: `${primaryColor}33` }} // 33 is approx 20% opacity
 			>
 				{/* Decorative Brackets */}

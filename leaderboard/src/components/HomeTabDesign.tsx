@@ -3,6 +3,7 @@ import {
 	useEffect,
 	useRef,
 	useState,
+	useMemo,
 	type ReactNode,
 	createContext,
 	useContext,
@@ -15,6 +16,7 @@ const CardHoverContext = createContext(false);
 // (I will re-include them if you need the full file, but assuming you just need the Card update below)
 
 // --- 2. INFINITE TICKER (Constant horizontal flow) ---
+// --- 2. INFINITE TICKER (Constant horizontal flow) ---
 export const InfiniteTicker = ({
 	text,
 	primaryColor,
@@ -23,26 +25,48 @@ export const InfiniteTicker = ({
 	text: string;
 	primaryColor: string;
 	reverse?: boolean;
-}) => (
-	<div className="relative flex overflow-hidden py-2 bg-white/5 border-y border-white/10 select-none group hover:bg-white/10 transition-colors">
-		<motion.div
-			className="flex whitespace-nowrap gap-8 font-mono text-xs font-bold uppercase tracking-widest"
-			style={{ color: primaryColor }}
-			animate={{ x: reverse ? ["-50%", "0%"] : ["0%", "-50%"] }}
-			transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-		>
-			{Array(20)
-				.fill(text)
-				.map((t, i) => (
-					<span key={i} className="flex items-center gap-4">
-						{t} <span className="w-2 h-2 bg-white/20 rotate-45" />
-					</span>
-				))}
-		</motion.div>
-		{/* Scanline overlay on ticker */}
-		<div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10" />
-	</div>
-);
+}) => {
+	// Optimization: Memoize the repeated text to prevent re-creation on every render
+	const tickerContent = useMemo(() => {
+		return Array(20)
+			.fill(text)
+			.map((t, i) => (
+				<span key={i} className="flex items-center gap-4">
+					{t} <span className="w-2 h-2 bg-white/20 rotate-45" />
+				</span>
+			));
+	}, [text]);
+
+	return (
+		<div className="relative flex overflow-hidden py-2 bg-white/5 border-y border-white/10 select-none group hover:bg-white/10 transition-colors">
+			{/* Optimization: Inject keyframes locally to avoid global CSS pollution */}
+			<style>
+				{`
+          @keyframes ticker-scroll {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+          }
+          @keyframes ticker-scroll-reverse {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+          }
+        `}
+			</style>
+			<div
+				className="flex whitespace-nowrap gap-8 font-mono text-xs font-bold uppercase tracking-widest"
+				style={{
+					color: primaryColor,
+					willChange: "transform", // Optimization: Promote to compositor layer
+					animation: `${reverse ? "ticker-scroll-reverse" : "ticker-scroll"} 100s linear infinite`,
+				}}
+			>
+				{tickerContent}
+			</div>
+			{/* Scanline overlay on ticker */}
+			<div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black z-10" />
+		</div>
+	);
+};
 
 export const ScrambleText = ({
 	text,
