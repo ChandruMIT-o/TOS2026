@@ -11,6 +11,9 @@ import {
 // Context to communicate hover state from Card to ScrambleText
 const CardHoverContext = createContext(false);
 
+// ... [Keep InfiniteTicker and ScrambleText exactly as they were] ...
+// (I will re-include them if you need the full file, but assuming you just need the Card update below)
+
 // --- 2. INFINITE TICKER (Constant horizontal flow) ---
 export const InfiniteTicker = ({
 	text,
@@ -60,7 +63,6 @@ export const ScrambleText = ({
 		let iteration = 0;
 		let frameCount = 0;
 
-		// Run the logic at a high frequency (30ms) for a responsive transition
 		const interval = setInterval(() => {
 			frameCount++;
 
@@ -68,17 +70,12 @@ export const ScrambleText = ({
 				return text
 					.split("")
 					.map((_, index) => {
-						// 1. If we've "passed" this letter during hover, show the real letter
 						if (active && index < iteration) {
 							return text[index];
 						}
-
-						// 2. Slow down the scramble: only change random chars every 4 frames (~120ms)
-						// This keeps the "loop" feeling slow and readable
 						if (frameCount % 16 !== 0) {
 							return currentDisplay[index] || CHARS[0];
 						}
-
 						if (text[index] === " ") return " ";
 						return CHARS[Math.floor(Math.random() * CHARS.length)];
 					})
@@ -86,7 +83,6 @@ export const ScrambleText = ({
 			});
 
 			if (active) {
-				// 3. Fast Transition: Reveal 1 letter every 30ms
 				if (iteration < text.length) {
 					iteration += 1;
 				}
@@ -109,7 +105,7 @@ export const ScrambleText = ({
 	);
 };
 
-// --- 4. BRUTALIST CARD (The container) ---
+// --- 4. BRUTALIST CARD (UPDATED) ---
 interface Position {
 	x: number;
 	y: number;
@@ -120,22 +116,35 @@ export const BrutalistCard = ({
 	primaryColor,
 	className = "",
 	delay = 0,
+	bgVector,
+	bgVectors = [],
 }: {
 	children: ReactNode;
 	primaryColor: string;
 	className?: string;
 	delay?: number;
+	bgVector?: string;
+	bgVectors?: string[];
 }) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const [isFocused, setIsFocused] = useState<boolean>(false);
 	const [isHovered, setIsHovered] = useState<boolean>(false);
 	const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
 	const [opacity, setOpacity] = useState<number>(0);
+	const [currentVector, setCurrentVector] = useState<string | undefined>(
+		bgVector,
+	);
+
+	// Reset currentVector when bgVector prop changes (rare but good practice)
+	useEffect(() => {
+		setCurrentVector(bgVector);
+	}, [bgVector]);
 
 	const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
 		if (!divRef.current || isFocused) return;
 
 		const rect = divRef.current.getBoundingClientRect();
+		// Increased dampening for smoother effect
 		setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
 	};
 
@@ -152,11 +161,16 @@ export const BrutalistCard = ({
 	const handleMouseEnter = () => {
 		setOpacity(0.15);
 		setIsHovered(true);
+		if (bgVectors.length > 0) {
+			const randomIndex = Math.floor(Math.random() * bgVectors.length);
+			setCurrentVector(bgVectors[randomIndex]);
+		}
 	};
 
 	const handleMouseLeave = () => {
 		setOpacity(0);
 		setIsHovered(false);
+		setCurrentVector(bgVector);
 	};
 
 	return (
@@ -175,13 +189,132 @@ export const BrutalistCard = ({
 				onMouseLeave={handleMouseLeave}
 				className={`cursor-target relative group bg-black border border-white/10 p-6 overflow-hidden ${className}`}
 			>
-				<div
-					className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out rounded-[inherit]"
-					style={{
-						opacity,
-						background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${primaryColor}, transparent 100%)`,
-					}}
-				/>
+				{/* --- 5X IMPROVED: HOLOGRAPHIC GRAIN GLOW --- */}
+				<div className="pointer-events-none absolute inset-0 rounded-[inherit] overflow-hidden">
+					{/* Layer 1: The "Hot" Core (Creates the 3D bulb effect) */}
+					<div
+						className="absolute inset-0 transition-opacity duration-300 ease-out"
+						style={{
+							opacity: opacity * 0.8, // Slightly more subtle
+							background: `radial-gradient(150px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.2), transparent 100%)`,
+						}}
+					/>
+
+					{/* Layer 2: The Colored Flood (The main glow) */}
+					<div
+						className="absolute inset-0 transition-opacity duration-500 ease-out mix-blend-plus-lighter"
+						style={{
+							opacity: opacity, // Full opacity on hover
+							background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${primaryColor}, transparent 100%)`,
+						}}
+					/>
+
+					{/* Layer 3: The Texture (Film Grain) */}
+					{/* This makes the light feel "physical" and organic */}
+					<div
+						className="absolute inset-0 opacity-[0.15] mix-blend-overlay"
+						style={{
+							backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+							backgroundSize: "100px",
+							// Only show grain where the light hits (using mask)
+							maskImage: `radial-gradient(400px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
+							WebkitMaskImage: `radial-gradient(400px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
+						}}
+					/>
+
+					{/* Layer 4: Subtle Border Reflection (Highlights edges near mouse) */}
+					<div
+						className="absolute inset-0 border border-white/5 rounded-[inherit]"
+						style={{
+							maskImage: `radial-gradient(300px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
+							WebkitMaskImage: `radial-gradient(300px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
+							borderColor: "rgba(255,255,255,0.3)",
+						}}
+					/>
+				</div>
+
+				{/* --- 5. ORGANIC SMOKEY SVG --- */}
+				{currentVector && (
+					<motion.div
+						className="absolute -top-10 -right-10 pointer-events-none z-0"
+						// 1. Faster Initial Reveal (The "Puff" effect)
+						initial={{ opacity: 0, scale: 0.2, rotate: -10 }}
+						animate={{
+							opacity: 1,
+							scale: 1,
+							rotate: 0,
+							// 2. The Continuous Organic Loop (Independent of hover)
+							y: [0, -15, 0], // Moves up and down smoothly
+							x: [0, -15, 0], // Moves side to side smoothly
+						}}
+						transition={{
+							// Reveal transition
+							opacity: {
+								duration: 0.6,
+								delay: delay,
+								ease: "easeOut",
+							},
+							scale: {
+								duration: 0.6,
+								delay: delay,
+								ease: "backOut",
+							},
+							rotate: {
+								duration: 0.6,
+								delay: delay,
+								ease: "easeOut",
+							},
+
+							// Loop transition (The "Floating")
+							y: {
+								duration: 6,
+								repeat: Infinity,
+								ease: "easeInOut",
+							},
+							x: {
+								duration: 7,
+								repeat: Infinity,
+								ease: "easeInOut",
+							}, // Different duration creates randomness
+						}}
+					>
+						<motion.img
+							key={currentVector} // Add key to force animation restart or proper diffing
+							src={currentVector}
+							alt=""
+							className="w-[18rem] h-[18rem] object-contain"
+							// 3. Hover States (Smokey Physics)
+							variants={{
+								idle: {
+									x: 0,
+									y: 0,
+									scale: 0.8,
+									opacity: 0.4,
+									rotate: -10,
+									filter: "blur(5px) brightness(0.8)", // Smokey haze
+								},
+								hover: {
+									x: -(position.x - 150) / 12, // Parallax movement
+									y: -(position.y - 150) / 12,
+									scale: 1.4,
+									opacity: 1,
+									rotate: 10,
+									filter: "blur(0px) brightness(1.5)", // Clears up
+								},
+							}}
+							initial="idle"
+							animate={isHovered ? "hover" : "idle"}
+							transition={{
+								// This ensures the Enter and Exit are mirror opposites
+								type: "spring",
+								stiffness: 50, // Higher stiffness = faster reaction
+								damping: 20, // Medium damping = no crazy bouncing, just fluid settling
+								mass: 1, // Standard weight
+							}}
+						/>
+					</motion.div>
+				)}
+
 				{/* Content */}
 				<div className="relative z-10 h-full flex flex-col justify-between">
 					{children}

@@ -1,25 +1,25 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Tabs } from "./components/Tabs";
-import { Registration } from "./components/Registration";
-import { TestingEnv } from "./components/TestingEnv";
-import { Leaderboard } from "./components/Leaderboard";
 import LetterGlitch from "./components/LetterGlitch";
 import { TacticalGrid } from "./components/TacticalGrid";
-import { motion, AnimatePresence } from "framer-motion";
 import { charList, colorPairs } from "./Config";
-import { HomeTab } from "./components/HomeTab";
 import TargetCursor from "./components/TargetCursor";
+import { HomeHeader } from "./components/HomeHeader";
+import { HomeContent } from "./components/HomeContent";
+import { Toast } from "./components/Toast";
 
 function Home() {
 	const [activeTab, setActiveTab] = useState("home");
 	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
+	const [isBriefing] = useState(true); // Controls "Briefing state" vs "Interactive State"
+	const [toastMessage, setToastMessage] = useState<string | null>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 
 	const tabs = [
-		{ id: "home", label: "Briefing" },
-		{ id: "registration", label: "Registration" },
-		{ id: "testing", label: "Testing Env" },
-		{ id: "leaderboard", label: "Leaderboard" },
+		{ id: "home", label: "Briefing", disabled: false },
+		{ id: "registration", label: "Registration", disabled: isBriefing },
+		{ id: "testing", label: "Testing Env", disabled: isBriefing },
+		{ id: "leaderboard", label: "Leaderboard", disabled: isBriefing },
 	];
 
 	const [glitchColors, setGlitchColors] = useState(colorPairs[0]);
@@ -35,12 +35,12 @@ function Home() {
 			charList[Math.floor(Math.random() * charList.length)];
 		setGlitchColors(randomColors);
 		setGlitchChars(randomChars);
-	}, [colorPairs, charList]);
+	}, []);
 
 	useEffect(() => {
 		const interval = setInterval(changeBackground, 5000);
 		return () => clearInterval(interval);
-	}, [changeBackground, glitchColors, glitchChars]);
+	}, [changeBackground]);
 
 	// Scroll Detection for Performance Mode
 	useEffect(() => {
@@ -66,11 +66,28 @@ function Home() {
 			}
 		};
 
+		// Run immediately (might be early)
+		handleScroll();
+
+		// Delay check to allow layout/animation to settle
+		const timer = setTimeout(handleScroll, 150);
+
+		// Observe size changes (content loading, layout shifts)
+		const resizeObserver = new ResizeObserver(() => {
+			handleScroll();
+		});
+
+		if (contentRef.current) {
+			resizeObserver.observe(contentRef.current);
+		}
+
 		window.addEventListener("scroll", handleScroll);
 		window.addEventListener("resize", handleScroll); // Check on resize too
 		return () => {
 			window.removeEventListener("scroll", handleScroll);
 			window.removeEventListener("resize", handleScroll);
+			resizeObserver.disconnect();
+			clearTimeout(timer);
 		};
 	}, [activeTab, isPerformanceMode]);
 
@@ -114,54 +131,7 @@ function Home() {
 
 			{/* Main Interface */}
 			<div className="relative z-10 flex flex-col items-center w-full min-h-screen p-4 md:p-8">
-				{/* Header HUD */}
-				<header className="mb-8 w-full max-w-4xl flex flex-col items-center">
-					<div className="w-full flex justify-between text-[10px] md:text-xs font-mono text-white/90 mb-2 tracking-widest uppercase">
-						<span className="bg-[#000]">SYS.VER.2.0.4</span>
-						<span className="animate-pulse bg-[#000]">
-							● SIGNAL ESTABLISHED
-						</span>
-						<span className="bg-[#000]">SECURE//ENCRYPTED</span>
-					</div>
-
-					<div
-						className="cursor-target relative px-12 py-6 border-y border-white/90 bg-black/30 backdrop-blur-[2px] w-full text-center group transition-colors duration-500"
-						style={{ borderColor: `${primaryColor}33` }} // 33 is approx 20% opacity
-					>
-						{/* Decorative Brackets */}
-						<div
-							className="absolute top-0 left-0 w-3 h-3 border-l-3 border-t-3 transition-colors duration-500"
-							style={{ borderColor: primaryColor }}
-						/>
-						<div
-							className="absolute top-0 right-0 w-3 h-3 border-r-3 border-t-3 transition-colors duration-500"
-							style={{ borderColor: primaryColor }}
-						/>
-						<div
-							className="absolute bottom-0 left-0 w-3 h-3 border-l-3 border-b-3 transition-colors duration-500"
-							style={{ borderColor: primaryColor }}
-						/>
-						<div
-							className="absolute bottom-0 right-0 w-3 h-3 border-r-3 border-b-3 transition-colors duration-500"
-							style={{ borderColor: primaryColor }}
-						/>
-
-						<h1 className="text-3xl md:text-5xl font-black tracking-widest text-white uppercase drop-shadow-2xl">
-							Tournament
-							<span style={{ color: primaryColor }}>.OS</span>
-						</h1>
-						<div className="mt-2 flex items-center justify-center gap-3">
-							<div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-white/50" />
-							<span
-								style={{ color: primaryColor }}
-								className="text-[15px] tracking-[0.6em] uppercase text-white/60 font-medium"
-							>
-								Warfare Edition
-							</span>
-							<div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-white/50" />
-						</div>
-					</div>
-				</header>
+				<HomeHeader primaryColor={primaryColor} />
 
 				{/* Tab Navigation */}
 				<div className="w-full max-w-4xl">
@@ -169,119 +139,28 @@ function Home() {
 						tabs={tabs}
 						activeTab={activeTab}
 						onTabChange={setActiveTab}
+						onDisabledTabClick={() =>
+							setToastMessage(
+								"Team reg opens on 21st. But, buy the event ticket in the main website.",
+							)
+						}
 						primaryColor={primaryColor}
 					/>
 				</div>
 
-				{/* Main Content "Glass Panel" */}
-				<main
-					className={`flex-1 w-full relative group transition-all duration-100 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-						activeTab === "testing" && isPerformanceMode
-							? "w-full max-w-none px-0"
-							: activeTab === "home" || activeTab === "testing"
-								? "max-w-[98vw] px-0"
-								: activeTab === "leaderboard"
-									? "max-w-4xl"
-									: "max-w-3xl"
-					}`}
-				>
-					<AnimatePresence mode="popLayout">
-						<motion.div
-							key={activeTab}
-							initial={{
-								opacity: 0,
-								scale: 0.98,
-								filter: "blur(10px)",
-							}}
-							animate={{
-								opacity: 1,
-								scale: 1,
-								filter: "blur(0px)",
-							}}
-							exit={{
-								opacity: 0,
-								scale: 0.98,
-								filter: "blur(10px)",
-							}}
-							transition={{ duration: 0.4, ease: "circOut" }}
-							className="relative w-full overflow-hidden"
-						>
-							<div
-								ref={contentRef}
-								className={`relative ${
-									activeTab === "testing" ||
-									(activeTab === "home" && isPerformanceMode)
-										? ""
-										: "bg-[#0a0a0a]/98 backdrop-blur-xl border border-white/10 p-6 md:p-10 shadow-2xl rounded-sm"
-								}`}
-							>
-								{/* Decorative Brackets & Glow - Hide in testing */}
-								{activeTab !== "testing" && (
-									<>
-										<div
-											className="absolute top-0 left-0 w-5 h-5 border-l-3 border-t-3 transition-colors duration-500"
-											style={{
-												borderColor: primaryColor,
-											}}
-										/>
-										<div
-											className="absolute top-0 right-0 w-5 h-5 border-r-3 border-t-3 transition-colors duration-500"
-											style={{
-												borderColor: primaryColor,
-											}}
-										/>
-										<div
-											className="absolute bottom-0 left-0 w-5 h-5 border-l-3 border-b-3 transition-colors duration-500"
-											style={{
-												borderColor: primaryColor,
-											}}
-										/>
-										<div
-											className="absolute bottom-0 right-0 w-5 h-5 border-r-3 border-b-3 transition-colors duration-500"
-											style={{
-												borderColor: primaryColor,
-											}}
-										/>
-										{/* Glowing border accent */}
-										<div
-											className="absolute top-0 left-0 w-full h-[1px] opacity-50"
-											style={{
-												background: `linear-gradient(90deg, transparent, ${primaryColor}, transparent)`,
-											}}
-										/>
-										{/* Background Grid Pattern inside container */}
-										<div
-											className="absolute inset-0 z-0 opacity-[0.03]"
-											style={{
-												backgroundImage: `linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)`,
-												backgroundSize: "40px 40px",
-											}}
-										/>
-									</>
-								)}
+				<Toast
+					message={toastMessage || ""}
+					isVisible={!!toastMessage}
+					onClose={() => setToastMessage(null)}
+				/>
 
-								{/* Content Render */}
-								<div className="relative z-10">
-									{activeTab === "home" && (
-										<HomeTab
-											primaryColor={primaryColor}
-											stringList={glitchChars}
-										/>
-									)}
-									{activeTab === "registration" && (
-										<Registration
-											primaryColor={primaryColor}
-										/>
-									)}
-									{activeTab === "testing" && <TestingEnv />}
-									{activeTab === "leaderboard" && (
-										<Leaderboard />
-									)}
-								</div>
-							</div>
-						</motion.div>
-					</AnimatePresence>
-				</main>
+				<HomeContent
+					activeTab={activeTab}
+					isPerformanceMode={isPerformanceMode}
+					contentRef={contentRef}
+					primaryColor={primaryColor}
+					glitchChars={glitchChars}
+				/>
 
 				<footer className="mt-12 mb-4 text-[10px] font-mono text-white/30 uppercase flex flex-col items-center gap-2">
 					<div className="flex gap-4">

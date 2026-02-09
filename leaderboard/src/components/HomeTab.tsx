@@ -11,6 +11,14 @@ import {
 } from "lucide-react";
 import { InfiniteTicker, ScrambleText, BrutalistCard } from "./HomeTabDesign";
 
+// Asset Imports
+import path3 from "../assets/path3.svg";
+import path4 from "../assets/path4.svg";
+import path5 from "../assets/path5.svg";
+import path6 from "../assets/path6.svg";
+import path7 from "../assets/path7.svg";
+import path8 from "../assets/path8.svg";
+
 type HomeTabProps = {
 	primaryColor: string;
 	stringList: string;
@@ -31,6 +39,8 @@ const textReveal: Variants = {
 };
 
 export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
+	const bgVectors = [path3, path4, path5, path6, path7, path8];
+
 	return (
 		<div className="relative bg-[#050505] min-h-screen text-slate-200 font-sans selection:bg-white selection:text-black overflow-hidden">
 			<motion.div
@@ -52,10 +62,10 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 							</span>
 						</div>
 
-						<div className="overflow-hidden">
+						<div className="overflow-hidden pb-2">
 							<motion.h1
 								variants={textReveal}
-								className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-white mix-blend-difference"
+								className="text-5xl sm:text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none md:leading-[0.9] text-white mix-blend-difference"
 							>
 								Tournament <br />
 								<span className="text-white/20">
@@ -95,7 +105,12 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 				{/* --- 3. MAIN GRID --- */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
 					{/* CARD: Execution */}
-					<BrutalistCard primaryColor={primaryColor} delay={0.1}>
+					<BrutalistCard
+						primaryColor={primaryColor}
+						delay={0.1}
+						bgVector={path3}
+						bgVectors={bgVectors}
+					>
 						<div className="flex justify-between items-start mb-8">
 							<Cpu size={28} style={{ color: primaryColor }} />
 							<span
@@ -121,7 +136,12 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 					</BrutalistCard>
 
 					{/* CARD: Simulation */}
-					<BrutalistCard primaryColor={primaryColor} delay={0.2}>
+					<BrutalistCard
+						primaryColor={primaryColor}
+						delay={0.2}
+						bgVector={path4}
+						bgVectors={bgVectors}
+					>
 						<div className="flex justify-between items-start mb-8">
 							<Activity
 								size={28}
@@ -155,6 +175,8 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 							primaryColor={primaryColor}
 							delay={0.3}
 							className="h-full"
+							bgVector={path5}
+							bgVectors={bgVectors}
 						>
 							<div className="flex justify-between items-start gap-3 mb-6">
 								<Clock
@@ -206,6 +228,8 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 							primaryColor={primaryColor}
 							delay={0.4}
 							className="h-full"
+							bgVector={path6}
+							bgVectors={bgVectors}
 						>
 							<div className="flex justify-between items-start gap-3 mb-6">
 								<FileCode
@@ -267,6 +291,8 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 							primaryColor={primaryColor}
 							delay={0.5}
 							className="h-full bg-gradient-to-br from-[#1a0505] to-black border-red-900/30"
+							bgVector={path8}
+							bgVectors={bgVectors}
 						>
 							<div className="absolute top-4 right-4 animate-pulse">
 								<Unlock size={20} className="text-red-500" />
@@ -299,23 +325,99 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 										event coordinators."
 									</p>
 								</div>
-								<div className="grid grid-cols-2 gap-2 content-start">
+								<div className="grid grid-cols-2 gap-3 w-full mt-4">
 									{[
-										"AI Assistance",
-										"Google Search",
-										"External Consult",
-										"Collusion",
+										{
+											label: "AI Assistance",
+											id: "SYS-01",
+										},
+										{
+											label: "Google Search",
+											id: "NET-02",
+										},
+										{
+											label: "External Consult",
+											id: "LNK-03",
+										},
+										{ label: "Collusion", id: "ERR-04" },
 									].map((item) => (
-										<div
-											key={item}
+										<motion.button
+											key={item.label}
+											initial="idle"
+											whileHover="hover"
+											className="relative group overflow-hidden border border-white/10 bg-black/40 p-3 text-left transition-all"
 											style={{
-												color: primaryColor,
-												borderColor: primaryColor,
+												// We use a CSS variable for the hover color so we can use it in pseudo-elements
+												// @ts-ignore
+												"--active-color": primaryColor,
 											}}
-											className="border border-white/10 bg-black/40 p-3 text-center text-xs uppercase font-bold text-white/60 hover:text-white transition-all cursor-pointer"
 										>
-											{item}
-										</div>
+											{/* 1. Background Sweep Animation */}
+											<motion.div
+												variants={{
+													idle: {
+														x: "-100%",
+														opacity: 0,
+													},
+													hover: {
+														x: "0%",
+														opacity: 0.1,
+													},
+												}}
+												transition={{
+													duration: 0.3,
+													ease: "circOut",
+												}}
+												className="absolute inset-0 bg-[var(--active-color)]"
+											/>
+
+											{/* 2. Border Glow (Pseudo-element replacement) */}
+											<div className="absolute inset-0 border border-[var(--active-color)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+											{/* Content Container */}
+											<div className="relative z-10 flex flex-col gap-1">
+												{/* 3. Tech ID (The "Brutalist" Detail) */}
+												<div className="flex justify-between items-center">
+													<span
+														className="text-[0.6rem] font-mono tracking-widest uppercase opacity-40 group-hover:opacity-80 transition-opacity"
+														style={{
+															color: primaryColor,
+														}}
+													>
+														{item.id}
+													</span>
+
+													{/* 4. Status LED */}
+													<motion.div
+														variants={{
+															idle: {
+																backgroundColor:
+																	"#333",
+																boxShadow:
+																	"none",
+															},
+															hover: {
+																backgroundColor:
+																	primaryColor,
+																boxShadow: `0 0 8px ${primaryColor}`,
+															},
+														}}
+														className="w-1.5 h-1.5 rounded-full"
+													/>
+												</div>
+
+												{/* 5. Scramble Title */}
+												<div className="text-xs font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
+													{/* Re-using your ScrambleText component here automatically handles the hover effect */}
+													<ScrambleText
+														text={item.label}
+													/>
+												</div>
+											</div>
+
+											{/* Corner Accent (Decor) */}
+											<div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-[var(--active-color)] transition-colors" />
+										</motion.button>
 									))}
 								</div>
 							</div>
@@ -327,6 +429,8 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 						primaryColor={primaryColor}
 						delay={0.6}
 						className="h-full"
+						bgVector={path7}
+						bgVectors={bgVectors}
 					>
 						<div className="flex justify-between items-start mb-6">
 							<ShieldAlert
