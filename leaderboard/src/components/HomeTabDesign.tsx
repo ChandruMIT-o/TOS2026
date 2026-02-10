@@ -272,7 +272,7 @@ export const BrutalistCard = ({
 				onBlur={handleBlur}
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
-				className={`min-h-[800px] md:min-h-0 cursor-target relative group bg-black border border-white/10 p-6 overflow-hidden ${className}`}
+				className={`min-h-[450px] md:min-h-0 cursor-target relative group bg-black border border-white/10 p-6 overflow-hidden ${className}`}
 			>
 				{/* --- 5X IMPROVED: HOLOGRAPHIC GRAIN GLOW --- */}
 				<div className="pointer-events-none absolute inset-0 rounded-[inherit] overflow-hidden">
