@@ -104,25 +104,39 @@ const TargetCursor: React.FC<TargetCursorProps> = ({
 		createSpinTimeline();
 
 		const tickerFn = () => {
-			if (
-				!targetCornerPositionsRef.current ||
-				!cursorRef.current ||
-				!cornersRef.current
-			) {
+			if (!activeTarget || !cursorRef.current || !cornersRef.current)
 				return;
-			}
+
+			const rect = activeTarget.getBoundingClientRect();
+			const { borderWidth, cornerSize } = constants;
+			const targetPositions = [
+				{ x: rect.left - borderWidth, y: rect.top - borderWidth },
+				{
+					x: rect.right + borderWidth - cornerSize,
+					y: rect.top - borderWidth,
+				},
+				{
+					x: rect.right + borderWidth - cornerSize,
+					y: rect.bottom + borderWidth - cornerSize,
+				},
+				{
+					x: rect.left - borderWidth,
+					y: rect.bottom + borderWidth - cornerSize,
+				},
+			];
+			targetCornerPositionsRef.current = targetPositions;
+
 			const strength = activeStrengthRef.current.current;
 			if (strength === 0) return;
+
 			const cursorX = gsap.getProperty(cursorRef.current, "x") as number;
 			const cursorY = gsap.getProperty(cursorRef.current, "y") as number;
 			const corners = Array.from(cornersRef.current);
 			corners.forEach((corner, i) => {
 				const currentX = gsap.getProperty(corner, "x") as number;
 				const currentY = gsap.getProperty(corner, "y") as number;
-				const targetX =
-					targetCornerPositionsRef.current![i].x - cursorX;
-				const targetY =
-					targetCornerPositionsRef.current![i].y - cursorY;
+				const targetX = targetPositions[i].x - cursorX;
+				const targetY = targetPositions[i].y - cursorY;
 				const finalX = currentX + (targetX - currentX) * strength;
 				const finalY = currentY + (targetY - currentY) * strength;
 

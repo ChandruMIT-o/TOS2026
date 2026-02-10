@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
 	Clock,
@@ -24,6 +25,7 @@ type HomeBentoProps = {
 };
 
 export function HomeBento({ primaryColor, stringList }: HomeBentoProps) {
+	const [isCheatSheetActive, setIsCheatSheetActive] = useState(false);
 	const bgVectors = [path3, path4, path5, path6, path7, path8];
 
 	return (
@@ -190,140 +192,95 @@ export function HomeBento({ primaryColor, stringList }: HomeBentoProps) {
 				</BrutalistCard>
 			</div>
 
-			{/* CARD: THE CHEAT SHEET (Danger Zone) */}
-			<div className="lg:col-span-2 lg:row-span-1">
-				<BrutalistCard
-					primaryColor={primaryColor}
-					delay={0.5}
-					className="h-full bg-gradient-to-br from-[#1a0505] to-black border-red-900/30"
-					bgVector={path8}
-					bgVectors={bgVectors}
-				>
-					<div className="absolute top-4 right-4 animate-pulse">
-						<Unlock size={20} className="text-red-500" />
+			{/* CARD: THE CHEAT SHEET (Danger Zone) - INFO STRIP STYLE */}
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				whileInView={{ opacity: 1, y: 0 }}
+				viewport={{ once: true }}
+				transition={{ duration: 0.5, delay: 0.5, ease: "circOut" }}
+				className="cursor-target lg:col-span-2 lg:row-span-1 group relative p-6 md:p-8 bg-slate-200 text-black border border-black hover:bg-black hover:text-white transition-colors duration-300 overflow-hidden flex flex-col justify-between"
+				onMouseEnter={() => setIsCheatSheetActive(true)}
+				onMouseLeave={() => setIsCheatSheetActive(false)}
+			>
+				{/* Top Header Section */}
+				<div className="flex justify-between items-start mb-6">
+					<div>
+						<div className="flex items-center gap-2 mb-1">
+							<Unlock
+								size={16}
+								className="text-red-600 group-hover:text-red-500 transition-colors"
+							/>
+							<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity text-red-600 group-hover:text-red-500">
+								Warning: Rules Disabled
+							</span>
+						</div>
+						<h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-[0.9]">
+							Protocol
+							<br />
+							<ScrambleText
+								text="Unrestricted"
+								CHARS={stringList}
+								active={isCheatSheetActive}
+							/>
+						</h3>
 					</div>
+					{/* Decorative Number/ID similar to other cards */}
+					<span
+						className="font-mono text-sm border border-black/20 group-hover:border-white/20 px-1 opacity-40 group-hover:opacity-100 transition-all"
+						style={{ color: primaryColor }}
+					>
+						ERR-00
+					</span>
+				</div>
 
-					<h3 className="text-2xl md:text-4xl font-black uppercase text-white mb-2">
-						Protocol{" "}
-						<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-							Unrestricted
-						</span>
-					</h3>
-					<p className="text-white/60 font-mono text-xl uppercase tracking-widest mb-8">
-						Warning: All rules disabled
-					</p>
-
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-						<div>
-							<p className="text-lg leading-relaxed text-white/90 mb-4">
-								Tactics conventionally considered "cheating" are
-								not only permitted but{" "}
+				{/* Content Grid */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full">
+					{/* Left: Description */}
+					<div className="flex flex-col justify-end">
+						<p className="text-lg font-bold leading-tight mb-4">
+							Tactics conventionally considered "cheating" are{" "}
+							<span className="bg-red-600 text-white px-1">
 								<ScrambleText
 									text="encouraged"
-									className="font-bold text-red-400"
 									CHARS={stringList}
+									active={isCheatSheetActive}
 								/>
-								.
-							</p>
-							<p className="text-xs text-white/40 italic">
-								"You are even free to collude with the event
-								coordinators."
-							</p>
-						</div>
-						<div className="grid grid-cols-2 gap-3 w-full mt-4">
-							{[
-								{
-									label: "AI Assistance",
-									id: "SYS-01",
-								},
-								{
-									label: "Google Search",
-									id: "NET-02",
-								},
-								{
-									label: "External Consult",
-									id: "LNK-03",
-								},
-								{ label: "Collusion", id: "ERR-04" },
-							].map((item) => (
-								<motion.button
-									key={item.label}
-									initial="idle"
-									whileHover="hover"
-									className="relative group overflow-hidden border border-white/10 bg-black/40 p-3 text-left transition-all"
-									style={{
-										// We use a CSS variable for the hover color so we can use it in pseudo-elements
-										// @ts-ignore
-										"--active-color": primaryColor,
-									}}
-								>
-									{/* 1. Background Sweep Animation */}
-									<motion.div
-										variants={{
-											idle: {
-												x: "-100%",
-												opacity: 0,
-											},
-											hover: {
-												x: "0%",
-												opacity: 0.1,
-											},
-										}}
-										transition={{
-											duration: 0.3,
-											ease: "circOut",
-										}}
-										className="absolute inset-0 bg-[var(--active-color)]"
-									/>
-
-									{/* 2. Border Glow (Pseudo-element replacement) */}
-									<div className="absolute inset-0 border border-[var(--active-color)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-									{/* Content Container */}
-									<div className="relative z-10 flex flex-col gap-1">
-										{/* 3. Tech ID (The "Brutalist" Detail) */}
-										<div className="flex justify-between items-center">
-											<span
-												className="text-[0.6rem] font-mono tracking-widest uppercase opacity-40 group-hover:opacity-80 transition-opacity"
-												style={{
-													color: primaryColor,
-												}}
-											>
-												{item.id}
-											</span>
-
-											{/* 4. Status LED */}
-											<motion.div
-												variants={{
-													idle: {
-														backgroundColor: "#333",
-														boxShadow: "none",
-													},
-													hover: {
-														backgroundColor:
-															primaryColor,
-														boxShadow: `0 0 8px ${primaryColor}`,
-													},
-												}}
-												className="w-1.5 h-1.5 rounded-full"
-											/>
-										</div>
-
-										{/* 5. Scramble Title */}
-										<div className="text-xs font-bold uppercase tracking-wider text-white/60 group-hover:text-white transition-colors">
-											{/* Re-using your ScrambleText component here automatically handles the hover effect */}
-											<ScrambleText text={item.label} />
-										</div>
-									</div>
-
-									{/* Corner Accent (Decor) */}
-									<div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-[var(--active-color)] transition-colors" />
-								</motion.button>
-							))}
-						</div>
+							</span>
+							.
+						</p>
+						<p className="text-xs font-mono opacity-60 group-hover:opacity-80 italic border-l-2 border-red-600 pl-3">
+							"You are even free to collude with the event
+							coordinators."
+						</p>
 					</div>
-				</BrutalistCard>
-			</div>
+
+					{/* Right: List of Allowed Actions (Styled like Info Strip Contacts) */}
+					<div className="flex flex-col justify-end gap-2">
+						{[
+							{ label: "AI Assistance", id: "SYS-01" },
+							{ label: "Google Search", id: "NET-02" },
+							{ label: "External Consult", id: "LNK-03" },
+							{ label: "Collusion", id: "ERR-04" },
+						].map((item) => (
+							<div
+								key={item.id}
+								className="flex items-center justify-between border-b border-black/10 group-hover:border-white/20 pb-1"
+							>
+								<div className="flex items-baseline gap-2">
+									<span className="font-mono text-[10px] opacity-40 group-hover:opacity-60 transition-opacity">
+										{item.id}
+									</span>
+									<span className="font-bold uppercase text-sm tracking-wide">
+										{item.label}
+									</span>
+								</div>
+								{/* Status Indicator */}
+								<div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+							</div>
+						))}
+					</div>
+				</div>
+			</motion.div>
 
 			{/* CARD: Integrity */}
 			<BrutalistCard

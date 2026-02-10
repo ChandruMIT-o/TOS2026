@@ -92,7 +92,7 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 							href="https://tekhora26.live"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer"
+							className="cursor-target group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300 cursor-pointer"
 						>
 							<div className="absolute top-6 right-6 md:top-8 md:right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
 								<ArrowUpRight size={24} />
@@ -114,7 +114,7 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 						</a>
 
 						{/* 2. DATE & TIME (Big Data) */}
-						<div className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
+						<div className="cursor-target group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
 							<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
 								T - Minus
 							</span>
@@ -134,7 +134,7 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 						</div>
 
 						{/* 3. PRIZE POOL (High Impact) */}
-						<div className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
+						<div className="cursor-target group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
 							<div className="flex justify-between items-start">
 								<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
 									Total_Bounty
@@ -161,7 +161,7 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 						</div>
 
 						{/* 4. CONTACTS (Actionable) */}
-						<div className="group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
+						<div className="cursor-target group relative p-6 md:p-8 flex flex-col justify-between min-h-[160px] hover:bg-black hover:text-white transition-colors duration-300">
 							<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
 								Link_Start
 							</span>

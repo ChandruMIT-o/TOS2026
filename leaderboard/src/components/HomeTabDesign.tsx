@@ -72,16 +72,18 @@ export const ScrambleText = ({
 	text,
 	className = "",
 	CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:,.<>?",
+	active: externalActive,
 }: {
 	text: string;
 	className?: string;
 	CHARS?: string;
+	active?: boolean;
 }) => {
 	const [display, setDisplay] = useState(text);
 	const [isHovered, setIsHovered] = useState(false);
 	const contextHover = useContext(CardHoverContext);
 
-	const active = isHovered || contextHover;
+	const active = isHovered || contextHover || externalActive;
 
 	useEffect(() => {
 		let iteration = 0;
@@ -164,8 +166,63 @@ export const BrutalistCard = ({
 		setCurrentVector(bgVector);
 	}, [bgVector]);
 
+	// Detect if device is mobile (touch or small screen)
+	const [isMobile, setIsMobile] = useState(false);
+
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(
+				window.matchMedia("(max-width: 768px)").matches ||
+					"ontouchstart" in window,
+			);
+		};
+		checkMobile();
+		window.addEventListener("resize", checkMobile);
+		return () => window.removeEventListener("resize", checkMobile);
+	}, []);
+
+	// Intersection Observer for Mobile Viewport Activation
+	useEffect(() => {
+		if (!isMobile || !divRef.current) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						// Simulate hover entry
+						setOpacity(0.15);
+						setIsHovered(true);
+						if (bgVectors.length > 0) {
+							const randomIndex = Math.floor(
+								Math.random() * bgVectors.length,
+							);
+							setCurrentVector(bgVectors[randomIndex]);
+						}
+						// Center the "mouse" position for the effect
+						if (divRef.current) {
+							const rect = divRef.current.getBoundingClientRect();
+							setPosition({
+								x: rect.width / 2,
+								y: rect.height / 2,
+							});
+						}
+					} else {
+						// Simulate hover exit
+						setOpacity(0);
+						setIsHovered(false);
+						setCurrentVector(bgVector);
+					}
+				});
+			},
+			{ threshold: 1 }, // Activate when 60% visible
+		);
+
+		observer.observe(divRef.current);
+		return () => observer.disconnect();
+	}, [isMobile, bgVector, bgVectors]);
+
 	const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
-		if (!divRef.current || isFocused) return;
+		if (isMobile || !divRef.current || isFocused) return; // Disable mouse move on mobile
 
 		const rect = divRef.current.getBoundingClientRect();
 		// Increased dampening for smoother effect
@@ -173,16 +230,19 @@ export const BrutalistCard = ({
 	};
 
 	const handleFocus = () => {
+		if (isMobile) return;
 		setIsFocused(true);
 		setOpacity(0.15);
 	};
 
 	const handleBlur = () => {
+		if (isMobile) return;
 		setIsFocused(false);
 		setOpacity(0);
 	};
 
 	const handleMouseEnter = () => {
+		if (isMobile) return;
 		setOpacity(0.15);
 		setIsHovered(true);
 		if (bgVectors.length > 0) {
@@ -192,6 +252,7 @@ export const BrutalistCard = ({
 	};
 
 	const handleMouseLeave = () => {
+		if (isMobile) return;
 		setOpacity(0);
 		setIsHovered(false);
 		setCurrentVector(bgVector);
@@ -211,7 +272,7 @@ export const BrutalistCard = ({
 				onBlur={handleBlur}
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
-				className={`cursor-target relative group bg-black border border-white/10 p-6 overflow-hidden ${className}`}
+				className={`min-h-[800px] md:min-h-0 cursor-target relative group bg-black border border-white/10 p-6 overflow-hidden ${className}`}
 			>
 				{/* --- 5X IMPROVED: HOLOGRAPHIC GRAIN GLOW --- */}
 				<div className="pointer-events-none absolute inset-0 rounded-[inherit] overflow-hidden">
@@ -219,8 +280,8 @@ export const BrutalistCard = ({
 					<div
 						className="absolute inset-0 transition-opacity duration-300 ease-out"
 						style={{
-							opacity: opacity * 0.8, // Slightly more subtle
-							background: `radial-gradient(150px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.2), transparent 100%)`,
+							opacity: opacity * 0.9, // Slightly more subtle
+							background: `radial-gradient(250px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.5), transparent 100%)`,
 						}}
 					/>
 
@@ -229,30 +290,17 @@ export const BrutalistCard = ({
 						className="absolute inset-0 transition-opacity duration-500 ease-out mix-blend-plus-lighter"
 						style={{
 							opacity: opacity, // Full opacity on hover
-							background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${primaryColor}, transparent 100%)`,
-						}}
-					/>
-
-					{/* Layer 3: The Texture (Film Grain) */}
-					{/* This makes the light feel "physical" and organic */}
-					<div
-						className="absolute inset-0 opacity-[0.15] mix-blend-overlay"
-						style={{
-							backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-							backgroundSize: "100px",
-							// Only show grain where the light hits (using mask)
-							maskImage: `radial-gradient(400px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
-							WebkitMaskImage: `radial-gradient(400px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
+							background: `radial-gradient(800px circle at ${position.x}px ${position.y}px, ${primaryColor}, transparent 100%)`,
 						}}
 					/>
 
 					{/* Layer 4: Subtle Border Reflection (Highlights edges near mouse) */}
 					<div
-						className="absolute inset-0 border border-white/5 rounded-[inherit]"
+						className="absolute inset-0 border border-white/10 rounded-[inherit]"
 						style={{
 							maskImage: `radial-gradient(300px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
 							WebkitMaskImage: `radial-gradient(300px circle at ${position.x}px ${position.y}px, black, transparent 100%)`,
-							borderColor: "rgba(255,255,255,0.3)",
+							borderColor: "rgba(255, 255, 255, 0.4)",
 						}}
 					/>
 				</div>
@@ -318,12 +366,12 @@ export const BrutalistCard = ({
 									filter: "blur(5px) brightness(0.8)", // Smokey haze
 								},
 								hover: {
-									x: -(position.x - 150) / 12, // Parallax movement
-									y: -(position.y - 150) / 12,
-									scale: 1.4,
+									x: -(position.x - 150) / 10, // Parallax movement
+									y: -(position.y - 150) / 10,
+									scale: 1.5,
 									opacity: 1,
 									rotate: 10,
-									filter: "blur(0px) brightness(1.5)", // Clears up
+									filter: "blur(0px) brightness(1) contrast(1.5)", // Clears up
 								},
 							}}
 							initial="idle"
