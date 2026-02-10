@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Cpu, Radio, Terminal, Crosshair } from "lucide-react";
 
 const LoadingScreen = ({ onComplete }: { onComplete?: () => void }) => {
