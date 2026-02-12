@@ -15,13 +15,19 @@ export function AttemptTabs({
 }: AttemptTabsProps) {
 	return (
 		<Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-			<TabsList className="grid w-full grid-cols-3 bg-muted/40 p-1 border border-white/5">
-				<TabsTrigger value="attempt-1">ATTEMPT 01</TabsTrigger>
+			<TabsList className="grid w-full grid-cols-3 bg-transparent p-1 border border-black rounded-none">
+				<TabsTrigger
+					value="attempt-1"
+					className="data-[state=active]:bg-black data-[state=active]:text-white rounded-none transition-colors"
+				>
+					ATTEMPT 01
+				</TabsTrigger>
 
 				<TabsTrigger
 					value="attempt-2"
 					disabled={isAttempt2Locked}
 					className={cn(
+						"data-[state=active]:bg-black data-[state=active]:text-white rounded-none transition-colors",
 						isAttempt2Locked && "opacity-50 cursor-not-allowed",
 					)}
 				>
@@ -36,7 +42,7 @@ export function AttemptTabs({
 
 				<TabsTrigger
 					value="submission"
-					className="data-[state=active]:text-emerald-400"
+					className="data-[state=active]:bg-black data-[state=active]:text-white rounded-none transition-colors"
 				>
 					SUBMISSION
 				</TabsTrigger>

@@ -1,6 +1,5 @@
-import { Trophy, Zap, Terminal, CheckCircle2 } from "lucide-react";
+import { Trophy, Zap, Terminal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/Card";
-import { Badge } from "../../ui/Badge";
 import { cn } from "../../../../lib/utils";
 
 interface AttemptStats {
@@ -27,90 +26,85 @@ export function AttemptCard({
 		<div
 			onClick={onSelect}
 			className={cn(
-				"relative cursor-pointer transition-all duration-300 group",
-				isSelected
-					? "scale-[1.02]"
-					: "hover:scale-[1.01] opacity-60 hover:opacity-100",
+				"relative cursor-pointer group transition-all duration-300",
+				isSelected ? "scale-[1.02] z-10" : "hover:-translate-y-1",
 			)}
 		>
-			{/* Selection Indicator */}
-			{isSelected && (
-				<div className="absolute -top-3 -right-3 z-20 bg-emerald-500 text-black rounded-full p-1 shadow-lg ring-4 ring-background">
-					<CheckCircle2
-						size={20}
-						fill="white"
-						className="text-emerald-600"
-					/>
-				</div>
-			)}
-
 			<Card
 				className={cn(
-					"h-full border-2",
+					"h-full border-2 rounded-none transition-all duration-300 relative overflow-hidden",
 					isSelected
-						? "border-emerald-500/50 bg-emerald-950/10 shadow-[0_0_30px_rgba(16,185,129,0.1)]"
-						: "border-border bg-card/50",
+						? "bg-black text-white border-emerald-500 shadow-[8px_8px_0px_#10b981]"
+						: "bg-slate-200 text-black border-black hover:bg-black hover:text-white shadow-[4px_4px_0px_black] hover:shadow-[8px_8px_0px_white]",
 				)}
 			>
-				<CardHeader className="pb-2">
+				{/* Brutalist Diagonal Stripe for selected */}
+				{isSelected && (
+					<div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500 transform rotate-45 translate-x-8 -translate-y-8" />
+				)}
+
+				<CardHeader className="pb-2 relative z-10">
 					<div className="flex justify-between items-start">
 						<div>
-							<div className="text-xs text-muted-foreground uppercase tracking-widest mb-1">
+							<div className="text-xs font-mono uppercase tracking-widest mb-1 opacity-60 group-hover:opacity-100 transition-opacity">
 								Attempt {String(attempt.id).padStart(2, "0")}
 							</div>
 							<CardTitle
 								className={cn(
-									"text-xl font-mono tracking-wider",
-									isSelected
-										? "text-emerald-400"
-										: "text-foreground",
+									"text-2xl font-black uppercase tracking-tighter leading-none",
+									isSelected ? "text-emerald-400" : "",
 								)}
 							>
 								{attempt.strategyName}
 							</CardTitle>
 						</div>
-						{isSelected && (
-							<Badge variant="success">SELECTED</Badge>
-						)}
 					</div>
 				</CardHeader>
 
-				<CardContent className="space-y-6 pt-4">
+				<CardContent className="space-y-6 pt-4 relative z-10">
 					<div className="grid grid-cols-2 gap-4">
-						<div className="bg-black/20 p-3 rounded border border-white/5">
-							<div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+						<div
+							className={cn(
+								"p-3 border transition-colors",
+								isSelected
+									? "border-white/20 bg-white/5"
+									: "border-black/10 bg-black/5 group-hover:border-white/20 group-hover:bg-white/10",
+							)}
+						>
+							<div className="flex items-center gap-2 text-xs opacity-70 mb-1 font-mono uppercase">
 								<Trophy size={14} /> Global Rank
 							</div>
-							<div className="text-2xl font-bold">
+							<div className="text-3xl font-black leading-none">
 								#{attempt.rank}
 							</div>
 						</div>
-						<div className="bg-black/20 p-3 rounded border border-white/5">
-							<div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-								<Zap size={14} /> Efficiency Score
+						<div
+							className={cn(
+								"p-3 border transition-colors",
+								isSelected
+									? "border-white/20 bg-white/5"
+									: "border-black/10 bg-black/5 group-hover:border-white/20 group-hover:bg-white/10",
+							)}
+						>
+							<div className="flex items-center gap-2 text-xs opacity-70 mb-1 font-mono uppercase">
+								<Zap size={14} /> Efficiency
 							</div>
-							<div className="text-2xl font-bold">
+							<div className="text-3xl font-black leading-none">
 								{attempt.score}%
 							</div>
 						</div>
 					</div>
 
-					<div className="space-y-2 pt-2 border-t border-white/5">
-						<div className="flex justify-between text-sm">
-							<span className="text-muted-foreground flex items-center gap-2">
-								<Terminal size={14} /> Execution Time
+					<div className="space-y-2 pt-2 border-t border-current opacity-80">
+						<div className="flex justify-between text-sm uppercase font-mono font-bold">
+							<span className="flex items-center gap-2 opacity-70">
+								<Terminal size={14} /> Execution
 							</span>
-							<span className="font-mono">
-								{attempt.executionTime}
-							</span>
+							<span>{attempt.executionTime}</span>
 						</div>
-						<div className="flex justify-between text-sm">
-							<span className="text-muted-foreground">
-								Timestamp
-							</span>
-							<span className="font-mono text-xs opacity-70">
-								{attempt.date}
-							</span>
+						<div className="flex justify-between text-sm uppercase font-mono font-bold">
+							<span className="opacity-70">Date</span>
+							<span className="text-xs">{attempt.date}</span>
 						</div>
 					</div>
 				</CardContent>

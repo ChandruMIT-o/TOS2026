@@ -31,16 +31,16 @@ export function CodePreview({
 						{isValidatedByAI ? "AI VALIDATED" : "HUMAN VERIFIED"}
 					</Badge>
 					{/* Hover Tooltip */}
-					<div className="absolute right-0 top-full mt-2 w-64 p-3 bg-popover text-popover-foreground text-xs rounded-md shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+					<div className="absolute right-0 top-full mt-2 w-64 p-3 bg-white text-black text-xs font-mono rounded-none shadow-[4px_4px_0px_black] border-2 border-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
 						{isValidatedByAI ? (
-							<span className="flex gap-2">
+							<span className="flex gap-2 font-bold uppercase">
 								<AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
 								Warning: Automated validation may have false
 								positives. Consult event coordinator if output
 								seems incorrect.
 							</span>
 						) : (
-							<span className="flex gap-2">
+							<span className="flex gap-2 font-bold uppercase">
 								<CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
 								Verified by Site Reliability Engineer.
 							</span>
@@ -49,11 +49,11 @@ export function CodePreview({
 				</div>
 			}
 		>
-			<div className="h-full bg-black/40 rounded-md border border-white/5 p-4 font-mono text-sm overflow-auto custom-scrollbar">
-				<div className="text-emerald-500 mb-2">
+			<div className="h-full bg-slate-900 rounded-none border-2 border-slate-300 p-4 font-mono text-sm overflow-auto custom-scrollbar text-slate-300 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+				<div className="text-emerald-500 mb-2 font-bold">
 					# EXECUTION STARTED AT {new Date().toLocaleTimeString()}
 				</div>
-				<pre className="text-muted-foreground whitespace-pre-wrap">
+				<pre className="whitespace-pre-wrap">
 					{logs ||
 						`def optimize_strategy(market_data):
     """

@@ -19,7 +19,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 			/>
 
 			{/* Content */}
-			<div className="relative z-50 grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg md:w-full">
+			<div className="relative z-50 grid w-full max-w-lg gap-4 border-2 border-black bg-slate-200 p-6 shadow-[8px_8px_0px_black] duration-200 md:w-full">
 				{children}
 			</div>
 		</div>
@@ -63,7 +63,7 @@ export function DialogTitle({
 	return (
 		<h2
 			className={cn(
-				"text-lg font-semibold leading-none tracking-tight",
+				"text-2xl font-black text-black uppercase tracking-tighter leading-none font-mono",
 				className,
 			)}
 			{...props}
@@ -77,7 +77,10 @@ export function DialogDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
 	return (
 		<p
-			className={cn("text-sm text-muted-foreground", className)}
+			className={cn(
+				"text-sm text-black/60 font-mono font-bold uppercase",
+				className,
+			)}
 			{...props}
 		/>
 	);

@@ -11,11 +11,11 @@ export function LockInButton({ onLockIn, isLoading }: LockInButtonProps) {
 		<Button
 			variant="glow"
 			size="lg"
-			className="w-full h-16 text-lg uppercase tracking-[0.2em] font-black group relative overflow-hidden"
+			className="w-full h-20 text-xl uppercase tracking-[0.2em] font-black group relative overflow-hidden rounded-none shadow-[8px_8px_0px_#10b981] hover:shadow-none hover:translate-y-1 transition-all"
 			onClick={onLockIn}
 			disabled={isLoading}
 		>
-			<span className="relative z-10 flex items-center gap-3">
+			<span className="relative z-10 flex items-center justify-center gap-3">
 				{isLoading ? "Transmitting..." : "Lock In Protocol"}
 				<ArrowRight className="group-hover:translate-x-1 transition-transform" />
 			</span>

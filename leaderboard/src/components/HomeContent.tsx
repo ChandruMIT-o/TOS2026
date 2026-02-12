@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HomeTab } from "./HomeTab";
-import { Registration } from "./Registration";
+import { Registration } from "./registration/Registration";
 import { TestingEnv } from "./TestingEnv";
 import { Leaderboard } from "./Leaderboard";
 

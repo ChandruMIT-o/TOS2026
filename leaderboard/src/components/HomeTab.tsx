@@ -79,7 +79,7 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 				{/* --- 2. TICKER --- */}
 				<div className="-mx-8">
 					<InfiniteTicker
-						text="EDITION IV // STRATEGY REQUIRED // NO CODE // 09:00 - 16:00"
+						text="EDITION IV // STRATEGY REQUIRED // NO CODE // 09:30 - 16:00"
 						primaryColor={primaryColor}
 					/>
 				</div>
@@ -98,8 +98,8 @@ export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
 								<ArrowUpRight size={24} />
 							</div>
 							<div>
-								<span className="font-mono text-xs uppercase opacity-60 group-hover:opacity-100 transition-opacity">
-									Event_ID
+								<span className="font-mono text-sm uppercase opacity-60 group-hover:opacity-100 transition-opacity">
+									BUY YOUR TICKET HERE
 								</span>
 								<h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9] mt-1">
 									Tekhora

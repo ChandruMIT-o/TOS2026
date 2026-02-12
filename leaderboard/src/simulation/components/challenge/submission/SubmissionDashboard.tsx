@@ -55,13 +55,15 @@ export function SubmissionDashboard() {
 	)?.strategyName;
 
 	return (
-		<div className="flex flex-col h-full max-w-5xl mx-auto p-6 animate-in fade-in zoom-in-95 duration-500">
+		<div className="flex flex-col h-full overflow-y-auto max-w-5xl mx-auto p-6 animate-in fade-in zoom-in-95 duration-500">
 			{/* Header */}
-			<div className="text-center mb-10 space-y-2">
-				<h2 className="text-3xl font-bold uppercase tracking-[0.2em] text-foreground">
-					Finalize Submission
+			<div className="text-center mb-10 space-y-4">
+				<h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white leading-[0.9]">
+					Finalize
+					<br />
+					<span className="text-emerald-500">Submission</span>
 				</h2>
-				<p className="text-muted-foreground max-w-md mx-auto">
+				<p className="font-mono text-white/50 uppercase tracking-widest text-xs max-w-md mx-auto border-t border-b border-white/10 py-2">
 					Select your best performing algorithm to lock in your final
 					ranking. This action cannot be undone.
 				</p>
@@ -102,12 +104,17 @@ export function SubmissionDashboard() {
 				<DialogFooter>
 					<div className="flex w-full gap-2 justify-end mt-4">
 						<Button
-							variant="ghost"
+							variant="outline"
+							className="rounded-none border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white font-mono uppercase text-xs"
 							onClick={() => setIsDialogOpen(false)}
 						>
 							Cancel
 						</Button>
-						<Button variant="glow" onClick={handleFinalSubmit}>
+						<Button
+							variant="glow"
+							onClick={handleFinalSubmit}
+							className="rounded-none"
+						>
 							Confirm Submission
 						</Button>
 					</div>

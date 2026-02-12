@@ -8,66 +8,38 @@ interface TestRunButtonProps {
 
 export function TestRunButton({ onRun, disabled }: TestRunButtonProps) {
 	return (
-		<div className="flex flex-col items-center justify-center h-full relative px-6 py-4">
-			{/* 1. Contextual Timeline Line: Dimmed when disabled */}
-			<div
-				className={`absolute inset-y-0 w-[1px] bg-border/40 z-0 transition-opacity duration-300 ${
-					disabled ? "opacity-30" : "opacity-100"
-				}`}
-			/>
+		<div className="flex flex-col items-center justify-center h-full relative p-6">
+			{/* The Button */}
+			<Button
+				onClick={onRun}
+				disabled={disabled}
+				variant="ghost" // Use ghost to override default styles, or justClassName
+				className={`
+					relative h-24 w-24 rounded-none border-4 transition-all duration-200 p-0
+					${
+						!disabled
+							? "bg-emerald-500 border-black text-black shadow-[8px_8px_0px_black] hover:bg-emerald-400 hover:translate-y-1 hover:shadow-none active:translate-y-2"
+							: "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed shadow-none"
+					}
+				`}
+			>
+				<Play fill="currentColor" className="w-10 h-10 ml-1" />
+			</Button>
 
-			<div className="relative z-10 group">
-				{/* 3. The Button */}
-				<Button
-					onClick={onRun}
-					disabled={disabled}
-					size="icon"
+			{/* Technical Label */}
+			<div className="mt-6">
+				<span
 					className={`
-            relative h-16 w-16 rounded-full border-4 border-background z-20
-            transition-all duration-300 ease-out
-            
-            /* -- Active/Enabled State -- */
-            ${
-				!disabled
-					? "bg-gradient-to-br from-emerald-400 to-emerald-600 hover:to-emerald-500 text-white shadow-[0_4px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.6)] hover:scale-105 active:scale-95 ring-1 ring-inset ring-white/20"
-					: ""
-			}
-
-            /* -- Disabled State -- */
-            ${
-				disabled
-					? "bg-muted text-muted-foreground shadow-none cursor-not-allowed opacity-50 grayscale border-border/50"
-					: ""
-			}
-          `}
+						inline-block font-mono font-black uppercase tracking-widest text-xs px-3 py-1 transition-all
+						${
+							!disabled
+								? "bg-black text-white shadow-[4px_4px_0px_#10b981]"
+								: "bg-slate-200 text-slate-400 border border-slate-300"
+						}
+					`}
 				>
-					{/* Play Icon: Optically centered with ml-1 */}
-					<Play
-						fill="currentColor"
-						className={`w-7 h-7 ml-1 transition-transform duration-300 ${!disabled ? "group-hover:scale-110" : ""}`}
-					/>
-				</Button>
-
-				{/* 4. Technical Label */}
-				<div
-					className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 whitespace-nowrap transition-all duration-300 ${disabled ? "opacity-40" : "opacity-100"}`}
-				>
-					<div
-						className={`
-            px-3 py-1 rounded-full border backdrop-blur-sm
-            ${disabled ? "bg-muted border-transparent" : "bg-background/80 border-emerald-500/30 shadow-sm"}
-          `}
-					>
-						<span
-							className={`
-              text-[10px] font-mono font-bold uppercase tracking-widest flex align-center justify-center
-              ${disabled ? "text-muted-foreground" : "text-emerald-600 dark:text-emerald-400"}
-            `}
-						>
-							{disabled ? "Not Ready" : "Run Test"}
-						</span>
-					</div>
-				</div>
+					{disabled ? "System_Lock" : "Run_Test"}
+				</span>
 			</div>
 		</div>
 	);

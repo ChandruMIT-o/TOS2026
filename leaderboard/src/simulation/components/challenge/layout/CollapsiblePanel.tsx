@@ -25,17 +25,17 @@ export function CollapsiblePanel({
 	return (
 		<Card
 			className={cn(
-				"flex flex-col overflow-hidden transition-all duration-300 ease-in-out",
-				isCollapsed ? "flex-none h-[60px]" : "flex-1 h-full", // Flex magic here
+				"flex flex-col overflow-hidden transition-all duration-300 ease-in-out rounded-none border-black border",
+				isCollapsed ? "flex-none h-[50px]" : "flex-1 h-full", // Flex magic here
 				className,
 			)}
 		>
 			{/* Header */}
 			<div
-				className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+				className="group flex items-center justify-between px-4 py-3 border-b border-black bg-[#ececec] text-black text-black cursor-pointer hover:bg-white hover:text-black transition-colors"
 				onClick={onToggle}
 			>
-				<div className="flex items-center gap-2 font-semibold text-sm uppercase tracking-wide text-muted-foreground">
+				<div className="flex items-center gap-2 font-bold font-mono text-sm uppercase tracking-wide">
 					{isCollapsed ? (
 						<ChevronRight size={16} />
 					) : (

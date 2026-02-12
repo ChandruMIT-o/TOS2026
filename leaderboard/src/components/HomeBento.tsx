@@ -119,7 +119,7 @@ export function HomeBento({ primaryColor, stringList }: HomeBentoProps) {
 								A rolling event held throughout the day
 								(tentatively scheduled from{" "}
 								<span className="font-bold text-white bg-white/10 px-2">
-									09:00 to 16:00
+									09:30 to 16:00
 								</span>
 								).
 							</p>
