@@ -119,7 +119,9 @@ export const HomeContent: React.FC<HomeContentProps> = ({
 								<Registration primaryColor={primaryColor} />
 							)}
 							{activeTab === "testing" && <TestingEnv />}
-							{activeTab === "leaderboard" && <Leaderboard />}
+							{activeTab === "leaderboard" && (
+								<Leaderboard primaryColor={primaryColor} />
+							)}
 						</div>
 					</div>
 				</motion.div>

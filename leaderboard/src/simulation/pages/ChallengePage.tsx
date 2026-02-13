@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLoading } from "../../context/LoadingContext";
 import { ArrowUpRight } from "lucide-react";
 import { AttemptTabs } from "../components/challenge/controls/AttemptTabs";
 import { ChallengeLayout } from "../components/challenge/layout/ChallengeLayout";
@@ -8,6 +9,10 @@ import { useChallengeData } from "../hooks/useChallengeData";
 import Dither from "./Dither";
 
 export default function ChallengePage() {
+	const { setPageLoaded } = useLoading();
+	React.useEffect(() => {
+		setPageLoaded(true);
+	}, [setPageLoaded]);
 	// 1. Logic Hooks
 	const { attempts, isRunning, runTest, updateAttempt } = useAttemptLogic();
 	const { leaderboard } = useChallengeData();

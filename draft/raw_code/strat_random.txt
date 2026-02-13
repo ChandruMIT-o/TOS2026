@@ -1,0 +1,34 @@
+def strat_random(free, opp, mine, energy):
+    import random
+    def get_valid_targets(targets):
+        # Exclude Home Bases (1 and 14) from potential target lists
+        # This fixes the "Target Fixation Bug"
+        return [t for t in targets if t not in [1, 14]]
+    actions = ["HARVEST"]
+    
+    # 1. EXPANSION
+    if free and energy >= 5:
+        power_nodes = [4, 7, 11, 17, 20, 24]
+        available_power = [n for n in free if n in power_nodes]
+        available_normal = [n for n in free if n not in power_nodes]
+        
+        possible_targets = []
+        if available_power and energy >= 16: possible_targets.extend(available_power)
+        if available_normal and energy >= 5: possible_targets.extend(available_normal)
+            
+        if possible_targets:
+            target = random.choice(possible_targets)
+            cost = 15 if target in power_nodes else 5
+            if energy >= cost: return ["EXPAND", target]
+
+    # 2. CONQUEST
+    valid_opp = get_valid_targets(opp)
+    if not free and valid_opp:
+        affordable_targets = []
+        for t in valid_opp:
+            base = 20 if t in [4, 7, 11, 17, 20, 24] else 8
+            if energy >= base + 1: affordable_targets.append(t)
+        
+        if affordable_targets: return ["CONQUER", random.choice(affordable_targets)]
+
+    return ["HARVEST"]

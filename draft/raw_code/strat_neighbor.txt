@@ -1,0 +1,24 @@
+# --- STRATEGY 4: THE NEIGHBOR (The Fortress Builder) ---
+def strat_neighbor(free, opp, mine, energy):
+    def get_valid_targets(targets):
+        # Exclude Home Bases (1 and 14) from potential target lists
+        # This fixes the "Target Fixation Bug"
+        return [t for t in targets if t not in [1, 14]]
+    def get_neighbors(n): return [n-1 if n>1 else 26, n+1 if n<26 else 1]
+
+    high_value_targets = []
+    normal_targets = []
+    
+    for node in free:
+        neighbors = get_neighbors(node)
+        my_neighbors = sum(1 for n in neighbors if n in mine)
+        if my_neighbors > 0:
+            if node in [4, 7, 11, 17, 20, 24]: high_value_targets.append(node)
+            elif my_neighbors == 2: normal_targets.insert(0, node) 
+            else: normal_targets.append(node)
+
+    if high_value_targets and energy >= 16: return ["EXPAND", high_value_targets[0]]
+    if normal_targets and energy >= 5: return ["EXPAND", normal_targets[0]]
+    if free and energy >= 5 and not mine: return ["EXPAND", random.choice(free)]
+
+    return ["HARVEST"]

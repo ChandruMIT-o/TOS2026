@@ -1,0 +1,23 @@
+def strat_power_rush(free, opp, mine, energy):
+    import random
+    def get_valid_targets(targets):
+        # Exclude Home Bases (1 and 14) from potential target lists
+        # This fixes the "Target Fixation Bug"
+        return [t for t in targets if t not in [1, 14]]
+    power_nodes = [4, 7, 11, 17, 20, 24]
+    free_power = [n for n in free if n in power_nodes]
+    
+    if free_power:
+        if energy >= 16: return ["EXPAND", random.choice(free_power)]
+        elif energy >= 5 and energy < 15:
+            if len(free_power) > 2:
+                normal_nodes = [n for n in free if n not in power_nodes]
+                if normal_nodes: return ["EXPAND", random.choice(normal_nodes)]
+        return ["HARVEST"]
+
+    if free and energy >= 5: return ["EXPAND", free[0]]
+        
+    opp_power = [n for n in get_valid_targets(opp) if n in power_nodes]
+    if opp_power and energy >= 25: return ["CONQUER", opp_power[0]]
+
+    return ["HARVEST"]

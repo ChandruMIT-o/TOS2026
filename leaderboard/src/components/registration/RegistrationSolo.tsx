@@ -6,21 +6,26 @@ type RegistrationSoloProps = {
 	user: User;
 	onConfirm: () => void;
 	onBack: () => void;
+	primaryColor: string;
 };
 
 export function RegistrationSolo({
 	user,
 	onConfirm,
 	onBack,
+	primaryColor = "#10b981", // Default Emerald
 }: RegistrationSoloProps) {
 	return (
 		<motion.div
 			initial={{ opacity: 0, x: 20 }}
 			animate={{ opacity: 1, x: 0 }}
 			exit={{ opacity: 0, x: -20 }}
-			className="space-y-6"
+			className="space-y-6 mt-6"
 		>
-			<div className="flex items-center gap-4 text-emerald-400 border-b border-white/10 pb-4">
+			<div
+				style={{ color: primaryColor }}
+				className="flex items-center gap-4 text-emerald-400 border-b border-white/10 pb-4"
+			>
 				<UserIcon size={24} />
 				<h3 className="text-xl font-bold uppercase tracking-widest">
 					Operative Profile // CONFIRMED
@@ -57,10 +62,16 @@ export function RegistrationSolo({
 					</div>
 
 					<div className="space-y-2 col-span-full">
-						<label className="text-xs text-emerald-500/80 uppercase tracking-widest flex items-center gap-2">
+						<label
+							style={{ color: primaryColor }}
+							className="text-xs text-emerald-500/80 uppercase tracking-widest flex items-center gap-2"
+						>
 							<Ticket size={12} /> Ticket Verification
 						</label>
-						<div className="text-base font-mono text-emerald-400 border-b border-emerald-500/20 pb-2 flex justify-between">
+						<div
+							style={{ color: primaryColor }}
+							className="text-base font-mono text-emerald-400 border-b border-emerald-500/20 pb-2 flex justify-between"
+						>
 							<span>VALIDATED</span>
 							<span className="opacity-50">{user.ticketId}</span>
 						</div>
@@ -71,13 +82,15 @@ export function RegistrationSolo({
 			<div className="flex gap-4 pt-4">
 				<button
 					onClick={onBack}
-					className="flex-1 py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-sm hover:bg-white/5 transition-colors"
+					style={{ borderColor: primaryColor }}
+					className="cursor-target flex-1 py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-sm hover:bg-white/5 transition-colors"
 				>
 					Back
 				</button>
 				<button
 					onClick={onConfirm}
-					className="flex-[2] bg-emerald-500 text-black font-bold uppercase tracking-widest py-4 hover:bg-emerald-400 transition-colors"
+					style={{ backgroundColor: primaryColor }}
+					className="cursor-target flex-[2] bg-emerald-500 text-black font-bold uppercase tracking-widest py-4 hover:bg-emerald-400 transition-colors"
 				>
 					Confirm & Proceed
 				</button>

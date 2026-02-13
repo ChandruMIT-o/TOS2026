@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Input } from "../ui/Input";
-import { Lock, Terminal, ShieldAlert, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "../ui/Input"; // Assuming this is your shadcn or custom input
+import { Terminal, ShieldAlert, ExternalLink, Cpu, Wifi } from "lucide-react";
 import type { User } from "./types";
 import { loginUser } from "./mockApi";
+import { cn } from "../../lib/utils";
 
 type RegistrationLoginProps = {
 	onLoginSuccess: (user: User) => void;
 	primaryColor: string;
 };
 
-export function RegistrationLogin({ onLoginSuccess }: RegistrationLoginProps) {
+export function RegistrationLogin({
+	onLoginSuccess,
+	primaryColor,
+}: RegistrationLoginProps) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -23,84 +27,182 @@ export function RegistrationLogin({ onLoginSuccess }: RegistrationLoginProps) {
 
 		try {
 			// Mock login - in real app, verify password too
-			if (password.length < 4) throw new Error("INVALID CREDENTIALS");
+			if (password.length < 4)
+				throw new Error("INVALID CREDENTIALS // ACCESS DENIED");
 
 			const user = await loginUser(email);
+
+			// Artificial delay to show off the "Authenticating" state
+			await new Promise((resolve) => setTimeout(resolve, 800));
+
 			onLoginSuccess(user);
 		} catch (err: any) {
-			setError(err.message || "LOGIN FALIED");
+			setError(err.message || "CONNECTION SEVERED");
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	return (
-		<motion.div
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			exit={{ opacity: 0, y: -20 }}
-			className="space-y-8 w-full max-w-md mx-auto"
-		>
-			<div className="bg-red-500/10 border border-red-500/20 p-4 rounded-sm flex flex-col gap-4">
-				<div className="flex gap-3">
-					<ShieldAlert className="text-red-500 shrink-0" />
-					<p className="text-xs text-red-200/80 font-mono leading-relaxed">
-						WARNING: RESTRICTED ACCESS. ONLY PERSONNEL WITH EVENT
-						TICKETS FOR TOS2026 MAY PROCEED. USE THE SAME EMAIL AND
-						PASSWORD YOU USED TO LOGIN TO THE EVENT.
-					</p>
+		<div className="w-full max-w-xl mx-auto pt-10 pb-10 font-mono">
+			{/* --- Warning / Context Module --- */}
+			<motion.div
+				initial={{ opacity: 0, y: 10 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className="mb-10 relative overflow-hidden rounded-sm border border-red-500/30 bg-red-950/20 p-6"
+			>
+				{/* Background Scanline Effect */}
+				<div className="absolute inset-0 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(220,38,38,0.05)_3px)]" />
+
+				<div className="flex gap-4 relative z-10">
+					<ShieldAlert className="text-red-500 shrink-0 w-6 h-6 mt-1" />
+					<div className="space-y-4 flex-1">
+						<div>
+							<h3 className="text-red-400 font-bold uppercase tracking-widest text-sm mb-2">
+								// Restricted Access Protocol
+							</h3>
+							<p className="text-xs text-red-200/70 font-mono leading-relaxed uppercase">
+								Only personnel with valid event tickets for
+								TOS2026 may proceed. Credentials must match your
+								event registration data.
+							</p>
+						</div>
+					</div>
 				</div>
 				<a
 					href="https://tekhora26.live"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="ml-9 flex items-center justify-center gap-2 bg-red-500 text-black font-bold text-xs uppercase tracking-widest py-3 rounded-sm hover:bg-red-400 transition-all shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_20px_rgba(239,68,68,0.5)]"
+					className="relative w-full mt-4 overflow-hidden flex items-center justify-center gap-3 px-6 py-3 border border-red-500/30 bg-red-400/20 font-bold uppercase tracking-widest text-xs hover:text-white hover:border-red-400 transition-all duration-300 group"
 				>
-					Visit TEKHORA26.LIVE <ExternalLink size={14} />
+					<span className="relative z-10 flex items-center gap-2">
+						TEKHORA26.LIVE <ExternalLink size={14} />
+					</span>
 				</a>
-			</div>
+			</motion.div>
 
-			<div className="space-y-4">
-				<div className="space-y-2">
-					<label className="text-xs uppercase tracking-widest text-emerald-500 font-bold flex items-center gap-2">
-						<Terminal size={14} /> Operator Email
+			{/* --- Login Form --- */}
+			<form onSubmit={handleLogin} className="space-y-8">
+				{/* Field 01: Email */}
+				<div className="space-y-4 group">
+					<label
+						style={{ color: primaryColor }}
+						className="text-sm uppercase tracking-widest font-bold pl-1 flex items-center gap-3"
+					>
+						<Terminal size={16} /> 01. Operator Identity
 					</label>
-					<Input
-						type="email"
-						placeholder="ENTER EMAIL"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						className="bg-black/40 border-white/10 text-white placeholder:text-white/20 h-12 font-mono tracking-wider focus:border-emerald-500/50"
-					/>
+
+					<div className="relative">
+						<Input
+							type="email"
+							placeholder="ENTER REGISTERED EMAIL"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							disabled={loading}
+							className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/20 focus:outline-none focus:border-black focus:ring-0 transition-all duration-300 tracking-widest h-16 text-lg px-4"
+							style={{ caretColor: primaryColor }}
+						/>
+						{/* Corner Accents */}
+						<div
+							className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 opacity-50"
+							style={{ borderColor: primaryColor }}
+						/>
+						<div
+							className="absolute -top-1 -left-1 w-3 h-3 border-l-2 border-t-2 opacity-50"
+							style={{ borderColor: primaryColor }}
+						/>
+					</div>
 				</div>
 
-				<div className="space-y-2">
-					<label className="text-xs uppercase tracking-widest text-emerald-500 font-bold flex items-center gap-2">
-						<Lock size={14} /> Access Code
+				{/* Field 02: Password */}
+				<div className="space-y-4 group">
+					<label
+						style={{ color: primaryColor }}
+						className="text-sm uppercase tracking-widest font-bold pl-1 flex items-center gap-3"
+					>
+						<Cpu size={16} /> 02. Security Clearance
 					</label>
-					<Input
-						type="password"
-						placeholder="••••••••"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className="bg-black/40 border-white/10 text-white placeholder:text-white/20 h-12 font-mono tracking-wider focus:border-emerald-500/50"
-					/>
-				</div>
-			</div>
 
-			{error && (
-				<div className="text-red-400 text-sm font-mono bg-red-500/5 p-2 border border-red-500/20">
-					// ERROR: {error}
+					<div className="relative">
+						<Input
+							type="password"
+							placeholder="ACCESS CODE"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							disabled={loading}
+							className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/20 focus:outline-none focus:border-black focus:ring-0 transition-all duration-300 tracking-widest h-16 text-lg px-4"
+							style={{ caretColor: primaryColor }}
+						/>
+						{/* Corner Accents */}
+						<div
+							className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 opacity-50"
+							style={{ borderColor: primaryColor }}
+						/>
+						<div
+							className="absolute -top-1 -left-1 w-3 h-3 border-l-2 border-t-2 opacity-50"
+							style={{ borderColor: primaryColor }}
+						/>
+					</div>
 				</div>
-			)}
 
-			<button
-				onClick={handleLogin}
-				disabled={loading}
-				className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-widest py-4 rounded-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-			>
-				{loading ? "AUTHENTICATING..." : "ESTABLISH UPLINK"}
-			</button>
-		</motion.div>
+				{/* Submit Action */}
+				<button
+					type="submit"
+					disabled={loading}
+					style={{
+						color: primaryColor,
+						borderColor: primaryColor,
+						backgroundColor: loading ? "#262626" : "#0f0f0f", // Very dark background to contrast with primaryColor
+					}}
+					className={cn(
+						"w-full border border-b-4 font-black uppercase tracking-[0.2em] overflow-hidden relative py-6 hover:brightness-150 hover:border-t-4 hover:border-b active:opacity-75 outline-none duration-300 group cursor-target",
+						loading && "opacity-50 cursor-not-allowed",
+					)}
+				>
+					{!loading && (
+						<span
+							style={{
+								backgroundColor: primaryColor,
+								boxShadow: `0 0 10px 10px ${primaryColor}4d`, // 30% opacity equivalent
+							}}
+							className="absolute -top-[150%] left-0 inline-flex w-full h-[5px] rounded-md opacity-50 group-hover:top-[150%] duration-500"
+						/>
+					)}
+
+					<span className="relative z-10 flex items-center justify-center gap-4 text-sm md:text-base">
+						{loading ? (
+							<>
+								<Wifi className="animate-ping" size={16} />
+								ESTABLISHING UPLINK...
+							</>
+						) : (
+							<>AUTHENTICATE</>
+						)}
+					</span>
+				</button>
+				{/* Error Console */}
+				<AnimatePresence>
+					{error && (
+						<motion.div
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: "auto" }}
+							exit={{ opacity: 0, height: 0 }}
+							className="overflow-hidden"
+						>
+							<div className="bg-red-500/10 border-l-2 border-red-500 p-4 mb-4 flex items-center gap-3">
+								<ShieldAlert
+									size={18}
+									className="text-red-500 animate-pulse"
+								/>
+								<span className="text-red-400 font-mono text-xs uppercase tracking-wider">
+									Error: {error}
+								</span>
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</form>
+		</div>
 	);
 }

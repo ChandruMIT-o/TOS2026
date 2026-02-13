@@ -1,0 +1,94 @@
+def strategy(free, opp, mine, energy):
+    import random
+    """
+    THE PLAGUE: 
+    1. Infects Power Nodes immediately.
+    2. Spreads to nodes that touch the Enemy (Containment).
+    3. Fills gaps to create solid defensive blocks.
+    4. Never hoards. Always expands.
+    """
+    
+    # --- HELPER: Map Math ---
+    def get_neighbors(n): 
+        # Returns [previous, next] in the circle 1-26
+        return [n-1 if n>1 else 26, n+1 if n<26 else 1]
+
+    power_nodes = [4, 7, 11, 17, 20, 24]
+
+    # -------------------------------
+    # PHASE 1: POWER GRAB (Priority)
+    # -------------------------------
+    # If we can afford a power node, take it instantly.
+    free_power = [n for n in free if n in power_nodes]
+    if free_power and energy >= 15:
+        # Pick the one closest to our existing territory if possible
+        for p in free_power:
+            neighbors = get_neighbors(p)
+            if any(n in mine for n in neighbors):
+                return ["EXPAND", p]
+        return ["EXPAND", free_power[0]]
+
+    # -------------------------------
+    # PHASE 2: CONTAINMENT (The Choke)
+    # -------------------------------
+    # If a free node touches an ENEMY node, take it.
+    # This stops them from expanding cheaply.
+    front_line = []
+    for node in free:
+        neighbors = get_neighbors(node)
+        if any(n in opp for n in neighbors):
+            front_line.append(node)
+    
+    if front_line and energy >= 5:
+        # Prioritize front-line nodes that also touch ME (Closing the gap)
+        perfect_blocks = [n for n in front_line if any(nb in mine for nb in get_neighbors(n))]
+        if perfect_blocks:
+            return ["EXPAND", perfect_blocks[0]]
+        return ["EXPAND", front_line[0]]
+
+    # -------------------------------
+    # PHASE 3: ORGANIC GROWTH
+    # -------------------------------
+    # Expand to nodes that touch my current nodes.
+    # This builds a "Cluster" which grants high defense bonuses.
+    my_expansion = []
+    for node in free:
+        neighbors = get_neighbors(node)
+        if any(n in mine for n in neighbors):
+            my_expansion.append(node)
+            
+    if my_expansion and energy >= 5:
+        return ["EXPAND", my_expansion[0]]
+
+    # -------------------------------
+    # PHASE 4: BLIND EXPANSION (Fallback)
+    # -------------------------------
+    # If we have energy but no smart moves, just take space.
+    if free and energy >= 5:
+        return ["EXPAND", free[0]]
+
+    # -------------------------------
+    # PHASE 5: SIEGE (Endgame)
+    # -------------------------------
+    # If the map is full, use excess energy to break their weakest link.
+    if not free and energy >= 30:
+        # Find their cheapest node to attack (non-power, isolated)
+        weakest_target = None
+        min_defense = 100
+        
+        for t in opp:
+            # Don't attack Home Base (too expensive/risky)
+            if t in [1, 14]: continue
+            
+            # Calculate rough defense strength
+            nbs = get_neighbors(t)
+            def_score = sum(1 for n in nbs if n in opp)
+            
+            if def_score < min_defense:
+                min_defense = def_score
+                weakest_target = t
+        
+        if weakest_target:
+            return ["CONQUER", weakest_target]
+
+    return ["HARVEST"]

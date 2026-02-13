@@ -12,6 +12,7 @@ type RegistrationTeamDesignationProps = {
 export function RegistrationTeamDesignation({
 	onSetTeamName,
 	onBack,
+	primaryColor,
 }: RegistrationTeamDesignationProps) {
 	const [teamName, setTeamName] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -34,7 +35,10 @@ export function RegistrationTeamDesignation({
 			animate={{ opacity: 1, scale: 1 }}
 			className="space-y-6"
 		>
-			<div className="flex items-center gap-4 text-emerald-400 border-b border-white/10 pb-4">
+			<div
+				style={{ color: primaryColor }}
+				className="flex items-center gap-4 border-b border-white/10 pb-4 pt-4"
+			>
 				<Terminal size={24} />
 				<h3 className="text-xl font-bold uppercase tracking-widest">
 					Unit Designation
@@ -50,7 +54,10 @@ export function RegistrationTeamDesignation({
 
 				<form onSubmit={handleSubmit} className="space-y-6">
 					<div className="space-y-2">
-						<label className="text-xs uppercase tracking-widest text-emerald-500 font-bold flex items-center gap-2">
+						<label
+							style={{ color: primaryColor }}
+							className="text-xs uppercase tracking-widest font-bold flex items-center gap-2"
+						>
 							// TEAM CODE
 						</label>
 						<div className="relative">
@@ -60,7 +67,7 @@ export function RegistrationTeamDesignation({
 								onChange={(e) =>
 									setTeamName(e.target.value.toUpperCase())
 								}
-								className="bg-black/40 border border-white/10 placeholder:text-white/20 h-16 text-xl tracking-[0.2em] font-black text-white px-6 focus:border-emerald-500/50"
+								className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/20 h-16 text-xl tracking-[0.2em] font-black text-white px-6 focus:border-emerald-500/50"
 							/>
 							<div className="absolute top-0 right-0 h-full w-2 bg-emerald-500/20 animate-pulse" />
 						</div>
@@ -73,14 +80,16 @@ export function RegistrationTeamDesignation({
 						<button
 							type="button"
 							onClick={onBack}
-							className="flex-1 py-6 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-sm hover:bg-white/5 transition-colors rounded-sm"
+							style={{ borderColor: primaryColor }}
+							className="cursor-target flex-1 py-6 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-sm hover:bg-white/5 transition-colors"
 						>
 							Back
 						</button>
 						<button
 							type="submit"
 							disabled={teamName.length < 3 || loading}
-							className="flex-[2] bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest py-6 text-lg rounded-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+							style={{ backgroundColor: primaryColor }}
+							className="cursor-target flex-[2] hover:bg-emerald-400 text-black font-black uppercase tracking-widest py-6 text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
 						>
 							<span className="relative z-10 flex items-center justify-center gap-4">
 								{loading

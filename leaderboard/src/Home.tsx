@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useLoading } from "./context/LoadingContext";
 import { Tabs } from "./components/Tabs";
 import LetterGlitch from "./components/LetterGlitch";
 import { TacticalGrid } from "./components/TacticalGrid";
@@ -9,9 +10,14 @@ import { HomeContent } from "./components/HomeContent";
 import { Toast } from "./components/Toast";
 
 function Home() {
+	const { setPageLoaded } = useLoading();
+	useEffect(() => {
+		setPageLoaded(true);
+	}, [setPageLoaded]);
+
 	const [activeTab, setActiveTab] = useState("home");
 	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
-	const [isBriefing] = useState(true); // Controls "Briefing state" vs "Interactive State"
+	const [isBriefing] = useState(false); // Controls "Briefing state" vs "Interactive State"
 	const [toastMessage, setToastMessage] = useState<string | null>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 

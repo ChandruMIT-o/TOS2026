@@ -18,6 +18,7 @@ export function RegistrationDuo({
 	onConfirm,
 	onBack,
 	partner: initialPartner,
+	primaryColor,
 }: RegistrationDuoProps) {
 	const [partnerEmail, setPartnerEmail] = useState(
 		initialPartner?.email || "",
@@ -67,9 +68,12 @@ export function RegistrationDuo({
 		<motion.div
 			initial={{ opacity: 0, scale: 0.95 }}
 			animate={{ opacity: 1, scale: 1 }}
-			className="space-y-6"
+			className="space-y-6 pt-4"
 		>
-			<div className="flex items-center gap-4 text-emerald-400 border-b border-white/10 pb-4">
+			<div
+				style={{ color: primaryColor }}
+				className="flex items-center gap-4 border-b border-white/10 pb-4"
+			>
 				<Users size={24} />
 				<h3 className="text-xl font-bold uppercase tracking-widest">
 					Duo Protocol // PARTNER LINK
@@ -84,7 +88,10 @@ export function RegistrationDuo({
 					</p>
 
 					<div className="space-y-2">
-						<label className="text-xs uppercase tracking-widest text-emerald-500 font-bold flex items-center gap-2">
+						<label
+							style={{ color: primaryColor }}
+							className="text-xs uppercase tracking-widest font-bold flex items-center gap-2"
+						>
 							<Mail size={14} /> Partner Email
 						</label>
 						<div className="flex gap-2">
@@ -95,12 +102,13 @@ export function RegistrationDuo({
 								onChange={(e) =>
 									setPartnerEmail(e.target.value)
 								}
-								className="bg-black/40 border-white/10 text-white placeholder:text-white/20 h-12 font-mono"
+								className="cursor-target bg-black/40 border-white/10 text-white placeholder:text-white/20 h-12 font-mono"
 							/>
 							<button
 								onClick={handleSendInvite}
 								disabled={!partnerEmail}
-								className="bg-white/10 hover:bg-emerald-500 hover:text-black text-emerald-400 px-6 font-bold uppercase tracking-wider transition-colors disabled:opacity-50"
+								style={{ backgroundColor: primaryColor }}
+								className="cursor-target hover:bg-emerald-500 hover:text-black text-black px-6 font-bold uppercase tracking-wider transition-colors disabled:opacity-50"
 							>
 								Send
 							</button>
@@ -143,10 +151,22 @@ export function RegistrationDuo({
 					animate={{ opacity: 1, y: 0 }}
 					className="space-y-6"
 				>
-					<div className="p-4 bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-4 rounded-sm">
-						<CheckCircle2 className="text-emerald-400 w-8 h-8" />
+					<div
+						style={{
+							color: primaryColor,
+							borderColor: primaryColor,
+						}}
+						className="p-4 bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-4 rounded-sm"
+					>
+						<CheckCircle2
+							style={{ color: primaryColor }}
+							className="text-emerald-400 w-8 h-8"
+						/>
 						<div>
-							<p className="text-emerald-400 font-bold uppercase tracking-widest">
+							<p
+								style={{ color: primaryColor }}
+								className="text-emerald-400 font-bold uppercase tracking-widest"
+							>
 								Uplink Established
 							</p>
 							<p className="text-xs text-white/60">
@@ -170,11 +190,17 @@ export function RegistrationDuo({
 						</div>
 
 						{/* Partner Card */}
-						<div className="p-4 border border-emerald-500/30 bg-emerald-500/5 space-y-2 rounded-sm shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+						<div
+							style={{ borderColor: primaryColor }}
+							className="p-4 border border-emerald-500/30 bg-emerald-500/5 space-y-2 rounded-sm shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+						>
 							<p className="text-xs text-emerald-500/60 uppercase">
 								Operative 02 (Linked)
 							</p>
-							<p className="text-lg font-mono font-bold text-emerald-400">
+							<p
+								style={{ color: primaryColor }}
+								className="text-lg font-mono font-bold"
+							>
 								{partner.name}
 							</p>
 							<p className="text-xs font-mono text-emerald-500/60">
@@ -182,20 +208,31 @@ export function RegistrationDuo({
 							</p>
 						</div>
 					</div>
+					<div className="flex gap-2">
+						<button
+							onClick={onBack}
+							style={{ borderColor: primaryColor }}
+							className="cursor-target w-full py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-xs mt-4 hover:bg-white/5 rounded-sm transition-colors"
+						>
+							Cancel Protocol
+						</button>
 
-					<button
-						onClick={() => partner && onConfirm(partner)}
-						className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-widest py-4 rounded-sm transition-all mt-4"
-					>
-						Proceed to Designation
-					</button>
+						<button
+							onClick={() => partner && onConfirm(partner)}
+							style={{ backgroundColor: primaryColor }}
+							className="cursor-target w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-widest py-4 rounded-sm transition-all mt-4"
+						>
+							Proceed to Designation
+						</button>
+					</div>
 				</motion.div>
 			)}
 
 			{inviteStatus !== "ACCEPTED" && (
 				<button
 					onClick={onBack}
-					className="w-full py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-xs mt-4 hover:bg-white/5 rounded-sm transition-colors"
+					style={{ borderColor: primaryColor }}
+					className="cursor-target w-full py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-xs mt-4 hover:bg-white/5 rounded-sm transition-colors"
 				>
 					Cancel Protocol
 				</button>

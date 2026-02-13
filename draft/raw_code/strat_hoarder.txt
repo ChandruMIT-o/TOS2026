@@ -1,0 +1,20 @@
+def strat_hoarder(free, opp, mine, energy):
+    def get_valid_targets(targets):
+        # Exclude Home Bases (1 and 14) from potential target lists
+        # This fixes the "Target Fixation Bug"
+        return [t for t in targets if t not in [1, 14]]
+    if energy >= 16 and free:
+        power_nodes = [4, 7, 11, 17, 20, 24]
+        free_power = [n for n in free if n in power_nodes]
+        if free_power: return ["EXPAND", free_power[0]]
+        else: return ["EXPAND", free[0]]
+
+    if energy >= 6 and energy < 15:
+        normal_nodes = [n for n in free if n not in [4, 7, 11, 17, 20, 24]]
+        if normal_nodes: return ["EXPAND", normal_nodes[0]]
+             
+    valid_opp = get_valid_targets(opp)
+    if energy > 30 and valid_opp:
+        return ["CONQUER", valid_opp[0]]
+
+    return ["HARVEST"]

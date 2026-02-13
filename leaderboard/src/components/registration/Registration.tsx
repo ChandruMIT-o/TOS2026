@@ -93,9 +93,9 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	};
 
 	return (
-		<div className="w-full max-w-2xl mx-auto pt-10 pb-20 px-4">
+		<div className="w-full max-w-2xl mx-auto pt-10 px-4">
 			{/* Header */}
-			<div className="flex items-center gap-5 mb-10 border-b border-white/10 pb-8">
+			<div className="flex items-center gap-5 border-b border-white/10 pb-8">
 				<div className="p-4 bg-white/5 border border-white/10 rounded-md shadow-[0_0_20px_rgba(255,255,255,0.05)]">
 					<Terminal
 						className="w-8 h-8 text-emerald-400"
@@ -143,6 +143,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						user={user}
 						onConfirm={handleSoloConfirm}
 						onBack={() => setStep("MODE_SELECTION")}
+						primaryColor={primaryColor}
 					/>
 				)}
 
@@ -201,7 +202,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						<div className="inline-flex p-6 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4">
 							<CheckCircle2
 								size={64}
-								className="text-emerald-500"
+								style={{ color: primaryColor }}
 							/>
 						</div>
 
@@ -209,7 +210,10 @@ export function Registration({ primaryColor }: RegistrationProps) {
 							<h3 className="text-3xl font-black uppercase tracking-widest text-white">
 								Registration Complete
 							</h3>
-							<p className="text-emerald-400 font-mono text-lg">
+							<p
+								style={{ color: primaryColor }}
+								className="font-mono text-lg"
+							>
 								UNIT DESIGNATION: {teamName}
 							</p>
 						</div>
