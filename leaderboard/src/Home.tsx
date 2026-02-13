@@ -17,7 +17,7 @@ function Home() {
 
 	const [activeTab, setActiveTab] = useState("home");
 	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
-	const [isBriefing] = useState(false); // Controls "Briefing state" vs "Interactive State"
+	const [isBriefing] = useState(true); // Controls "Briefing state" vs "Interactive State"
 	const [toastMessage, setToastMessage] = useState<string | null>(null);
 	const contentRef = useRef<HTMLDivElement>(null);
 
