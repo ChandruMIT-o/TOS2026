@@ -11,6 +11,8 @@ const firebaseConfig = {
 	measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
+console.log("Firebase Config:", firebaseConfig);
+
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -18,5 +20,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
+
+if (!firebaseConfig.apiKey) {
+	console.error(
+		"CRITICAL ERROR: Firebase API Key is missing from environment variables.",
+	);
+	console.error(
+		"Please ensure .env file exists and restart the dev server (npm run dev).",
+	);
+	console.log("Current Config:", firebaseConfig);
+}
 
 export { app, analytics, db, auth };
