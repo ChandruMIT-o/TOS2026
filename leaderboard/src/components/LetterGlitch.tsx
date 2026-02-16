@@ -9,19 +9,6 @@ interface LetterGlitchProps {
 	characters?: string;
 }
 
-interface RGB {
-	r: number;
-	g: number;
-	b: number;
-}
-
-interface LetterState {
-	char: string;
-	color: RGB;
-	targetColor: RGB;
-	colorProgress: number;
-}
-
 const containerStyle: React.CSSProperties = {
 	position: "relative",
 	width: "100%",
@@ -58,17 +45,17 @@ const centerVignetteStyle: React.CSSProperties = {
 		"radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)",
 };
 
-const hexToRgb = (hex: string): RGB => {
+const hexToRgbArray = (hex: string): [number, number, number] => {
 	const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
 	hex = hex.replace(shorthandRegex, (_m, r, g, b) => r + r + g + g + b + b);
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
-		? {
-				r: parseInt(result[1], 16),
-				g: parseInt(result[2], 16),
-				b: parseInt(result[3], 16),
-			}
-		: { r: 0, g: 0, b: 0 };
+		? [
+				parseInt(result[1], 16),
+				parseInt(result[2], 16),
+				parseInt(result[3], 16),
+			]
+		: [0, 0, 0];
 };
 
 const LetterGlitch: React.FC<LetterGlitchProps> = ({
@@ -80,137 +67,201 @@ const LetterGlitch: React.FC<LetterGlitchProps> = ({
 	characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$&*()-_+=/[]{};:<>.,0123456789",
 }) => {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
-	const animationRef = useRef<number | null>(null);
 	const context = useRef<CanvasRenderingContext2D | null>(null);
-	const letters = useRef<LetterState[]>([]);
-	const grid = useRef({ columns: 0, rows: 0 });
+	const animationRef = useRef<number | null>(null);
 	const lastGlitchTime = useRef(0);
 
-	const rgbColors = useMemo(() => glitchColors.map(hexToRgb), [glitchColors]);
+	// OPTIMIZATION 1: Flattened Data Structures (SoA - Structure of Arrays)
+	// Instead of an array of objects, we use TypedArrays for performance.
+	const gridRef = useRef({ columns: 0, rows: 0, total: 0 });
+	const charIndexRef = useRef<Uint8Array | null>(null); // Stores index of character in string
+	const colorRef = useRef<Float32Array | null>(null); // Stores current R, G, B
+	const targetColorRef = useRef<Float32Array | null>(null); // Stores target R, G, B
+	const colorProgressRef = useRef<Float32Array | null>(null); // Stores progress 0.0 - 1.0
+
+	// Pre-parse colors into a numeric array for faster access
+	const glitchColorsRgb = useMemo(
+		() => glitchColors.map(hexToRgbArray),
+		[glitchColors],
+	);
+
+	// Pre-calculate char count for modulo operations
+	const charCount = characters.length;
 
 	const fontSize = 16;
 	const charWidth = 10;
 	const charHeight = 20;
 
-	// Stable random pickers
-	const getRandomChar = useCallback(() => {
-		return characters[Math.floor(Math.random() * characters.length)];
-	}, [characters]);
-
-	const getRandomColor = useCallback(() => {
-		return rgbColors[Math.floor(Math.random() * rgbColors.length)];
-	}, [rgbColors]);
-
-	const calculateGrid = (width: number, height: number) => {
-		const columns = Math.ceil(width / charWidth);
-		const rows = Math.ceil(height / charHeight);
-		return { columns, rows };
-	};
-
-	// 1. Decoupled initialization logic
-	// This now runs whenever dimensions OR characters/colors change
 	const initializeLetters = useCallback(
 		(columns: number, rows: number) => {
-			grid.current = { columns, rows };
-			const totalLetters = columns * rows;
+			const total = columns * rows;
+			gridRef.current = { columns, rows, total };
 
-			letters.current = new Array(totalLetters);
+			// Allocating TypedArrays (Much faster than new Array(N).fill({}))
+			charIndexRef.current = new Uint8Array(total);
+			colorRef.current = new Float32Array(total * 3);
+			targetColorRef.current = new Float32Array(total * 3);
+			colorProgressRef.current = new Float32Array(total);
 
-			for (let i = 0; i < totalLetters; i++) {
-				const color = getRandomColor();
-				letters.current[i] = {
-					char: getRandomChar(),
-					color: { ...color },
-					targetColor: { ...color },
-					colorProgress: 1,
-				};
+			for (let i = 0; i < total; i++) {
+				charIndexRef.current[i] = Math.floor(Math.random() * charCount);
+
+				const color =
+					glitchColorsRgb[
+						Math.floor(Math.random() * glitchColorsRgb.length)
+					];
+
+				// Set initial colors
+				colorRef.current[i * 3] = color[0];
+				colorRef.current[i * 3 + 1] = color[1];
+				colorRef.current[i * 3 + 2] = color[2];
+
+				targetColorRef.current[i * 3] = color[0];
+				targetColorRef.current[i * 3 + 1] = color[1];
+				targetColorRef.current[i * 3 + 2] = color[2];
+
+				colorProgressRef.current[i] = 1;
 			}
 		},
-		[getRandomChar, getRandomColor],
+		[charCount, glitchColorsRgb],
 	);
 
-	// Optimization: Use refs for dimensions to avoid layout thrashing
-	const canvasSize = useRef({ width: 0, height: 0 });
-
 	const drawLetters = useCallback(() => {
-		if (!context.current || letters.current.length === 0) return;
 		const ctx = context.current;
-		const { width, height } = canvasSize.current;
+		if (
+			!ctx ||
+			!charIndexRef.current ||
+			!colorRef.current ||
+			!targetColorRef.current ||
+			!colorProgressRef.current
+		)
+			return;
 
-		// Optimization: Clear using cached dimensions
-		ctx.clearRect(0, 0, width, height);
+		const { columns, total } = gridRef.current;
+		const colors = colorRef.current;
+		const targets = targetColorRef.current;
+		const progress = colorProgressRef.current;
+		const charIndices = charIndexRef.current;
+
+		// OPTIMIZATION 2: Dirty Clearing
+		// If smooth is OFF, we don't clear the whole canvas, we only overwrite specific letters.
+		// If smooth is ON, clearing the whole canvas is usually faster than tracking thousands of dirty rects.
+		if (smooth) {
+			ctx.clearRect(
+				0,
+				0,
+				canvasRef.current!.width,
+				canvasRef.current!.height,
+			);
+		}
+
 		ctx.font = `${fontSize}px monospace`;
 		ctx.textBaseline = "top";
 
-		const cols = grid.current.columns;
-		const lettersArr = letters.current;
-		const len = lettersArr.length;
+		for (let i = 0; i < total; i++) {
+			// OPTIMIZATION 3: Skip drawing if static and not clearing screen
+			// If !smooth, we only need to draw if progress < 1 (meaning it was just updated)
+			if (!smooth && progress[i] >= 1) continue;
 
-		for (let i = 0; i < len; i++) {
-			const letter = lettersArr[i];
+			const x = (i % columns) * charWidth;
+			const y = ((i / columns) | 0) * charHeight; // Bitwise OR 0 is faster than Math.floor
 
-			// Optimization: Integrate smooth color transitions into the draw loop
-			if (smooth && letter.colorProgress < 1) {
-				letter.colorProgress += 0.05;
-				if (letter.colorProgress > 1) letter.colorProgress = 1;
+			if (smooth && progress[i] < 1) {
+				progress[i] += 0.05;
+				if (progress[i] > 1) progress[i] = 1;
 
-				const t = letter.colorProgress;
-				const start = letter.color;
-				const end = letter.targetColor;
+				const t = progress[i];
+				const index3 = i * 3;
 
-				letter.color.r = start.r + (end.r - start.r) * t;
-				letter.color.g = start.g + (end.g - start.g) * t;
-				letter.color.b = start.b + (end.b - start.b) * t;
+				// Lerp R, G, B
+				colors[index3] =
+					colors[index3] + (targets[index3] - colors[index3]) * t;
+				colors[index3 + 1] =
+					colors[index3 + 1] +
+					(targets[index3 + 1] - colors[index3 + 1]) * t;
+				colors[index3 + 2] =
+					colors[index3 + 2] +
+					(targets[index3 + 2] - colors[index3 + 2]) * t;
 			}
 
-			const x = (i % cols) * charWidth;
-			// Optimization: Avoid repeated Math.floor
-			const y = ((i / cols) | 0) * charHeight;
-			ctx.fillStyle = `rgb(${Math.floor(letter.color.r)}, ${Math.floor(letter.color.g)}, ${Math.floor(letter.color.b)})`;
-			ctx.fillText(letter.char, x, y);
+			// OPTIMIZATION 4: Integer Math for colors
+			// Browser engines optimize `| 0` heavily.
+			const index3 = i * 3;
+			ctx.fillStyle = `rgb(${colors[index3] | 0}, ${colors[index3 + 1] | 0}, ${colors[index3 + 2] | 0})`;
+
+			// If !smooth, we need to clear the rect before drawing the new character
+			if (!smooth) {
+				ctx.clearRect(x, y, charWidth, charHeight);
+			}
+
+			ctx.fillText(characters[charIndices[i]], x, y);
 		}
-	}, [smooth, fontSize, charWidth, charHeight]);
+	}, [smooth, characters, charWidth, charHeight, fontSize]);
 
 	const updateLetters = useCallback(() => {
-		if (!letters.current.length) return;
+		if (
+			!gridRef.current.total ||
+			!charIndexRef.current ||
+			!targetColorRef.current ||
+			!colorRef.current ||
+			!colorProgressRef.current
+		)
+			return;
 
 		const updateCount = Math.max(
 			1,
-			Math.floor(letters.current.length * 0.05),
+			Math.floor(gridRef.current.total * 0.05),
 		);
 
-		for (let i = 0; i < updateCount; i++) {
-			const index = Math.floor(Math.random() * letters.current.length);
-			const letter = letters.current[index];
-			if (!letter) continue;
+		const charIndices = charIndexRef.current;
+		const targets = targetColorRef.current;
+		const colors = colorRef.current;
+		const progress = colorProgressRef.current;
 
-			letter.char = getRandomChar();
-			letter.targetColor = getRandomColor();
+		for (let i = 0; i < updateCount; i++) {
+			const index = Math.floor(Math.random() * gridRef.current.total);
+
+			// Random Char
+			charIndices[index] = Math.floor(Math.random() * charCount);
+
+			// Random Target Color
+			const targetColor =
+				glitchColorsRgb[
+					Math.floor(Math.random() * glitchColorsRgb.length)
+				];
+			const index3 = index * 3;
+
+			targets[index3] = targetColor[0];
+			targets[index3 + 1] = targetColor[1];
+			targets[index3 + 2] = targetColor[2];
 
 			if (!smooth) {
-				letter.color = { ...letter.targetColor };
-				letter.colorProgress = 1;
+				colors[index3] = targetColor[0];
+				colors[index3 + 1] = targetColor[1];
+				colors[index3 + 2] = targetColor[2];
+				progress[index] = 0.5; // Set to <1 to trigger redraw in dirty rect logic
 			} else {
-				letter.colorProgress = 0;
+				progress[index] = 0;
 			}
 		}
-	}, [getRandomChar, getRandomColor, smooth]);
+	}, [charCount, glitchColorsRgb, smooth]);
 
 	const animate = useCallback(() => {
 		const now = Date.now();
-		let needsRedraw = false;
-
-		// 1. Glitch Update
-		if (now - lastGlitchTime.current >= glitchSpeed) {
-			updateLetters();
-			needsRedraw = true;
-			lastGlitchTime.current = now;
-		}
-
-		// 2. Smooth Transition & Draw
-		// If smooth is on, we always redraw because colors might be transitioning
-		if (smooth || needsRedraw) {
+		// If smooth is off, we only draw when the glitch timer hits
+		// If smooth is on, we draw every frame for interpolation
+		if (smooth) {
+			if (now - lastGlitchTime.current >= glitchSpeed) {
+				updateLetters();
+				lastGlitchTime.current = now;
+			}
 			drawLetters();
+		} else {
+			if (now - lastGlitchTime.current >= glitchSpeed) {
+				updateLetters();
+				drawLetters();
+				lastGlitchTime.current = now;
+			}
 		}
 
 		animationRef.current = requestAnimationFrame(animate);
@@ -221,62 +272,52 @@ const LetterGlitch: React.FC<LetterGlitchProps> = ({
 		if (!canvas || !canvas.parentElement) return;
 
 		const parent = canvas.parentElement;
-		const dpr = window.devicePixelRatio || 1;
 		const rect = parent.getBoundingClientRect();
+		const dpr = window.devicePixelRatio || 1;
 
-		canvas.width = rect.width * dpr;
-		canvas.height = rect.height * dpr;
+		// Only resize if dimensions actually changed to avoid heavy reallocation
+		if (
+			canvas.width !== rect.width * dpr ||
+			canvas.height !== rect.height * dpr
+		) {
+			canvas.width = rect.width * dpr;
+			canvas.height = rect.height * dpr;
+			canvas.style.width = `${rect.width}px`;
+			canvas.style.height = `${rect.height}px`;
 
-		canvas.style.width = `${rect.width}px`;
-		canvas.style.height = `${rect.height}px`;
+			if (context.current) {
+				context.current.setTransform(dpr, 0, 0, dpr, 0, 0);
+			}
 
-		// Optimization: Store caching dimensions
-		canvasSize.current = { width: canvas.width, height: canvas.height };
+			const columns = Math.ceil(rect.width / charWidth);
+			const rows = Math.ceil(rect.height / charHeight);
 
-		if (context.current) {
-			context.current.setTransform(dpr, 0, 0, dpr, 0, 0);
+			initializeLetters(columns, rows);
 		}
+	}, [initializeLetters]);
 
-		const { columns, rows } = calculateGrid(rect.width, rect.height);
-
-		// Initialize Grid with new Dimensions
-		initializeLetters(columns, rows);
-		drawLetters();
-	}, [initializeLetters, drawLetters]);
-
-	// 2. Setup Canvas & Resize Listener
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
-		context.current = canvas.getContext("2d");
+		context.current = canvas.getContext("2d", { alpha: true }); // Alpha true for transparent background
 		resizeCanvas();
 		animationRef.current = requestAnimationFrame(animate);
 
-		let resizeTimeout: number;
-
-		const handleResize = () => {
-			clearTimeout(resizeTimeout);
-			resizeTimeout = window.setTimeout(() => {
-				resizeCanvas();
-			}, 100);
-		};
-
+		const handleResize = () => resizeCanvas();
 		window.addEventListener("resize", handleResize);
 
 		return () => {
 			if (animationRef.current)
 				cancelAnimationFrame(animationRef.current);
 			window.removeEventListener("resize", handleResize);
-			clearTimeout(resizeTimeout);
 		};
 	}, [resizeCanvas, animate]);
 
-	// 3. New Effect: Explicitly handle Prop Changes (Data Reset)
-	// This fixes the "slow update" issue by forcing a reset when props change
+	// Reset grid if config changes
 	useEffect(() => {
-		if (grid.current.columns > 0 && grid.current.rows > 0) {
-			initializeLetters(grid.current.columns, grid.current.rows);
+		if (gridRef.current.columns) {
+			initializeLetters(gridRef.current.columns, gridRef.current.rows);
 		}
 	}, [characters, glitchColors, initializeLetters]);
 

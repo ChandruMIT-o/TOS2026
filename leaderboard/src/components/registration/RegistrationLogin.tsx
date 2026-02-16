@@ -74,7 +74,7 @@ export function RegistrationLogin({
 					href="https://tekhora26.live"
 					target="_blank"
 					rel="noopener noreferrer"
-					className="relative w-full mt-4 overflow-hidden flex items-center justify-center gap-3 px-6 py-3 border border-red-500/30 bg-red-400/20 font-bold uppercase tracking-widest text-xs hover:text-white hover:border-red-400 transition-all duration-300 group"
+					className="cursor-target relative w-full mt-4 overflow-hidden flex items-center justify-center gap-3 px-6 py-3 border border-red-500/30 bg-red-400/20 font-bold uppercase tracking-widest text-xs hover:text-white hover:border-red-400 transition-all duration-300 group"
 				>
 					<span className="relative z-10 flex items-center gap-2">
 						TEKHORA26.LIVE <ExternalLink size={14} />
