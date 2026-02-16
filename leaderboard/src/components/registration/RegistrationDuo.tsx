@@ -13,7 +13,7 @@ import {
 type RegistrationDuoProps = {
 	currentUser: UserType;
 	primaryColor: string;
-	onConfirm: (partner: UserType) => void;
+	onConfirm: (partner: UserType, invite?: TeamFormation) => void;
 	onBack: () => void;
 	partner?: UserType | null;
 	existingInvite?: TeamFormation | null;
@@ -36,7 +36,9 @@ export function RegistrationDuo({
 		existingInvite
 			? existingInvite.status === "PENDING"
 				? "SENT"
-				: existingInvite.status
+				: existingInvite.status === "COMPLETED"
+					? "ACCEPTED"
+					: existingInvite.status
 			: initialPartner
 				? "ACCEPTED"
 				: "IDLE",
@@ -46,6 +48,9 @@ export function RegistrationDuo({
 	);
 	const [currentInviteId, setCurrentInviteId] = useState<string | null>(
 		existingInvite?.id || null,
+	);
+	const [latestInvite, setLatestInvite] = useState<TeamFormation | null>(
+		existingInvite || null,
 	);
 	const [error, setError] = useState<string | null>(null);
 
@@ -59,15 +64,17 @@ export function RegistrationDuo({
 				setInviteStatus("IDLE");
 				setCurrentInviteId(null);
 				setPartnerEmail("");
+				setLatestInvite(null);
 				return;
 			}
+			setLatestInvite(updatedInvite);
 
 			if (updatedInvite.status === "ACCEPTED") {
 				setInviteStatus("ACCEPTED");
 				// In a real scenario, we would fetch the partner's full profile here.
 				// For now, we construct a partial User based on the invite info.
 				setPartner({
-					id: "partner-id-placeholder", // We don't have their ID unless we query for it
+					id: updatedInvite.invitee_uid || "partner-id-placeholder",
 					name: updatedInvite.invitee_email.split("@")[0], // Placeholder name
 					email: updatedInvite.invitee_email,
 					phone: "",
@@ -93,6 +100,7 @@ export function RegistrationDuo({
 		try {
 			const newInvite = await createInvite(currentUser, partnerEmail);
 			setCurrentInviteId(newInvite.id!);
+			setLatestInvite(newInvite);
 			setInviteStatus("SENT");
 		} catch (e: any) {
 			console.error(e);
@@ -108,6 +116,7 @@ export function RegistrationDuo({
 				setInviteStatus("IDLE");
 				setCurrentInviteId(null);
 				setPartnerEmail("");
+				setLatestInvite(null);
 			} catch (e) {
 				console.error("Failed to cancel invite", e);
 			}
@@ -125,6 +134,7 @@ export function RegistrationDuo({
 		setCurrentInviteId(null);
 		setPartnerEmail("");
 		setPartner(null);
+		setLatestInvite(null);
 	};
 
 	return (
@@ -306,7 +316,10 @@ export function RegistrationDuo({
 						</button>
 
 						<button
-							onClick={() => partner && onConfirm(partner)}
+							onClick={() =>
+								partner &&
+								onConfirm(partner, latestInvite || undefined)
+							}
 							style={{ backgroundColor: primaryColor }}
 							className="cursor-target w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold uppercase tracking-widest py-4 rounded-sm transition-all mt-4"
 						>

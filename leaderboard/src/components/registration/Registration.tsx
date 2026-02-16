@@ -15,6 +15,8 @@ import {
 	checkUserInviteStatus,
 	acceptInvite,
 	rejectInvite,
+	getTeamByMemberUid,
+	getUserProfile,
 	type TeamFormation,
 } from "../../database/api/Invitation";
 
@@ -34,6 +36,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	);
 	const [isInitializing, setIsInitializing] = useState(true);
 	const [confirmLogout, setConfirmLogout] = useState(false);
+	const [confirmAbort, setConfirmAbort] = useState(false);
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -53,6 +56,40 @@ export function Registration({ primaryColor }: RegistrationProps) {
 				setUser(loggedInUser);
 
 				try {
+					// 1. Check if user is already in a team
+					const team = await getTeamByMemberUid(loggedInUser.id);
+					if (team) {
+						setTeamName(team.team_name);
+						setMode(team.mode as "SOLO" | "DUO");
+						// If DUO, we should ideally fetch partner details.
+						if (team.mode === "DUO" && team.members.length > 1) {
+							// Find partner UID
+							const partnerUid = team.members.find(
+								(uid: string) => uid !== loggedInUser.id,
+							);
+							if (partnerUid) {
+								const partnerProfile =
+									await getUserProfile(partnerUid);
+								if (partnerProfile) {
+									setPartner(partnerProfile);
+								} else {
+									setPartner({
+										id: partnerUid,
+										name: "Linked Partner", // Fallback
+										email: "",
+										phone: "",
+										ticketId: "",
+										hasTicket: false,
+									});
+								}
+							}
+						}
+						setStep("COMPLETED");
+						setIsInitializing(false);
+						return;
+					}
+
+					// 2. If not in a team, check invites
 					const invite = await checkUserInviteStatus(
 						loggedInUser.email,
 					);
@@ -84,7 +121,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						}
 					}
 				} catch (e) {
-					console.error("Error checking invites", e);
+					console.error("Error checking invites/teams", e);
 					if (isInitializing) {
 						setStep("MODE_SELECTION");
 					}
@@ -116,6 +153,35 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setUser(loggedInUser);
 		// Check for invites immediately after login
 		try {
+			// 1. Check if user is already in a team
+			const team = await getTeamByMemberUid(loggedInUser.id);
+			if (team) {
+				setTeamName(team.team_name);
+				setMode(team.mode as "SOLO" | "DUO");
+				if (team.mode === "DUO" && team.members.length > 1) {
+					const partnerUid = team.members.find(
+						(uid: string) => uid !== loggedInUser.id,
+					);
+					if (partnerUid) {
+						const partnerProfile = await getUserProfile(partnerUid);
+						if (partnerProfile) {
+							setPartner(partnerProfile);
+						} else {
+							setPartner({
+								id: partnerUid,
+								name: "Linked Partner", // Fallback
+								email: "",
+								phone: "",
+								ticketId: "",
+								hasTicket: false,
+							});
+						}
+					}
+				}
+				setStep("COMPLETED");
+				return;
+			}
+
 			const invite = await checkUserInviteStatus(loggedInUser.email);
 			if (invite) {
 				setExistingInvite(invite);
@@ -155,15 +221,21 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setStep("TEAM_NAME");
 	};
 
-	const handleDuoConfirm = (confirmedPartner: User) => {
+	const handleDuoConfirm = (
+		confirmedPartner: User,
+		invite?: TeamFormation,
+	) => {
 		setPartner(confirmedPartner);
+		if (invite) {
+			setExistingInvite(invite);
+		}
 		setStep("TEAM_NAME");
 	};
 
 	const handleInviteAccept = async () => {
-		if (inviteFrom && existingInvite?.id) {
+		if (inviteFrom && existingInvite?.id && user?.id) {
 			try {
-				await acceptInvite(existingInvite.id);
+				await acceptInvite(existingInvite.id, user.id);
 				setPartner(inviteFrom);
 				setMode("DUO");
 				// After acceptance, we can proceed to team name.
@@ -205,6 +277,26 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setTeamName("");
 		setExistingInvite(null);
 		setInviteFrom(null);
+	};
+
+	const handleAbortTeam = async () => {
+		if (!teamName) return;
+		try {
+			// Find and delete team
+			const { deleteTeam } =
+				await import("../../database/api/Invitation");
+			await deleteTeam(teamName);
+
+			// Reset state
+			setStep("MODE_SELECTION");
+			setTeamName("");
+			setPartner(null);
+			setConfirmLogout(false);
+			// Optionally reload page or re-check to ensure clean state
+			window.location.reload();
+		} catch (e) {
+			console.error("Failed to abort team", e);
+		}
 	};
 
 	return (
@@ -324,6 +416,22 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						key="team-name"
 						onSetTeamName={handleSetTeamName}
 						primaryColor={primaryColor}
+						// Pass extra props for team sync
+						role={
+							existingInvite?.inviter_email === user?.email
+								? "inviter"
+								: "invitee"
+						}
+						inviteId={existingInvite?.id}
+						inviterName={existingInvite?.inviter_name}
+						// If I am inviter, I need invitee's UID. If I am invitee, I don't need it for this step.
+						// existingInvite might be null if SOLO, so handle that in component
+						// Note: If SOLO, existingInvite is null, so role is "invitee" (default) or we can pass "SOLO"
+						// But RegistrationTeamDesignation needs to handle SOLO case appropriately.
+						// Actually, for SOLO, existingInvite is null.
+						// Let's pass a explicit mode or derive it.
+						// The component likely assumes SOLO if inviteId is missing, logic needs to be robust.
+						inviteeUid={existingInvite?.invitee_uid}
 						onBack={() => {
 							if (mode === "SOLO") {
 								setStep("SOLO_CONFIRMATION");
@@ -389,12 +497,38 @@ export function Registration({ primaryColor }: RegistrationProps) {
 							)}
 						</div>
 
-						<button
-							onClick={resetRegistration}
-							className="text-xs text-white/20 hover:text-white uppercase tracking-widest mt-8 transition-colors"
-						>
-							Return to Login
-						</button>
+						{!confirmAbort ? (
+							<button
+								onClick={() => setConfirmAbort(true)}
+								style={{
+									borderColor: primaryColor,
+									color: primaryColor,
+								}}
+								className="cursor-target w-full py-4 border border-white/10 hover:bg-white/5 uppercase tracking-widest transition-all mt-8"
+							>
+								[ ABORT TEAM OPERATION ]
+							</button>
+						) : (
+							<div className="space-y-4 p-4 border border-red-500/30 bg-red-950/10 rounded mt-8">
+								<div className="text-red-400 text-sm font-bold tracking-widest uppercase">
+									WARNING: THIS ACTION CANNOT BE UNDONE
+								</div>
+								<div className="flex gap-4">
+									<button
+										onClick={handleAbortTeam}
+										className="cursor-target flex-1 py-3 bg-red-500/20 border border-red-500/50 text-red-200 hover:bg-red-500/30 hover:text-white uppercase tracking-widest transition-all"
+									>
+										CONFIRM ABORT
+									</button>
+									<button
+										onClick={() => setConfirmAbort(false)}
+										className="cursor-target flex-1 py-3 border border-white/10 text-white/60 hover:text-white hover:bg-white/5 uppercase tracking-widest transition-all"
+									>
+										CANCEL
+									</button>
+								</div>
+							</div>
+						)}
 					</motion.div>
 				)}
 			</AnimatePresence>
