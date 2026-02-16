@@ -9,9 +9,14 @@ import { RegistrationDuo } from "./RegistrationDuo";
 import { RegistrationTeamDesignation } from "./RegistrationTeamDesignation";
 import { RegistrationInvite } from "./RegistrationInvite";
 import type { User, RegistrationStep } from "./types";
-import { checkInvites } from "./mockApi";
 import { logout } from "../../auth/session";
 import { auth } from "../../lib/firebase"; // Import auth for checking current user state
+import {
+	checkUserInviteStatus,
+	acceptInvite,
+	rejectInvite,
+	type TeamFormation,
+} from "../../database/api/Invitation";
 
 type RegistrationProps = {
 	primaryColor: string;
@@ -24,6 +29,9 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	const [teamName, setTeamName] = useState("");
 	const [mode, setMode] = useState<"SOLO" | "DUO">("SOLO");
 	const [inviteFrom, setInviteFrom] = useState<User | null>(null);
+	const [existingInvite, setExistingInvite] = useState<TeamFormation | null>(
+		null,
+	);
 	const [isInitializing, setIsInitializing] = useState(true);
 	const [confirmLogout, setConfirmLogout] = useState(false);
 
@@ -45,11 +53,30 @@ export function Registration({ primaryColor }: RegistrationProps) {
 				setUser(loggedInUser);
 
 				try {
-					const invite = await checkInvites(loggedInUser.email);
+					const invite = await checkUserInviteStatus(
+						loggedInUser.email,
+					);
 					if (invite) {
-						setInviteFrom(invite.from);
-						if (isInitializing) {
-							setStep("INVITE_RECEIVED");
+						setExistingInvite(invite);
+						if (invite.role === "invitee") {
+							// I am the invitee, show the invite received screen
+							setInviteFrom({
+								id: "inviter-placeholder",
+								name: invite.inviter_name || "Unknown",
+								email: invite.inviter_email,
+								phone: "",
+								ticketId: "",
+								hasTicket: false,
+							});
+							if (isInitializing) {
+								setStep("INVITE_RECEIVED");
+							}
+						} else if (invite.role === "inviter") {
+							// I am the inviter, show the pending invite screen (Duo)
+							setMode("DUO");
+							if (isInitializing) {
+								setStep("DUO_INVITE");
+							}
 						}
 					} else {
 						if (isInitializing) {
@@ -89,10 +116,23 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setUser(loggedInUser);
 		// Check for invites immediately after login
 		try {
-			const invite = await checkInvites(loggedInUser.email);
+			const invite = await checkUserInviteStatus(loggedInUser.email);
 			if (invite) {
-				setInviteFrom(invite.from);
-				setStep("INVITE_RECEIVED");
+				setExistingInvite(invite);
+				if (invite.role === "invitee") {
+					setInviteFrom({
+						id: "inviter-placeholder",
+						name: invite.inviter_name || "Unknown",
+						email: invite.inviter_email,
+						phone: "",
+						ticketId: "",
+						hasTicket: false,
+					});
+					setStep("INVITE_RECEIVED");
+				} else if (invite.role === "inviter") {
+					setMode("DUO");
+					setStep("DUO_INVITE");
+				}
 			} else {
 				setStep("MODE_SELECTION");
 			}
@@ -120,25 +160,32 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setStep("TEAM_NAME");
 	};
 
-	const handleInviteAccept = () => {
-		if (inviteFrom) {
-			setPartner(inviteFrom);
-			setMode("DUO");
-			setStep("DUO_CONFIRMED"); // Skip to confirmation/team name?
-			// The prompt implies: "Once, accepted, both of their accounts will show duo only with both their details".
-			// So we show the Duo Confirmation screen (User + Partner details).
-			// But RegistrationDuo handles the "Invite Sending" part.
-			// I should probably reuse a component or creating a specific "DuoConfirmed" view.
-			// For simplicity, I'll redirect to a state effectively same as "Team Name" but maybe show the partner details there?
-			// Actually, let's just go to TEAM_NAME, and show the team members there or add an intermediate step.
-			// Let's add a "DUO_CONFIRMED" state to show the success message before Team Name.
-			setStep("TEAM_NAME");
+	const handleInviteAccept = async () => {
+		if (inviteFrom && existingInvite?.id) {
+			try {
+				await acceptInvite(existingInvite.id);
+				setPartner(inviteFrom);
+				setMode("DUO");
+				// After acceptance, we can proceed to team name.
+				setStep("TEAM_NAME");
+			} catch (e) {
+				console.error("Failed to accept invite", e);
+				// Optionally show error
+			}
 		}
 	};
 
-	const handleInviteReject = () => {
-		setInviteFrom(null);
-		setStep("MODE_SELECTION");
+	const handleInviteReject = async () => {
+		if (existingInvite?.id) {
+			try {
+				await rejectInvite(existingInvite.id);
+				setInviteFrom(null);
+				setExistingInvite(null);
+				setStep("MODE_SELECTION");
+			} catch (e) {
+				console.error("Failed to reject invite", e);
+			}
+		}
 	};
 
 	const handleSetTeamName = (name: string) => {
@@ -156,6 +203,8 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setUser(null);
 		setPartner(null);
 		setTeamName("");
+		setExistingInvite(null);
+		setInviteFrom(null);
 	};
 
 	return (
@@ -256,6 +305,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						onConfirm={handleDuoConfirm}
 						onBack={() => setStep("MODE_SELECTION")}
 						partner={partner}
+						existingInvite={existingInvite}
 					/>
 				)}
 
@@ -278,15 +328,6 @@ export function Registration({ primaryColor }: RegistrationProps) {
 							if (mode === "SOLO") {
 								setStep("SOLO_CONFIRMATION");
 							} else {
-								// For DUO, we should probably go back to the state where the partner was accepted.
-								// Currently RegistrationDuo handles the flow up to "Proceed to Designation".
-								// So going back to DUO_INVITE should render RegistrationDuo which should presumably show the accepted state if partner is set?
-								// In RegistrationDuo, it has local state for `inviteStatus`. If we unmount it, we lose that state.
-								// We might need to lift that state up or just accept that "Back" might reset the invite flow (which is annoying).
-								// BUT, we have `partner` state in `Registration.tsx`.
-								// Let's check `RegistrationDuo`. It takes `currentUser` and `onConfirm`. It doesn't take `partner` as prop to initialize state.
-								// Ideally we should fix RegistrationDuo to accept `partner` prop to restore state.
-								// For now, let's just go back to DUO_INVITE.
 								setStep("DUO_INVITE");
 							}
 						}}

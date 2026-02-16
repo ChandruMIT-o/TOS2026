@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Users, Mail, Loader2, CheckCircle2 } from "lucide-react";
+import { Users, Mail, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import type { User as UserType } from "./types";
 import { Input } from "../ui/Input";
-import { sendInvite } from "./mockApi";
+import {
+	createInvite,
+	cancelInvite,
+	listenToInvite,
+	type TeamFormation,
+} from "../../database/api/Invitation";
 
 type RegistrationDuoProps = {
 	currentUser: UserType;
@@ -11,6 +16,7 @@ type RegistrationDuoProps = {
 	onConfirm: (partner: UserType) => void;
 	onBack: () => void;
 	partner?: UserType | null;
+	existingInvite?: TeamFormation | null;
 };
 
 export function RegistrationDuo({
@@ -18,50 +24,107 @@ export function RegistrationDuo({
 	onConfirm,
 	onBack,
 	partner: initialPartner,
+	existingInvite,
 	primaryColor,
 }: RegistrationDuoProps) {
 	const [partnerEmail, setPartnerEmail] = useState(
-		initialPartner?.email || "",
+		existingInvite?.invitee_email || initialPartner?.email || "",
 	);
 	const [inviteStatus, setInviteStatus] = useState<
-		"IDLE" | "SENDING" | "SENT" | "ACCEPTED"
-	>(initialPartner ? "ACCEPTED" : "IDLE");
+		"IDLE" | "SENDING" | "SENT" | "ACCEPTED" | "REJECTED"
+	>(
+		existingInvite
+			? existingInvite.status === "PENDING"
+				? "SENT"
+				: existingInvite.status
+			: initialPartner
+				? "ACCEPTED"
+				: "IDLE",
+	);
 	const [partner, setPartner] = useState<UserType | null>(
 		initialPartner || null,
 	);
+	const [currentInviteId, setCurrentInviteId] = useState<string | null>(
+		existingInvite?.id || null,
+	);
+	const [error, setError] = useState<string | null>(null);
+
+	// Effect to listen to invite status changes if we have an active invite ID
+	useEffect(() => {
+		if (!currentInviteId) return;
+
+		const unsubscribe = listenToInvite(currentInviteId, (updatedInvite) => {
+			if (!updatedInvite) {
+				// Invite was deleted/cancelled
+				setInviteStatus("IDLE");
+				setCurrentInviteId(null);
+				setPartnerEmail("");
+				return;
+			}
+
+			if (updatedInvite.status === "ACCEPTED") {
+				setInviteStatus("ACCEPTED");
+				// In a real scenario, we would fetch the partner's full profile here.
+				// For now, we construct a partial User based on the invite info.
+				setPartner({
+					id: "partner-id-placeholder", // We don't have their ID unless we query for it
+					name: updatedInvite.invitee_email.split("@")[0], // Placeholder name
+					email: updatedInvite.invitee_email,
+					phone: "",
+					ticketId: "",
+					hasTicket: false,
+				});
+			} else if (updatedInvite.status === "REJECTED") {
+				setInviteStatus("REJECTED");
+				// Optionally wait and reset
+			} else {
+				setInviteStatus("SENT");
+			}
+		});
+
+		return () => unsubscribe();
+	}, [currentInviteId]);
 
 	const handleSendInvite = async () => {
 		if (!partnerEmail.includes("@")) return;
 		setInviteStatus("SENDING");
+		setError(null);
 
 		try {
-			await sendInvite(currentUser, partnerEmail);
+			const newInvite = await createInvite(currentUser, partnerEmail);
+			setCurrentInviteId(newInvite.id!);
 			setInviteStatus("SENT");
-
-			// Simulate polling for acceptance
-			// In a real app, this would be a socket or periodic fetch
-			// For demo, we'll auto-accept after 3 seconds if the email matches a mock user
-			if (
-				partnerEmail === "operative2@tos.com" ||
-				partnerEmail === "operative1@tos.com"
-			) {
-				setTimeout(() => {
-					setInviteStatus("ACCEPTED");
-					// Mock partner data
-					setPartner({
-						id: "mock-partner",
-						name: "Ghost",
-						email: partnerEmail,
-						phone: "999-002-2002",
-						ticketId: "TOS-002",
-						hasTicket: true,
-					});
-				}, 3000);
-			}
-		} catch (e) {
+		} catch (e: any) {
 			console.error(e);
+			setError(e.message || "Failed to send invite");
 			setInviteStatus("IDLE");
 		}
+	};
+
+	const handleCancelInvite = async () => {
+		if (currentInviteId) {
+			try {
+				await cancelInvite(currentInviteId);
+				setInviteStatus("IDLE");
+				setCurrentInviteId(null);
+				setPartnerEmail("");
+			} catch (e) {
+				console.error("Failed to cancel invite", e);
+			}
+		} else {
+			// If we are just locally in "sending" or "idle" state
+			onBack();
+		}
+	};
+
+	const handleReset = () => {
+		if (currentInviteId) {
+			cancelInvite(currentInviteId).catch(console.error);
+		}
+		setInviteStatus("IDLE");
+		setCurrentInviteId(null);
+		setPartnerEmail("");
+		setPartner(null);
 	};
 
 	return (
@@ -113,6 +176,11 @@ export function RegistrationDuo({
 								Send
 							</button>
 						</div>
+						{error && (
+							<p className="text-red-400 text-xs font-mono mt-2">
+								{error}
+							</p>
+						)}
 					</div>
 				</div>
 			)}
@@ -142,6 +210,26 @@ export function RegistrationDuo({
 							proceed.
 						</p>
 					</div>
+				</div>
+			)}
+
+			{inviteStatus === "REJECTED" && (
+				<div className="py-12 flex flex-col items-center justify-center text-red-400 space-y-4 bg-red-500/5 border border-red-500/20 rounded-sm">
+					<XCircle className="w-12 h-12 text-red-400" />
+					<div className="text-center space-y-1">
+						<p className="text-sm font-bold uppercase tracking-widest">
+							Uplink Rejected
+						</p>
+						<p className="text-xs text-white/40 max-w-[250px] mx-auto">
+							Target decliend the connection request.
+						</p>
+					</div>
+					<button
+						onClick={handleReset}
+						className="px-6 py-2 border border-red-500/30 hover:bg-red-500/10 text-red-400 uppercase tracking-widest text-xs transition-colors"
+					>
+						Try Again
+					</button>
 				</div>
 			)}
 
@@ -210,7 +298,7 @@ export function RegistrationDuo({
 					</div>
 					<div className="flex gap-2">
 						<button
-							onClick={onBack}
+							onClick={handleCancelInvite}
 							style={{ borderColor: primaryColor }}
 							className="cursor-target w-full py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-xs mt-4 hover:bg-white/5 rounded-sm transition-colors"
 						>
@@ -228,9 +316,9 @@ export function RegistrationDuo({
 				</motion.div>
 			)}
 
-			{inviteStatus !== "ACCEPTED" && (
+			{inviteStatus !== "ACCEPTED" && inviteStatus !== "REJECTED" && (
 				<button
-					onClick={onBack}
+					onClick={handleCancelInvite}
 					style={{ borderColor: primaryColor }}
 					className="cursor-target w-full py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-xs mt-4 hover:bg-white/5 rounded-sm transition-colors"
 				>

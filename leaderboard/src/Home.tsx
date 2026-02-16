@@ -23,9 +23,9 @@ function Home() {
 
 	const tabs = [
 		{ id: "home", label: "Briefing", disabled: false },
-		{ id: "registration", label: "Registration", disabled: isBriefing },
+		{ id: "registration", label: "Registration", disabled: false },
 		{ id: "testing", label: "Testing Env", disabled: isBriefing },
-		{ id: "leaderboard", label: "Leaderboard", disabled: isBriefing },
+		{ id: "leaderboard", label: "Leaderboard", disabled: false },
 	];
 
 	const [glitchColors, setGlitchColors] = useState(colorPairs[0]);
