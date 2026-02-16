@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "../ui/Input"; // Assuming this is your shadcn or custom input
 import { Terminal, ShieldAlert, ExternalLink, Cpu, Wifi } from "lucide-react";
 import type { User } from "./types";
-import { loginUser } from "./mockApi";
+import { login } from "../../auth/session";
 import { cn } from "../../lib/utils";
+import { Eye, EyeOff } from "lucide-react";
 
 type RegistrationLoginProps = {
 	onLoginSuccess: (user: User) => void;
@@ -19,6 +20,7 @@ export function RegistrationLogin({
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -26,22 +28,37 @@ export function RegistrationLogin({
 		setError(null);
 
 		try {
-			// Mock login - in real app, verify password too
-			if (password.length < 4)
-				throw new Error("INVALID CREDENTIALS // ACCESS DENIED");
-
-			const user = await loginUser(email);
+			// Real login call
+			const userCredential = await login(email, password);
+			const user: User = {
+				id: userCredential.uid,
+				email: userCredential.email || email,
+				name: userCredential.displayName || email.split("@")[0], // Fallback if no display name
+				phone: "", // TODO: Fetch from profile if exists
+				ticketId: "",
+				hasTicket: false,
+			};
 
 			// Artificial delay to show off the "Authenticating" state
 			await new Promise((resolve) => setTimeout(resolve, 800));
 
 			onLoginSuccess(user);
 		} catch (err: any) {
-			setError(err.message || "CONNECTION SEVERED");
+			// Sanitize Firebase Format: "Firebase: Error (auth/invalid-credential)." -> "Error (auth/invalid-credential)"
+			const errorMessage = err.message || "CONNECTION SEVERED";
+			const sanitizedError = errorMessage
+				.replace("Firebase: ", "")
+				.replace(/\.$/, "");
+			setError(sanitizedError);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	function onForgotPassword() {
+		window.open("https://tekhora26.live/signin", "_blank");
+		return;
+	}
 
 	return (
 		<div className="w-full max-w-xl mx-auto pt-10 pb-10 font-mono">
@@ -96,7 +113,7 @@ export function RegistrationLogin({
 					<div className="relative">
 						<Input
 							type="email"
-							placeholder="ENTER REGISTERED EMAIL"
+							placeholder="TEKHORA REGISTERED EMAIL"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							disabled={loading}
@@ -115,7 +132,7 @@ export function RegistrationLogin({
 					</div>
 				</div>
 
-				{/* Field 02: Password */}
+				{/* Field 02: Password with Eye icon */}
 				<div className="space-y-4 group">
 					<label
 						style={{ color: primaryColor }}
@@ -126,14 +143,29 @@ export function RegistrationLogin({
 
 					<div className="relative">
 						<Input
-							type="password"
-							placeholder="ACCESS CODE"
+							type={showPassword ? "text" : "password"}
+							placeholder="TEKHORA PASSWORD"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={loading}
-							className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/20 focus:outline-none focus:border-black focus:ring-0 transition-all duration-300 tracking-widest h-16 text-lg px-4"
+							className="cursor-target bg-black/40 border border-white/10 placeholder:text-white/20 focus:outline-none focus:border-black focus:ring-0 transition-all duration-300 tracking-widest h-16 text-lg px-4 pr-14"
 							style={{ caretColor: primaryColor }}
 						/>
+
+						{/* Eye Toggle */}
+						<button
+							type="button"
+							onClick={() => setShowPassword((prev) => !prev)}
+							className="cursor-target absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition"
+							tabIndex={-1}
+						>
+							{showPassword ? (
+								<EyeOff size={24} />
+							) : (
+								<Eye size={24} />
+							)}
+						</button>
+
 						{/* Corner Accents */}
 						<div
 							className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 opacity-50"
@@ -145,6 +177,28 @@ export function RegistrationLogin({
 						/>
 					</div>
 				</div>
+
+				{/* Error Console */}
+				<AnimatePresence>
+					{error && (
+						<motion.div
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: "auto" }}
+							exit={{ opacity: 0, height: 0 }}
+							className="overflow-hidden"
+						>
+							<div className="bg-red-500/10 border-l-2 border-red-500 p-4 mb-4 flex items-center gap-3">
+								<ShieldAlert
+									size={18}
+									className="text-red-500 animate-pulse"
+								/>
+								<span className="text-red-400 font-mono text-xs uppercase tracking-wider">
+									Error: {error}
+								</span>
+							</div>
+						</motion.div>
+					)}
+				</AnimatePresence>
 
 				{/* Submit Action */}
 				<button
@@ -181,27 +235,17 @@ export function RegistrationLogin({
 						)}
 					</span>
 				</button>
-				{/* Error Console */}
-				<AnimatePresence>
-					{error && (
-						<motion.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							exit={{ opacity: 0, height: 0 }}
-							className="overflow-hidden"
-						>
-							<div className="bg-red-500/10 border-l-2 border-red-500 p-4 mb-4 flex items-center gap-3">
-								<ShieldAlert
-									size={18}
-									className="text-red-500 animate-pulse"
-								/>
-								<span className="text-red-400 font-mono text-xs uppercase tracking-wider">
-									Error: {error}
-								</span>
-							</div>
-						</motion.div>
-					)}
-				</AnimatePresence>
+
+				{/* forgot password button */}
+				<button
+					type="button"
+					onClick={() => {
+						onForgotPassword();
+					}}
+					className="cursor-target text-lg uppercase w-full h-16 tracking-widest text-blue-200 hover:text-blue-400 border border-blue-200 hover:border-blue-500/50 px-3 py-1 bg-blue-950/20 transition-all"
+				>
+					FORGOT PASSWORD : TO MAIN WEBSITE
+				</button>
 			</form>
 		</div>
 	);

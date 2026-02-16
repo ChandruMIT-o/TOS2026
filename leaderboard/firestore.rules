@@ -5,6 +5,15 @@ service cloud.firestore {
     match /strategies/{document=**} {
       allow read, write: if true;
     }
+    match /tos_leaderboard/{document=**} {
+      allow read: if true;
+    }
+    match /tos_teams/{document=**} {
+      allow read: if true;
+    }
+    match /users/{document=**} {
+      allow read: if true;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

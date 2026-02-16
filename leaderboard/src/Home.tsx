@@ -127,7 +127,7 @@ function Home() {
 			) : (
 				<div className="fixed inset-0 z-0 opacity-80">
 					<LetterGlitch
-						glitchSpeed={100}
+						glitchSpeed={200}
 						glitchColors={glitchColors}
 						characters={glitchChars}
 						outerVignette={true}

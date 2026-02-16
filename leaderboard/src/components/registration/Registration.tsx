@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Terminal, CheckCircle2 } from "lucide-react";
+import { onAuthStateChanged } from "firebase/auth";
 import { RegistrationLogin } from "./RegistrationLogin";
 import { RegistrationModeSelect } from "./RegistrationModeSelect";
 import { RegistrationSolo } from "./RegistrationSolo";
@@ -9,6 +10,8 @@ import { RegistrationTeamDesignation } from "./RegistrationTeamDesignation";
 import { RegistrationInvite } from "./RegistrationInvite";
 import type { User, RegistrationStep } from "./types";
 import { checkInvites } from "./mockApi";
+import { logout } from "../../auth/session";
+import { auth } from "../../lib/firebase"; // Import auth for checking current user state
 
 type RegistrationProps = {
 	primaryColor: string;
@@ -21,6 +24,64 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	const [teamName, setTeamName] = useState("");
 	const [mode, setMode] = useState<"SOLO" | "DUO">("SOLO");
 	const [inviteFrom, setInviteFrom] = useState<User | null>(null);
+	const [isInitializing, setIsInitializing] = useState(true);
+	const [confirmLogout, setConfirmLogout] = useState(false);
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+			if (currentUser) {
+				const loggedInUser: User = {
+					id: currentUser.uid,
+					email: currentUser.email || "",
+					name:
+						currentUser.displayName ||
+						currentUser.email?.split("@")[0] ||
+						"Unknown",
+					phone: "", // Fetch from DB if needed
+					ticketId: "",
+					hasTicket: false,
+				};
+
+				setUser(loggedInUser);
+
+				try {
+					const invite = await checkInvites(loggedInUser.email);
+					if (invite) {
+						setInviteFrom(invite.from);
+						if (isInitializing) {
+							setStep("INVITE_RECEIVED");
+						}
+					} else {
+						if (isInitializing) {
+							setStep("MODE_SELECTION");
+						}
+					}
+				} catch (e) {
+					console.error("Error checking invites", e);
+					if (isInitializing) {
+						setStep("MODE_SELECTION");
+					}
+				}
+			} else {
+				// No user is signed in
+				if (isInitializing) {
+					setStep("LOGIN");
+				}
+			}
+			setIsInitializing(false);
+		});
+
+		return () => unsubscribe();
+	}, []);
+
+	// Show a loading state while initializing to prevent flash of login screen
+	if (isInitializing && step === "LOGIN") {
+		return (
+			<div className="min-h-[50vh] flex items-center justify-center text-emerald-500/50 font-mono animate-pulse">
+				INITIALIZING SYSTEM...
+			</div>
+		);
+	}
 
 	// --- Handlers ---
 
@@ -85,7 +146,12 @@ export function Registration({ primaryColor }: RegistrationProps) {
 		setStep("COMPLETED");
 	};
 
-	const resetRegistration = () => {
+	const resetRegistration = async () => {
+		try {
+			await logout();
+		} catch (error) {
+			console.error("Logout failed", error);
+		}
 		setStep("LOGIN");
 		setUser(null);
 		setPartner(null);
@@ -116,6 +182,41 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						</p>
 					</div>
 				</div>
+				{step !== "LOGIN" && (
+					<>
+						{!confirmLogout ? (
+							<button
+								onClick={() => setConfirmLogout(true)}
+								className="cursor-target ml-auto text-md uppercase tracking-widest text-red-200 hover:text-red-400 border border-red-200 hover:border-red-500/50 px-3 py-1 bg-red-950/20 transition-all"
+							>
+								[ LOG OUT ]
+							</button>
+						) : (
+							<div className="ml-auto flex items-center gap-2">
+								<span className="text-xs tracking-widest text-red-300">
+									CONFIRM?
+								</span>
+
+								<button
+									onClick={() => {
+										resetRegistration();
+										setConfirmLogout(false);
+									}}
+									className="cursor-target text-xs uppercase tracking-widest text-green-200 hover:text-green-400 border border-green-200 hover:border-green-500/50 px-2 py-1 bg-green-950/20 transition-all"
+								>
+									YES
+								</button>
+
+								<button
+									onClick={() => setConfirmLogout(false)}
+									className="cursor-target text-xs uppercase tracking-widest text-slate-300 hover:text-white border border-slate-400 hover:border-white/50 px-2 py-1 bg-slate-800/40 transition-all"
+								>
+									NO
+								</button>
+							</div>
+						)}
+					</>
+				)}
 			</div>
 
 			{/* Main Content Area */}
