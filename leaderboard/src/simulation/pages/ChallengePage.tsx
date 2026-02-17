@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useLoading } from "../../context/LoadingContext";
-import { ArrowUpRight } from "lucide-react";
+import { Home, Users } from "lucide-react"; // Added Home and Users icons
 import { AttemptTabs } from "../components/challenge/controls/AttemptTabs";
 import { ChallengeLayout } from "../components/challenge/layout/ChallengeLayout";
 import { SubmissionDashboard } from "../components/challenge/submission/SubmissionDashboard";
@@ -10,9 +10,11 @@ import Dither from "./Dither";
 
 export default function ChallengePage() {
 	const { setPageLoaded } = useLoading();
+
 	React.useEffect(() => {
 		setPageLoaded(true);
 	}, [setPageLoaded]);
+
 	// 1. Logic Hooks
 	const { attempts, isRunning, runTest, updateAttempt } = useAttemptLogic();
 	const { leaderboard } = useChallengeData();
@@ -24,6 +26,11 @@ export default function ChallengePage() {
 	const currentAttemptId = activeTab === "attempt-2" ? 2 : 1;
 	const currentAttemptData = attempts[currentAttemptId as 1 | 2];
 
+	// Navigation Handler
+	const handleGoHome = () => {
+		window.location.href = "/";
+	};
+
 	// 4. Render Logic
 	const renderContent = () => {
 		if (activeTab === "submission") {
@@ -34,9 +41,6 @@ export default function ChallengePage() {
 			);
 		}
 
-		// We pass the specific data for the current active attempt to the Layout
-		// Note: You will need to slightly update ChallengeLayout to accept props instead of using local state
-		// See note below code block.
 		return (
 			<ChallengeLayout
 				// Data Passing
@@ -65,46 +69,54 @@ export default function ChallengePage() {
 	return (
 		<div className="flex flex-col h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-emerald-500/30">
 			<div className="absolute inset-0 w-full h-full z-0">
-				<Dither
-					waveColor={
-						activeTab === "attempt-2"
-							? [0.1, 0.4, 0.5] // Deep teal for attempt-2
-							: activeTab === "submission"
-								? [0.6, 0.4, 0.1] // Gold/amber for submission
-								: [0.5, 0.5, 0.5] // Silver/grey for attempt-1
-					}
-					disableAnimation={false}
-					enableMouseInteraction={false}
-					mouseRadius={0.3}
-					colorNum={27.4}
-					waveAmplitude={0.1}
-					waveFrequency={3}
-					waveSpeed={0.03}
-				/>
+				{/* Dither only for submission tab */}
+				{activeTab === "submission" && (
+					<Dither
+						waveColor={[0.6, 0.4, 0.1]}
+						disableAnimation={false}
+						enableMouseInteraction={true}
+						mouseRadius={0.3}
+						colorNum={27.4}
+						waveAmplitude={0.1}
+						waveFrequency={3}
+						waveSpeed={0.05}
+					/>
+				)}
 			</div>
-			{/* Top Navigation Bar - Brutalist Style */}
-			<div className="group/nav w-full bg-slate-200 text-black border-b border-black z-50 transition-[height] duration-500 ease-in-out h-[60px] hover:h-[100px] overflow-hidden relative shadow-lg">
-				<div className="grid grid-cols-1 md:grid-cols-[200px_1fr_200px] divide-y md:divide-y-0 md:divide-x divide-black h-full">
-					{/* 1. IDENTITY */}
-					<div className="group/item relative p-4 flex flex-col justify-center group-hover/nav:justify-between hover:bg-black hover:text-white transition-colors duration-300 cursor-default h-full">
-						<div className="absolute top-3 right-3 opacity-0 group-hover/item:opacity-100 transition-opacity">
-							<ArrowUpRight size={16} />
-						</div>
-						<span className="font-mono text-[10px] uppercase opacity-0 group-hover/nav:opacity-60 group-hover/item:opacity-100 transition-opacity delay-100 hidden group-hover/nav:block">
-							Simulation_ID
-						</span>
-						<div className="flex flex-col">
-							<span className="font-black uppercase tracking-tighter text-xl leading-none">
-								ToS
+
+			{/* Top Navigation Bar - Updated */}
+			{/* Fixed height, no hover expansion, persistent details */}
+			<div className="w-full bg-slate-200 text-black border-b border-black z-50 h-[64px] shadow-lg relative">
+				<div className="grid grid-cols-[280px_1fr_280px] divide-x divide-black h-full">
+					{/* 1. LEFT: EXIT + IDENTITY */}
+					<div className="flex items-center h-full px-4 gap-4 bg-slate-200">
+						{/* Root Page Button */}
+						<button
+							onClick={handleGoHome}
+							className="flex items-center justify-center h-10 w-10 border border-black hover:bg-black hover:text-white transition-colors flex-shrink-0"
+							title="Return to Root"
+						>
+							<Home size={18} />
+						</button>
+
+						{/* Branding Info */}
+						<div className="flex flex-col justify-center">
+							<span className="font-mono text-[10px] uppercase opacity-60 leading-tight">
+								Simulation_ID
 							</span>
-							<span className="font-black uppercase tracking-tighter text-xl leading-none opacity-0 h-0 group-hover/nav:opacity-100 group-hover/nav:h-auto transition-all duration-300 transform translate-y-2 group-hover/nav:translate-y-0">
-								Edition 4
-							</span>
+							<div className="flex items-baseline gap-2">
+								<span className="font-black uppercase tracking-tighter text-xl leading-none">
+									ToS
+								</span>
+								<span className="font-bold font-mono text-sm uppercase tracking-tight opacity-100">
+									Edition 4
+								</span>
+							</div>
 						</div>
 					</div>
 
-					{/* 2. CENTRAL TABS */}
-					<div className="relative flex items-center justify-center p-2 bg-slate-200 hover:bg-white/50 transition-colors h-full">
+					{/* 2. CENTER: TABS */}
+					<div className="relative flex items-center justify-center bg-slate-200 px-4 h-full">
 						<div className="w-full max-w-[500px]">
 							<AttemptTabs
 								activeTab={activeTab}
@@ -116,25 +128,28 @@ export default function ChallengePage() {
 						</div>
 					</div>
 
-					{/* 3. SYSTEM INFO */}
-					<div className="group/item relative p-4 flex flex-col justify-center group-hover/nav:justify-between hover:bg-black hover:text-white transition-colors duration-300 cursor-default h-full">
-						<span className="font-mono text-[10px] uppercase opacity-0 group-hover/nav:opacity-60 group-hover/item:opacity-100 transition-opacity delay-100 hidden group-hover/nav:block">
-							System_Ver
-						</span>
-						<div className="flex items-center justify-between mt-auto w-full">
-							<span className="font-bold font-mono text-xl tracking-tight opacity-0 group-hover/nav:opacity-100 transition-opacity hidden group-hover/nav:block">
+					{/* 3. RIGHT: TEAM + SYSTEM INFO */}
+					<div className="flex items-center justify-between h-full px-4 bg-slate-200">
+						{/* Team Name Display */}
+						<div className="flex flex-col">
+							<span className="font-mono text-[10px] uppercase opacity-60 leading-tight flex items-center gap-1">
+								<Users size={10} /> Team Name
+							</span>
+							<span className="font-bold text-lg tracking-tight leading-none truncate max-w-[120px]">
+								Null_Ptr
+							</span>
+						</div>
+
+						{/* System Status */}
+						<div className="flex flex-col items-end leading-none">
+							<span className="font-mono text-[10px] uppercase opacity-60 mb-1">
 								v2.4.RC
 							</span>
-							<div className="flex flex-col items-end leading-none ml-auto">
-								<span className="text-[10px] opacity-50 uppercase hidden group-hover/nav:block">
-									Status
+							<div className="flex items-center gap-1.5 border border-black px-2 py-1 bg-white/50">
+								<span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+								<span className="text-[10px] font-bold uppercase tracking-wider">
+									Online
 								</span>
-								<div className="flex items-center gap-1">
-									<span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-									<span className="text-xs font-bold uppercase">
-										Online
-									</span>
-								</div>
 							</div>
 						</div>
 					</div>

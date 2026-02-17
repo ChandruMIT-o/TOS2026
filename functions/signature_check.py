@@ -73,16 +73,16 @@ def verify_logic():
             saved_sig = f.read().strip()
         
         if current_sig == saved_sig:
-            print("✅ Logical Signature Match: Game rules are identical.")
+            print("Logical Signature Match: Game rules are identical.")
             return True
         else:
-            print("⚠️ LOGIC BREACH DETECTED!")
+            print("LOGIC BREACH DETECTED!")
             print("The game rules (costs, yields, or mechanics) have changed.")
             return False
     else:
         with open(sig_file, 'w') as f:
             f.write(current_sig)
-        print(f"📝 New logical signature stored: {current_sig}")
+        print(f"New logical signature stored: {current_sig}")
         return True
 
 if __name__ == "__main__":

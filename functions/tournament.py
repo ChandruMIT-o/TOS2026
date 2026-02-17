@@ -36,7 +36,7 @@ def fetch_strategies_from_firestore():
     docs = strategies_ref.stream()
     
     strategies = []
-    print(f"🔄 Fetching strategies from Firestore ({COLLECTION_NAME})...")
+    print(f"Fetching strategies from Firestore ({COLLECTION_NAME})...")
     
     count = 0
     for doc in docs:
@@ -45,7 +45,7 @@ def fetch_strategies_from_firestore():
         source_code = data.get("code", "")
         
         if not source_code:
-            print(f"  ⚠️  Skipping {strat_name}: No 'code' field found.")
+            print(f"Skipping {strat_name}: No 'code' field found.")
             continue
 
         try:
@@ -79,14 +79,14 @@ def fetch_strategies_from_firestore():
                     "id": doc.id
                 })
                 count += 1
-                print(f"  ✅ Loaded: {strat_name}")
+                print(f"Loaded: {strat_name}")
             else:
-                print(f"  ❌ Skipped {strat_name}: No valid function found (must accept 4 args).")
+                print(f"Skipped {strat_name}: No valid function found (must accept 4 args).")
                 
         except Exception as e:
-            print(f"  🔥 Error loading {strat_name}: {e}")
+            print(f"Error loading {strat_name}: {e}")
             
-    print(f"📂 Loaded {count} strategies from Firestore.")
+    print(f"Loaded {count} strategies from Firestore.")
     return strategies
 
 def run_league(competitors):
@@ -102,7 +102,7 @@ def run_league(competitors):
     # Generate all pairs (home, away) - permutations ensures (A, B) and (B, A) are both run
     matchups = list(itertools.permutations(competitors, 2))
     
-    print(f"🏆 Starting League with {len(competitors)} strategies ({len(matchups)} matches)...")
+    print(f"Starting League with {len(competitors)} strategies ({len(matchups)} matches)...")
 
     for home, away in matchups:
         try:
@@ -145,7 +145,7 @@ def run_league(competitors):
             results.append(match_result)
             
         except Exception as e:
-            print(f"❌ Error in match {home['name']} vs {away['name']}: {e}")
+            print(f"Error in match {home['name']} vs {away['name']}: {e}")
 
     # Convert Stats to DataFrame
     leaderboard = []

@@ -117,7 +117,6 @@ function Home() {
 			<TargetCursor
 				spinDuration={2}
 				hideDefaultCursor
-				parallaxOn
 				hoverDuration={0.2}
 			/>
 			{/* Background Layer */}

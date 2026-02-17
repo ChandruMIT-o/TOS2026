@@ -1,6 +1,9 @@
 # strategies.py
 import random
 
+# set random seed as 42
+random.seed(42)
+
 # --- HELPER: Safe Target Filter ---
 def get_valid_targets(targets):
     # Exclude Home Bases (1 and 14) from potential target lists

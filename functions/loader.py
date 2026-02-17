@@ -52,12 +52,12 @@ def load_strategies(folder_path="raw_code"):
     
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-        print(f"⚠️ Created missing folder: {folder_path}")
+        print(f"Created missing folder: {folder_path}")
         return []
 
     files = [f for f in os.listdir(folder_path) if f.endswith(".txt")]
     
-    print(f"📂 Found {len(files)} strategies in '{folder_path}'...")
+    print(f"Found {len(files)} strategies in '{folder_path}'...")
 
     for filename in files:
         filepath = os.path.join(folder_path, filename)
@@ -73,8 +73,8 @@ def load_strategies(folder_path="raw_code"):
                 "name": strat_name,
                 "func": found_func
             })
-            print(f"  ✅ Loaded: {strat_name}")
+            print(f"  Loaded: {strat_name}")
         else:
-            print(f"  ❌ Skipped {strat_name}: No valid function found (must accept 4 args).")
+            print(f"  Skipped {strat_name}: No valid function found (must accept 4 args).")
 
     return strategies
