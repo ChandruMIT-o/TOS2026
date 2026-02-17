@@ -1,7 +1,15 @@
-import { motion, type Variants } from "framer-motion";
-import { ArrowUpRight, Terminal } from "lucide-react";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
+import {
+	ArrowUpRight,
+	Terminal,
+	MapPin,
+	Mail,
+	Check,
+	Copy,
+} from "lucide-react";
 import { InfiniteTicker, ScrambleText } from "./HomeTabDesign";
 import { HomeBento } from "./HomeBento";
+import { useState } from "react";
 
 type HomeTabProps = {
 	primaryColor: string;
@@ -23,14 +31,120 @@ const textReveal: Variants = {
 };
 
 export function HomeTab({ primaryColor, stringList }: HomeTabProps) {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopyEmail = (e: React.MouseEvent) => {
+		e.preventDefault();
+		navigator.clipboard.writeText("aia.mit.india@gmail.com");
+		setCopied(true);
+		setTimeout(() => setCopied(false), 2000);
+	};
 	return (
-		<div className="relative bg-[#050505] min-h-screen text-slate-200 font-sans selection:bg-white selection:text-black overflow-hidden">
+		<div className="relative bg-black min-h-screen text-slate-200 font-sans selection:bg-white selection:text-black overflow-hidden">
 			<motion.div
 				variants={containerVariants}
 				initial="hidden"
 				animate="show"
 				className="relative z-10 max-w-[1400px] mx-auto p-4 md:p-8 space-y-8"
 			>
+				{/* --- TOP INFO STRIP (System Status Bar) --- */}
+				<div className="flex flex-col md:flex-row border-b border-white/10 bg-white/5 backdrop-blur-sm shadow-sm justify-between">
+					{/* 1. GET TICKETS (High Visibility & Animation) */}
+					<a
+						href="https://tekhora26.live"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="cursor-target group relative flex-shrink-0 flex items-center justify-center px-6 py-3 border-r border-white/10 overflow-hidden bg-slate-200 text-black transition-colors duration-300"
+					>
+						<div className="relative z-10 flex items-center gap-3">
+							<span className="relative flex h-2 w-2">
+								<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+								<span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+							</span>
+							<span className="font-mono text-sm font-bold uppercase tracking-widest">
+								Get_Tickets
+							</span>
+							<ArrowUpRight
+								size={14}
+								className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"
+							/>
+						</div>
+					</a>
+
+					<div className="flex flex-col md:flex-row">
+						{/* 2. LOCATION (System Data Look) */}
+						<div className="cursor-target flex-shrink-0 flex items-center px-6 py-3 border-r border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors cursor-default">
+							<MapPin
+								size={14}
+								className="mr-3 flex-shrink-0"
+								style={{ color: primaryColor }}
+							/>
+							<div className="flex flex-col leading-none">
+								<span className="font-mono text-[10px] uppercase opacity-50 mb-0.5">
+									Location Data
+								</span>
+								<span className="font-mono text-xs tracking-wider uppercase truncate">
+									Chromepet, Chennai – 600044
+								</span>
+							</div>
+						</div>
+
+						{/* 3. CONTACT (Interactive Copy Function) */}
+						<button
+							onClick={handleCopyEmail}
+							className="cursor-target flex-shrink-0 flex items-center px-6 py-3 border-r border-white/10 text-white/60 hover:text-white hover:bg-white/5 transition-colors group"
+						>
+							<div className="mr-3 relative">
+								<AnimatePresence mode="wait">
+									{copied ? (
+										<motion.div
+											key="check"
+											initial={{ scale: 0 }}
+											animate={{ scale: 1 }}
+											exit={{ scale: 0 }}
+										>
+											<Check
+												size={14}
+												className="text-green-500"
+											/>
+										</motion.div>
+									) : (
+										<motion.div
+											key="mail"
+											initial={{ scale: 0 }}
+											animate={{ scale: 1 }}
+											exit={{ scale: 0 }}
+										>
+											<Mail
+												size={14}
+												style={{ color: primaryColor }}
+											/>
+										</motion.div>
+									)}
+								</AnimatePresence>
+							</div>
+
+							<div className="flex flex-col items-start leading-none text-left">
+								<span className="font-mono text-[10px] uppercase opacity-50 mb-0.5">
+									{copied
+										? "Copied to Clipboard"
+										: "Contact Protocol"}
+								</span>
+								<span className="font-mono text-xs tracking-wider uppercase truncate group-hover:underline decoration-white/30 underline-offset-4">
+									aia.mit.india@gmail.com
+								</span>
+							</div>
+
+							{!copied && (
+								<Copy
+									size={12}
+									className="ml-3 opacity-0 group-hover:opacity-50 transition-opacity"
+								/>
+							)}
+						</button>
+					</div>
+				</div>
+
 				{/* --- 1. HERO SECTION --- */}
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 border-b border-white/10 pb-8">
 					<div className="lg:col-span-8 space-y-4">
