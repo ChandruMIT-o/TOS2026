@@ -55,7 +55,7 @@ export function CollapsiblePanel({
 			{/* Content */}
 			<div
 				className={cn(
-					"flex-1 overflow-auto transition-opacity duration-300 p-4",
+					"flex-1 overflow-auto transition-opacity duration-200 p-4",
 					isCollapsed
 						? "opacity-0 pointer-events-none"
 						: "opacity-100",

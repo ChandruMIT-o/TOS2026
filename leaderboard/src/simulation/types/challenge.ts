@@ -6,8 +6,13 @@ export type ValidationStatus =
 
 export interface LeaderboardEntry {
 	rank: number;
-	name: string;
-	score: number;
+	strategy: string;
+	points: number;
+	wins: number;
+	draws: number;
+	losses: number;
+	total_nodes: number;
+	matches: number;
 	isPlayer: boolean;
 	avatar?: string;
 }

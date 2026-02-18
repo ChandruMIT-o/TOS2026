@@ -156,11 +156,7 @@ export default function ChallengePage() {
 				</div>
 			</div>
 
-			{/* Main Workspace */}
-			<main className="flex-1 flex overflow-hidden relative">
-				{/* Background Grid Pattern */}
-				<div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10" />
-
+			<main className="flex-1 flex overflow-hidden relative h-full">
 				{renderContent()}
 			</main>
 		</div>

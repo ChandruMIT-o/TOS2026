@@ -3,15 +3,27 @@ from firebase_admin import firestore
 import pandas as pd
 import types
 import itertools
+from dataclasses import dataclass, asdict
+from typing import Dict, List
 from sim import GameSimRecorded
-from datetime import datetime
 
-# Initialize Firebase (if not already initialized) implies
-# creating an app context. Since functions environment handles its own context,
-# we rely on main.py usually doing initialize_app(), or we check.
-# But inside a cloud function, strict initialization is best.
-# We'll use get_app or initialize_app cautiously.
+# --- DATA STRUCTURES ---
+@dataclass
+class StrategyStats:
+    strategy: str
+    rank: int
+    points: int
+    wins: int
+    draws: int
+    losses: int
+    total_nodes: int
+    matches: int
+    team_name: str
 
+    def to_firestore(self) -> Dict:
+        return asdict(self)
+
+# --- FIREBASE SETUP ---
 def get_firestore_client():
     try:
         app = firebase_admin.get_app()
@@ -19,10 +31,11 @@ def get_firestore_client():
         app = firebase_admin.initialize_app()
     return firestore.client(app)
 
-COLLECTION_NAME = "strategies"
+COLLECTION_Strategies = "strategies"
+COLLECTION_LEADERBOARD = "tos_leaderboard"
 
+# --- HELPER FUNCTIONS ---
 def validate_signature(func):
-    """Checks if the function accepts the 4 required arguments."""
     try:
         code = func.__code__
         return code.co_argcount == 4
@@ -30,41 +43,34 @@ def validate_signature(func):
         return False
 
 def fetch_strategies_from_firestore():
-    """Fetches strategies from Firestore and loads them as functions."""
     db = get_firestore_client()
-    strategies_ref = db.collection(COLLECTION_NAME)
+    strategies_ref = db.collection(COLLECTION_Strategies)
     docs = strategies_ref.stream()
     
     strategies = []
-    print(f"Fetching strategies from Firestore ({COLLECTION_NAME})...")
+    print(f"[INFO] Fetching strategies from Firestore ({COLLECTION_Strategies})...")
     
     count = 0
     for doc in docs:
         data = doc.to_dict()
         strat_name = data.get("name", doc.id)
         source_code = data.get("code", "")
+        team_name = data.get("team_name", "Unknown Team")
         
         if not source_code:
-            print(f"Skipping {strat_name}: No 'code' field found.")
+            print(f"   [WARN] Skipping {strat_name}: No 'code' field found.")
             continue
 
         try:
-            # 1. Create dynamic module
             module_name = f"dynamic_strat_{strat_name}"
             mod = types.ModuleType(module_name)
-            
-            # 2. Execute code
             exec(source_code, mod.__dict__)
             
-            # 3. Find function
             found_func = None
-            
-            # Priority: 'strategy' function
             if "strategy" in mod.__dict__ and callable(mod.strategy):
                 if validate_signature(mod.strategy):
                     found_func = mod.strategy
             
-            # Fallback: First valid function
             if not found_func:
                 for name, obj in mod.__dict__.items():
                     if isinstance(obj, types.FunctionType):
@@ -76,90 +82,140 @@ def fetch_strategies_from_firestore():
                 strategies.append({
                     "name": strat_name,
                     "func": found_func,
-                    "id": doc.id
+                    "id": doc.id,
+                    "team_name": team_name
                 })
                 count += 1
-                print(f"Loaded: {strat_name}")
+                print(f"   [OK] Loaded: {strat_name}")
             else:
-                print(f"Skipped {strat_name}: No valid function found (must accept 4 args).")
+                print(f"   [SKIP] Skipped {strat_name}: No valid function.")
                 
         except Exception as e:
-            print(f"Error loading {strat_name}: {e}")
+            print(f"   [ERR] Error loading {strat_name}: {e}")
             
-    print(f"Loaded {count} strategies from Firestore.")
+    print(f"[INFO] Loaded {count} strategies.")
     return strategies
 
-def run_league(competitors):
-    """Runs a round-robin league where every strategy plays every other strategy TWICE (Home & Away)."""
+def run_league(competitors, draft = False):
     if len(competitors) < 2:
-        return pd.DataFrame()
+        print("[WARN] Not enough competitors.")
+        return []
 
-    results = []
-    
-    # Initialize leaderboard stats
-    stats = {c['name']: {'points': 0, 'played': 0, 'won': 0, 'lost': 0, 'drawn': 0} for c in competitors}
+    # Initialize stats
+    stats = {
+        c['name']: {
+            'points': 0, 'played': 0, 'won': 0, 'lost': 0, 'drawn': 0, 
+            'total_nodes': 0, 'team_name': c.get('team_name', 'Unknown')
+        } 
+        for c in competitors
+    }
 
-    # Generate all pairs (home, away) - permutations ensures (A, B) and (B, A) are both run
     matchups = list(itertools.permutations(competitors, 2))
-    
-    print(f"Starting League with {len(competitors)} strategies ({len(matchups)} matches)...")
+    print(f"[INFO] Starting League with {len(competitors)} strategies ({len(matchups)} matches)...")
 
     for home, away in matchups:
         try:
-            # Run Simulation
             sim = GameSimRecorded(home['func'], away['func'])
             game_data = sim.play_game()
             
-            # Determine Winner (based on final score)
             final_round = game_data.iloc[-1]
-            score_a = final_round['score_a']
-            score_b = final_round['score_b']
             
-            match_result = {
-                "home": home['name'],
-                "away": away['name'],
-                "score_home": score_a,
-                "score_away": score_b,
-                "winner": None
-            }
-
+            # Cast NumPy types to Python Ints
+            score_a = int(final_round['score_a'])
+            score_b = int(final_round['score_b'])
+            
+            stats[home['name']]['total_nodes'] += score_a
+            stats[away['name']]['total_nodes'] += score_b
+            
             if score_a > score_b:
                 stats[home['name']]['points'] += 3
                 stats[home['name']]['won'] += 1
                 stats[away['name']]['lost'] += 1
-                match_result['winner'] = home['name']
             elif score_b > score_a:
                 stats[away['name']]['points'] += 3
                 stats[away['name']]['won'] += 1
                 stats[home['name']]['lost'] += 1
-                match_result['winner'] = away['name']
             else:
                 stats[home['name']]['points'] += 1
                 stats[away['name']]['points'] += 1
                 stats[home['name']]['drawn'] += 1
                 stats[away['name']]['drawn'] += 1
-                match_result['winner'] = "Draw"
             
             stats[home['name']]['played'] += 1
             stats[away['name']]['played'] += 1
-            results.append(match_result)
             
         except Exception as e:
-            print(f"Error in match {home['name']} vs {away['name']}: {e}")
+            print(f"   [ERR] Match failed: {home['name']} vs {away['name']} - {e}")
 
-    # Convert Stats to DataFrame
-    leaderboard = []
+    # --- RESULTS PROCESSING ---
+    raw_results = []
     for name, s in stats.items():
-        leaderboard.append({
-            "Strategy": name,
-            "Points": s['points'],
-            "Played": s['played'],
-            "Won": s['won'],
-            "Lost": s['lost'],
-            "Drawn": s['drawn']
+        raw_results.append({
+            "strategy": name,
+            "points": s['points'],
+            "wins": s['won'],
+            "draws": s['drawn'],
+            "losses": s['lost'],
+            "total_nodes": s['total_nodes'],
+            "matches": s['played'],
+            "team_name": s['team_name']
         })
 
-    df = pd.DataFrame(leaderboard)
-    df = df.sort_values(by=["Points", "Won"], ascending=False).reset_index(drop=True)
+    sorted_results = sorted(
+        raw_results, 
+        key=lambda x: (x['points'], x['wins'], x['total_nodes']), 
+        reverse=True
+    )
+
+    if draft:
+        return sorted_results
+
+    # --- DATABASE SYNC (CLEANUP + UPLOAD) ---
+    db = get_firestore_client()
+    collection = db.collection(COLLECTION_LEADERBOARD)
     
-    return df
+    # 1. Fetch ALL existing documents in the leaderboard
+    existing_docs = collection.stream()
+    existing_ids = set(doc.id for doc in existing_docs)
+    
+    # 2. Identify active IDs from current tournament
+    current_active_ids = set(res['strategy'] for res in sorted_results)
+    
+    # 3. Identify obsolete IDs (to be deleted)
+    ids_to_delete = existing_ids - current_active_ids
+    
+    batch = db.batch()
+    
+    # A. Queue Deletions
+    if ids_to_delete:
+        print(f"[INFO] Cleaning up {len(ids_to_delete)} obsolete entries...")
+        for obsolete_id in ids_to_delete:
+            doc_ref = collection.document(obsolete_id)
+            batch.delete(doc_ref)
+
+    # B. Queue Updates/Inserts
+    final_leaderboard_data = []
+    print(f"[INFO] Uploading {len(sorted_results)} results to '{COLLECTION_LEADERBOARD}'...")
+    
+    for rank, res in enumerate(sorted_results, 1):
+        stat_obj = StrategyStats(
+            strategy=res['strategy'],
+            rank=int(rank),
+            points=int(res['points']),
+            wins=int(res['wins']),
+            draws=int(res['draws']),
+            losses=int(res['losses']),
+            total_nodes=int(res['total_nodes']),
+            matches=int(res['matches']),
+            team_name=str(res['team_name'])
+        )
+        
+        doc_ref = collection.document(res['strategy'])
+        batch.set(doc_ref, stat_obj.to_firestore())
+        final_leaderboard_data.append(stat_obj.to_firestore())
+
+    # C. Commit Everything
+    batch.commit()
+    print("[SUCCESS] Leaderboard synced successfully.")
+
+    return final_leaderboard_data

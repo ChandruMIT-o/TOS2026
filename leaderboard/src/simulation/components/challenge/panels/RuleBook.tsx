@@ -15,9 +15,9 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 			onToggle={onToggle}
 			// Assuming your Panel accepts a className, we force the container dark here.
 			// If not, ensure the parent container of this component has 'bg-[#09090b]'
-			className="bg-[#09090b] border-[#27272a] text-[#ecfdf5]"
+			className="bg-[#1A1A1A] border-[#27272a] text-[#ecfdf5]"
 		>
-			<div className="flex flex-col gap-8 text-sm leading-relaxed font-sans bg-[#09090b] text-[#a1a1aa]">
+			<div className="flex flex-col gap-6 text-md leading-relaxed bg-[#09090b] text-white p-4">
 				{/* Intro Section */}
 				<div className="bg-[#18181b] p-4  border border-[#27272a]">
 					<p>

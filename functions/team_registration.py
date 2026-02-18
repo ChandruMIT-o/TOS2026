@@ -14,12 +14,14 @@ class StrategyStats:
     total_nodes: int
     matches: int
 
+
 @dataclass
 class Draft:
     strategy_name: Optional[str]
     strategy_desc: Optional[str]
     code: Optional[str]
     tournament_result: Dict[str, StrategyStats]
+
 
 @dataclass
 class Team:

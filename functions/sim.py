@@ -1,8 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib.colors import LinearSegmentedColormap
 from config import GAME_CONFIG
 
 class GameSimRecorded:
@@ -165,68 +162,10 @@ class GameSimRecorded:
             self.run_round(r)
         return pd.DataFrame(self.metrics)
 
-def plot_game_analysis(df, name_a, name_b, config=GAME_CONFIG):
-    plt.style.use('seaborn-v0_8-darkgrid')
-    fig = plt.figure(figsize=(18, 12))
-    grid = plt.GridSpec(3, 2, hspace=0.3, wspace=0.2)
-    col_a, col_b, col_neut = '#1f77b4', '#d62728', '#cccccc'
 
-    # 1. Territory Stacked Plot
-    ax1 = fig.add_subplot(grid[0, :])
-    empty = config["num_nodes"] - (df['score_a'] + df['score_b'])
-    ax1.stackplot(df['round'], df['score_a'], empty, df['score_b'], 
-                  labels=[f"{name_a}", "Empty", f"{name_b}"],
-                  colors=[col_a, col_neut, col_b], alpha=0.8)
-    ax1.set_title("Territory Control Over Time", weight='bold', size=14)
-    ax1.set_ylabel("Number of Nodes")
-    ax1.legend(loc='upper left')
-
-    # 2. Energy Economy
-    ax2 = fig.add_subplot(grid[1, 0])
-    ax2.plot(df['round'], df['energy_a'], color=col_a, label=name_a, lw=2)
-    ax2.plot(df['round'], df['energy_b'], color=col_b, label=name_b, lw=2, ls='--')
-    ax2.set_title("Energy Reserves", weight='bold')
-    ax2.legend()
-
-    # 3. Action Distribution
-    ax3 = fig.add_subplot(grid[1, 1])
-    # Ensure all actions appear in the plot even if not used
-    possible = ["HARVEST", "EXPAND", "CONQUER"]
-    vals_a = [df['move_a'].value_counts().get(act, 0) for act in possible]
-    vals_b = [df['move_b'].value_counts().get(act, 0) for act in possible]
-    x = np.arange(len(possible))
-    ax3.bar(x - 0.175, vals_a, 0.35, label=name_a, color=col_a)
-    ax3.bar(x + 0.175, vals_b, 0.35, label=name_b, color=col_b)
-    ax3.set_xticks(x); ax3.set_xticklabels(possible)
-    ax3.set_title("Strategy Profile (Action Counts)", weight='bold')
-
-    # 4. Spatial Heatmap
-    ax4 = fig.add_subplot(grid[2, :])
-    # Dynamic matrix sizing
-    matrix = np.zeros((config["num_nodes"], len(df)))
-    for r_idx, row in df.iterrows():
-        for n in row['nodes_a']: matrix[n-1, r_idx] = 1 
-        for n in row['nodes_b']: matrix[n-1, r_idx] = -1
-    
-    cmap = LinearSegmentedColormap.from_list("game_map", [col_b, "#f0f0f0", col_a], N=3)
-    sns.heatmap(matrix, ax=ax4, cmap=cmap, cbar=False, linewidths=0.1, linecolor='#eeeeee')
-    ax4.set_title("Map Occupation Heatmap", weight='bold')
-    ax4.set_xlabel("Round")
-    ax4.set_ylabel("Node ID")
-    
-    # Highlight Power Nodes in Y-axis
-    ax4.set_yticks(np.arange(config["num_nodes"]) + 0.5)
-    ax4.set_yticklabels(np.arange(1, config["num_nodes"] + 1), rotation=0, fontsize=9)
-    y_labels = ax4.get_yticklabels()
-    for p in config['power_nodes']:
-        if p-1 < len(y_labels):
-            y_labels[p-1].set_color("#D4AC0D")
-            y_labels[p-1].set_fontweight("bold")
-
-    plt.show()
 
 if __name__ == "__main__":
     from strategies import strat_sniper, strat_hoarder
     sim = GameSimRecorded(strat_sniper, strat_hoarder)
     data = sim.play_game()
-    plot_game_analysis(data, "Sniper", "Hoarder")
+    print(data)
