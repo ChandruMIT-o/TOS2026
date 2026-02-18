@@ -2,7 +2,8 @@ export type ValidationStatus =
 	| "AI_VALIDATED"
 	| "HUMAN_VERIFIED"
 	| "PENDING"
-	| "FAILED";
+	| "FAILED"
+	| "FLAGGED";
 
 export interface LeaderboardEntry {
 	rank: number;
@@ -24,9 +25,15 @@ export interface AttemptData {
 	code: string; // The markdown/strategy text
 	executionResult?: {
 		score: number;
+		wins: number;
+		draws: number;
+		losses: number;
+		total_nodes: number;
+		rank: number;
 		logs: string;
 		validationStatus: ValidationStatus;
 		executionTime: string;
+		fullLeaderboard?: LeaderboardEntry[];
 	};
 	lastSavedAt?: string;
 }

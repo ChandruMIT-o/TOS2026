@@ -104,12 +104,23 @@ export function ChallengeLayout({
 			</div>
 
 			{/* --- CENTER CONTROL --- */}
-			<div className="flex flex-col items-center justify-center relative shrink-0">
+			<div className="flex flex-col items-center justify-center relative shrink-0 gap-4">
 				<div className="relative z-10">
 					<TestRunButton
 						onRun={handleTestRun}
-						disabled={isRunning}
-					></TestRunButton>
+						disabled={
+							isRunning ||
+							validationStatus === "PENDING" ||
+							validationStatus === "AI_VALIDATED" ||
+							validationStatus === "HUMAN_VERIFIED" ||
+							validationStatus === "FLAGGED"
+						}
+						// Actually, disabled if isRunning.
+						// Also if locked?
+						// The requirements say "make the whole attempt 1 page only viewable if draft_1 is present".
+						// So if status is COMPLETED, maybe they can re-run? "If something fails, players can rerun that attempt."
+						// So only disable if running.
+					/>
 				</div>
 			</div>
 

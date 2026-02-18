@@ -1,13 +1,16 @@
-import { Trophy, Zap, Terminal } from "lucide-react";
+import { Trophy, Target, Activity, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/Card";
 import { cn } from "../../../../lib/utils";
 
-interface AttemptStats {
+export interface AttemptStats {
 	id: number;
 	strategyName: string;
-	score: number;
 	rank: number;
-	executionTime: string;
+	points: number;
+	wins: number;
+	draws: number;
+	losses: number;
+	total_nodes: number;
 	date: string;
 }
 
@@ -22,6 +25,8 @@ export function AttemptCard({
 	isSelected,
 	onSelect,
 }: AttemptCardProps) {
+	const totalGames = attempt.wins + attempt.draws + attempt.losses || 1;
+
 	return (
 		<div
 			onClick={onSelect}
@@ -72,7 +77,7 @@ export function AttemptCard({
 							)}
 						>
 							<div className="flex items-center gap-2 text-xs opacity-70 mb-1 font-mono uppercase">
-								<Trophy size={14} /> Global Rank
+								<Trophy size={14} /> Rank
 							</div>
 							<div className="text-3xl font-black leading-none">
 								#{attempt.rank}
@@ -87,23 +92,63 @@ export function AttemptCard({
 							)}
 						>
 							<div className="flex items-center gap-2 text-xs opacity-70 mb-1 font-mono uppercase">
-								<Zap size={14} /> Efficiency
+								<Target size={14} /> Points
 							</div>
 							<div className="text-3xl font-black leading-none">
-								{attempt.score}%
+								{attempt.points}
 							</div>
+						</div>
+					</div>
+
+					{/* W/D/L Visual */}
+					<div className="space-y-2">
+						<div className="flex justify-between text-xs font-bold font-mono tracking-tight uppercase opacity-80">
+							<span>Performance</span>
+							<span className="flex gap-2">
+								<span className="text-emerald-500">
+									{attempt.wins}W
+								</span>
+								<span className="text-yellow-500">
+									{attempt.draws}D
+								</span>
+								<span className="text-red-500">
+									{attempt.losses}L
+								</span>
+							</span>
+						</div>
+						<div className="flex h-2 w-full bg-black/20 rounded-full overflow-hidden border border-current/10">
+							<div
+								style={{
+									width: `${(attempt.wins / totalGames) * 100}%`,
+								}}
+								className="bg-emerald-500"
+							/>
+							<div
+								style={{
+									width: `${(attempt.draws / totalGames) * 100}%`,
+								}}
+								className="bg-yellow-500"
+							/>
+							<div
+								style={{
+									width: `${(attempt.losses / totalGames) * 100}%`,
+								}}
+								className="bg-red-500"
+							/>
 						</div>
 					</div>
 
 					<div className="space-y-2 pt-2 border-t border-current opacity-80">
 						<div className="flex justify-between text-sm uppercase font-mono font-bold">
 							<span className="flex items-center gap-2 opacity-70">
-								<Terminal size={14} /> Execution
+								<Activity size={14} /> Total Nodes
 							</span>
-							<span>{attempt.executionTime}</span>
+							<span>{attempt.total_nodes.toLocaleString()}</span>
 						</div>
 						<div className="flex justify-between text-sm uppercase font-mono font-bold">
-							<span className="opacity-70">Date</span>
+							<span className="flex items-center gap-2 opacity-70">
+								<Calendar size={14} /> Date
+							</span>
 							<span className="text-xs">{attempt.date}</span>
 						</div>
 					</div>

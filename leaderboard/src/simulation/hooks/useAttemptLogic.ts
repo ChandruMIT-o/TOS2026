@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChallengeState } from "../types/challenge";
-import { challengeApi } from "../services/challengeApi";
+import {
+	challengeApi,
+	type DraftSubmission,
+	type LockSelectionRequest,
+} from "../services/challengeApi";
+import type { TimelineStep } from "../components/ValidationTimeline";
 
 const INITIAL_STATE: ChallengeState = {
 	remainingTrials: 2,
@@ -11,9 +16,57 @@ const INITIAL_STATE: ChallengeState = {
 	},
 };
 
-export function useAttemptLogic() {
+export function useAttemptLogic(teamName: string | null) {
 	const [state, setState] = useState<ChallengeState>(INITIAL_STATE);
 	const [isRunning, setIsRunning] = useState(false);
+	const [isLocking, setIsLocking] = useState(false);
+
+	// Timeline State
+	const [timelineSteps, setTimelineSteps] = useState<TimelineStep[]>([]);
+	const [showTimeline, setShowTimeline] = useState(false);
+
+	// Load local storage backup on mount
+	useEffect(() => {
+		const savedStrat = localStorage.getItem("STRATEGY_DEFINITION");
+		if (savedStrat) {
+			try {
+				const parsed = JSON.parse(savedStrat);
+				if (parsed.code || parsed.name) {
+					setState((prev) => ({
+						...prev,
+						attempts: {
+							...prev.attempts,
+							1: {
+								...prev.attempts[1],
+								code:
+									prev.attempts[1].code || parsed.code || "",
+								strategyName:
+									prev.attempts[1].strategyName ||
+									parsed.name ||
+									"",
+							},
+						},
+					}));
+				}
+			} catch (e) {
+				console.error("Failed to parse local strategy", e);
+			}
+		}
+	}, []);
+
+	// Save to local storage on change
+	useEffect(() => {
+		const current = state.attempts[1]; // Primarily saving attempt 1 for now
+		if (current.code || current.strategyName) {
+			localStorage.setItem(
+				"STRATEGY_DEFINITION",
+				JSON.stringify({
+					name: current.strategyName,
+					code: current.code,
+				}),
+			);
+		}
+	}, [state.attempts[1].code, state.attempts[1].strategyName]);
 
 	// Update text/name for a specific attempt
 	const updateAttempt = (
@@ -30,17 +83,69 @@ export function useAttemptLogic() {
 		}));
 	};
 
+	const setAttempts = (newAttempts: ChallengeState["attempts"]) => {
+		setState((prev) => ({ ...prev, attempts: newAttempts }));
+	};
+
+	const setSubmissionLocked = (locked: boolean) => {
+		setState((prev) => ({ ...prev, isSubmissionLocked: locked }));
+	};
+
+	// Update specific timeline step status
+	const updateStepStatus = (id: string, status: TimelineStep["status"]) => {
+		setTimelineSteps((prev) =>
+			prev.map((s) => (s.id === id ? { ...s, status } : s)),
+		);
+	};
+
 	// Run the code
 	const runTest = async (attemptId: 1 | 2) => {
-		if (state.remainingTrials <= 0) return;
+		if (state.remainingTrials <= 0 || !teamName) return;
 
 		setIsRunning(true);
+		setShowTimeline(true);
+
+		// Reset Timeline
+		const initialSteps: TimelineStep[] = [
+			{
+				id: "init",
+				label: "Initializing Environment",
+				status: "loading",
+			},
+			{ id: "server", label: "Processing Strategy", status: "pending" },
+			{ id: "finalize", label: "Finalizing Results", status: "pending" },
+		];
+		setTimelineSteps(initialSteps);
 
 		try {
+			const payload: DraftSubmission = {
+				team_name: teamName,
+				draft_id: attemptId === 1 ? "draft_1" : "draft_2",
+				strategy_name: state.attempts[attemptId].strategyName,
+				strategy_code: state.attempts[attemptId].code,
+				strategy_desc: "Imported from Editor", // Default desc if just code
+			};
+
 			const result = await challengeApi.runSimulation(
-				attemptId,
-				state.attempts[attemptId].code,
+				payload,
+				(stage) => {
+					if (stage.includes("Processing")) {
+						updateStepStatus("init", "success");
+						updateStepStatus("server", "loading");
+					} else if (stage.includes("Finalizing")) {
+						updateStepStatus("server", "success");
+						updateStepStatus("finalize", "loading");
+					}
+				},
 			);
+
+			// Success
+			updateStepStatus("finalize", "success");
+
+			// Auto-close dialog after short delay on success
+			setTimeout(() => {
+				setShowTimeline(false);
+			}, 1500);
 
 			setState((prev) => {
 				const nextState = { ...prev };
@@ -48,7 +153,7 @@ export function useAttemptLogic() {
 				// Save result
 				nextState.attempts[attemptId].executionResult = result;
 				nextState.attempts[attemptId].status = "COMPLETED";
-				nextState.remainingTrials -= 1;
+				if (prev.remainingTrials > 0) nextState.remainingTrials -= 1;
 
 				// Unlock Attempt 2 if Attempt 1 is done
 				if (
@@ -60,18 +165,98 @@ export function useAttemptLogic() {
 
 				return nextState;
 			});
-		} catch (e) {
+		} catch (e: any) {
 			console.error(e);
+			// Mark current step as error
+			setTimelineSteps((prev) =>
+				prev.map((s) =>
+					s.status === "loading" ? { ...s, status: "error" } : s,
+				),
+			);
+
+			// Add error step
+			setTimelineSteps((prev) => [
+				...prev,
+				{ id: "error", label: `Error: ${e.message}`, status: "error" },
+			]);
 		} finally {
 			setIsRunning(false);
+		}
+	};
+
+	const lockSelection = async (attemptId: 1 | 2) => {
+		if (!teamName) return;
+		setIsLocking(true);
+		setShowTimeline(true);
+
+		// Initialize Timeline for Locking
+		setTimelineSteps([
+			{
+				id: "lock_init",
+				label: "Verifying Integrity",
+				status: "loading",
+			},
+			{
+				id: "lock_server",
+				label: "Finalizing Submission",
+				status: "pending",
+			},
+		]);
+
+		try {
+			const payload: LockSelectionRequest = {
+				team_name: teamName,
+				draft_id: attemptId === 1 ? "draft_1" : "draft_2",
+			};
+
+			// Artificial delay for UX (so specific steps are visible)
+			await new Promise((resolve) => setTimeout(resolve, 800));
+			updateStepStatus("lock_init", "success");
+			updateStepStatus("lock_server", "loading");
+
+			await challengeApi.lockSelection(payload);
+
+			updateStepStatus("lock_server", "success");
+			setState((prev) => ({ ...prev, isSubmissionLocked: true }));
+
+			// Auto-close
+			setTimeout(() => {
+				setShowTimeline(false);
+			}, 1500);
+		} catch (e: any) {
+			console.error("Locking failed", e);
+			setTimelineSteps((prev) =>
+				prev.map((s) => ({
+					...s,
+					status: s.status === "loading" ? "error" : s.status,
+				})),
+			);
+			setTimelineSteps((prev) => [
+				...prev,
+				{
+					id: "error",
+					label: `Lock Failed: ${e.message}`,
+					status: "error",
+				},
+			]);
+		} finally {
+			setIsLocking(false);
 		}
 	};
 
 	return {
 		attempts: state.attempts,
 		remainingTrials: state.remainingTrials,
+		isSubmissionLocked: state.isSubmissionLocked,
 		isRunning,
+		isLocking,
+		timelineSteps,
+		showTimeline,
+		setShowTimeline,
 		updateAttempt,
 		runTest,
+		lockSelection,
+		setAttempts,
+		setSubmissionLocked,
 	};
 }

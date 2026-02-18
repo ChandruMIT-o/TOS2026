@@ -1,8 +1,7 @@
-firebase_functions~=0.1.0
-firebase-admin~=6.2.0
-pandas~=2.0.3
-requests~=2.31.0
-
-google-cloud-firestore~=2.11.1
+firebase_functions
+firebase-admin
+pandas
+requests
+google-cloud-firestore
 google-genai
 python-dotenv
