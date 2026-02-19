@@ -20,33 +20,33 @@ export function Leaderboard({
 			icon={Terminal}
 			isCollapsed={isCollapsed}
 			onToggle={onToggle}
-			className="bg-[#050505] border-[#1f1f22] overflow-hidden"
+			// Harsh container styling
+			className="bg-zinc-950 border-4 border-zinc-100 text-zinc-100 font-sans overflow-hidden"
 		>
-			<div className="flex flex-col w-full font-mono text-xs bg-[#1A1A1A]">
+			<div className="flex flex-col w-full font-mono text-sm bg-zinc-950 relative">
 				{/* Terminal Header Row */}
-				<div className="sticky top-0 z-20 grid grid-cols-12 gap-2 px-4 py-3 bg-[#09090b]/90 backdrop-blur-md border-b border-[#27272a] text-[#52525b] uppercase tracking-[0.15em] font-black select-none text-xs">
+				<div className="sticky top-0 z-20 grid grid-cols-12 gap-2 px-4 py-4 bg-zinc-100 border-b-4 border-zinc-100 text-black uppercase tracking-[0.15em] font-black select-none text-xs">
 					<div className="col-span-1 flex items-center justify-center">
 						Rank
 					</div>
-					<div className="col-span-4 flex items-center gap-2">
-						Strategy
-					</div>
-					<div className="col-span-1 text-center text-[#e4e4e7]">
-						Points
-					</div>
+					<div className="col-span-4 flex items-center">Strategy</div>
+					<div className="col-span-1 text-center">Points</div>
 					<div className="col-span-4 text-center">
-						(Win/Draw/Loss)
+						Win / Draw / Loss
 					</div>
-					<div className="col-span-2 text-right">Total Nodes</div>
+					<div className="col-span-2 text-right">Nodes</div>
 				</div>
 
 				{/* Data Rows */}
-				<div className="flex flex-col overflow-y-auto max-h-[500px] custom-scrollbar divide-y divide-[#161618]">
+				<div className="flex flex-col overflow-y-auto max-h-[500px] custom-scrollbar bg-zinc-950">
 					{entries.length === 0 ? (
-						<div className="flex flex-col items-center justify-center py-12 text-[#52525b] gap-2">
-							<Terminal className="w-8 h-8 opacity-50" />
-							<span className="text-xs uppercase tracking-widest font-bold">
-								Run Test to show the leaderboard
+						<div className="flex flex-col items-center justify-center py-16 m-6 border-4 border-dashed border-zinc-700 bg-zinc-900/50 gap-4">
+							<Terminal
+								className="w-10 h-10 text-zinc-500"
+								strokeWidth={3}
+							/>
+							<span className="text-sm bg-zinc-950 text-zinc-300 border-2 border-zinc-700 px-4 py-2 uppercase tracking-widest font-black shadow-[4px_4px_0px_0px_#3f3f46]">
+								Run Test to show leaderboard
 							</span>
 						</div>
 					) : (
@@ -59,38 +59,46 @@ export function Leaderboard({
 								<div
 									key={entry.strategy}
 									className={cn(
-										"grid grid-cols-12 gap-2 items-center px-4 py-4 transition-all duration-300 group relative",
+										"grid grid-cols-12 gap-2 items-center px-4 py-4 border-b-2 border-zinc-800 transition-colors group relative",
 										isTarget
-											? "bg-[#F70001]/[0.05] border-y border-y-[#F70001]/40 z-10 shadow-[inset_0_0_20px_rgba(247,0,1,0.05)]"
-											: "hover:bg-white/[0.02]",
+											? "bg-zinc-900"
+											: "hover:bg-zinc-900/40 text-zinc-300",
 									)}
 								>
 									{/* Visual Accent for Highlighted Row */}
 									{isTarget && (
-										<div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#F70001] shadow-[0_0_12px_#F70001]" />
+										<div className="absolute left-0 top-0 bottom-0 w-2 bg-rose-500 shadow-[4px_0_0_0_#f4f4f5]" />
 									)}
 
-									{/* Rank */}
-									<div
-										className={cn(
-											"col-span-1 text-center font-bold tabular-nums text-base",
-											entry.rank <= 3
-												? "text-amber-500"
-												: "text-[#3f3f46]",
-											isTarget && "text-[#F70001]",
-										)}
-									>
-										{String(entry.rank).padStart(2, "0")}
+									{/* Rank Badge */}
+									<div className="col-span-1 flex justify-center">
+										<span
+											className={cn(
+												"flex items-center justify-center w-8 h-8 font-black text-sm border-2",
+												entry.rank === 1
+													? "bg-yellow-400 text-black border-yellow-400 shadow-[3px_3px_0px_0px_#facc15]"
+													: entry.rank === 2
+														? "bg-zinc-300 text-black border-zinc-300 shadow-[3px_3px_0px_0px_#d4d4d8]"
+														: entry.rank === 3
+															? "bg-orange-500 text-black border-orange-500 shadow-[3px_3px_0px_0px_#f97316]"
+															: "bg-zinc-950 text-zinc-400 border-zinc-700 shadow-[3px_3px_0px_0px_#3f3f46]",
+												isTarget &&
+													entry.rank > 3 &&
+													"border-rose-500 text-rose-500 shadow-[3px_3px_0px_0px_#f43f5e]",
+											)}
+										>
+											{entry.rank}
+										</span>
 									</div>
 
 									{/* Strategy Name */}
-									<div className="col-span-4 flex items-left gap-3 overflow-hidden">
+									<div className="col-span-4 flex items-center overflow-hidden pl-2">
 										<span
 											className={cn(
-												"truncate font-medium tracking-tight uppercase text-sm",
+												"truncate uppercase tracking-wider",
 												isTarget
-													? "text-white font-black tracking-widest text-base"
-													: "text-[#a1a1aa] group-hover:text-white",
+													? "text-white font-black text-base bg-rose-500/10 px-2 py-1 border border-rose-500"
+													: "font-bold group-hover:text-white",
 											)}
 										>
 											{entry.strategy}
@@ -100,10 +108,10 @@ export function Leaderboard({
 									{/* Points */}
 									<div
 										className={cn(
-											"col-span-1 text-center font-black tabular-nums text-base",
+											"col-span-1 text-center font-black tabular-nums text-lg",
 											isTarget
-												? "text-[#F70001] drop-shadow-[0_0_8px_rgba(247,0,1,0.5)]"
-												: "text-[#e4e4e7]",
+												? "text-rose-500"
+												: "text-zinc-100",
 										)}
 									>
 										{entry.points}
@@ -111,54 +119,68 @@ export function Leaderboard({
 
 									{/* W/D/L Performance Visual */}
 									<div className="col-span-4 px-4">
-										<div className="flex h-2 w-full bg-[#161618] rounded-full overflow-hidden border border-white/5">
-											<div
-												style={{
-													width: `${(entry.wins / total) * 100}%`,
-												}}
-												className="bg-emerald-500/70"
-											/>
-											<div
-												style={{
-													width: `${(entry.draws / total) * 100}%`,
-												}}
-												className="bg-yellow-500/50"
-											/>
-											<div
-												style={{
-													width: `${(entry.losses / total) * 100}%`,
-												}}
-												className="bg-red-500/40"
-											/>
+										{/* Hard-edged bar */}
+										<div className="flex h-3 w-full bg-zinc-950 border-2 border-zinc-700 shadow-[2px_2px_0px_0px_#3f3f46] overflow-hidden mb-2">
+											{entry.wins > 0 && (
+												<div
+													style={{
+														width: `${(entry.wins / total) * 100}%`,
+													}}
+													className="bg-lime-400 border-r border-zinc-950"
+												/>
+											)}
+											{entry.draws > 0 && (
+												<div
+													style={{
+														width: `${(entry.draws / total) * 100}%`,
+													}}
+													className="bg-yellow-400 border-r border-zinc-950"
+												/>
+											)}
+											{entry.losses > 0 && (
+												<div
+													style={{
+														width: `${(entry.losses / total) * 100}%`,
+													}}
+													className="bg-rose-500"
+												/>
+											)}
 										</div>
-										<div className="flex justify-between mt-1 text-sm font-bold tracking-tighter tabular-nums text-[#52525b]">
-											<span className="text-emerald-500/80">
+										{/* Stats */}
+										<div className="flex justify-between text-xs font-black tracking-widest uppercase">
+											<span className="text-lime-400">
 												{entry.wins}W
 											</span>
-											<span className="text-yellow-500/80">
+											<span className="text-yellow-400">
 												{entry.draws}D
 											</span>
-											<span className="text-red-500/80">
+											<span className="text-rose-500">
 												{entry.losses}L
 											</span>
 										</div>
 									</div>
 
-									{/* Total Nodes / Capacity */}
-									<div className="col-span-2 text-right leading-none">
+									{/* Total Nodes */}
+									<div className="col-span-2 text-right pr-2">
 										<div
 											className={cn(
-												"tabular-nums font-black text-sm",
+												"inline-flex flex-col items-end px-2 py-1 border-2 shadow-[2px_2px_0px_0px]",
 												isTarget
-													? "text-white"
-													: "text-[#71717a]",
+													? "border-rose-500 shadow-rose-500 bg-zinc-950"
+													: "border-cyan-400 shadow-cyan-400 bg-zinc-950",
 											)}
 										>
-											{entry.total_nodes.toLocaleString()}
+											<span
+												className={cn(
+													"tabular-nums font-black text-sm leading-none",
+													isTarget
+														? "text-rose-500"
+														: "text-cyan-400",
+												)}
+											>
+												{entry.total_nodes.toLocaleString()}
+											</span>
 										</div>
-										<span className="text-[10px] text-[#3f3f46] uppercase font-bold">
-											Nodes
-										</span>
 									</div>
 								</div>
 							);

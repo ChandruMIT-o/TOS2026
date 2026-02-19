@@ -13,16 +13,15 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 			icon={BookOpen}
 			isCollapsed={isCollapsed}
 			onToggle={onToggle}
-			// Assuming your Panel accepts a className, we force the container dark here.
-			// If not, ensure the parent container of this component has 'bg-[#09090b]'
-			className="bg-[#1A1A1A] border-[#27272a] text-[#ecfdf5]"
+			// Forces the dark brutalist container style
+			className="bg-zinc-950 border-4 border-zinc-100 text-zinc-100 font-sans"
 		>
-			<div className="flex flex-col gap-6 text-md leading-relaxed bg-[#09090b] text-white p-4">
+			<div className="flex flex-col gap-8 text-base leading-relaxed bg-zinc-950 p-6">
 				{/* Intro Section */}
-				<div className="bg-[#18181b] p-4  border border-[#27272a]">
-					<p>
+				<div className="bg-yellow-400 p-5 border-2 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5]">
+					<p className="font-medium text-black text-lg">
 						This is a{" "}
-						<strong className="text-[#ecfdf5]">
+						<strong className="font-black uppercase tracking-wide">
 							turn-based, iterated tactical simulation
 						</strong>
 						. Two strategies battle for dominance over a circular
@@ -32,100 +31,105 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 				</div>
 
 				{/* Section 1: Battlefield */}
-				<section className="space-y-4">
-					<h3 className="text-lg font-bold text-[#ecfdf5] flex items-center gap-2">
-						<span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#10b981]/10 text-[#10b981] text-xs">
+				<section className="space-y-5">
+					<h3 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-wide">
+						<span className="flex items-center justify-center w-8 h-8 bg-zinc-100 text-black border-2 border-zinc-100 shadow-[2px_2px_0px_0px_#f4f4f5]">
 							1
 						</span>
 						The Battlefield: The Ring
 					</h3>
-					<p>
+					<p className="font-medium">
 						The game takes place on a ring of{" "}
-						<strong className="text-[#ecfdf5]">26 nodes</strong> (n1
-						to n26).
+						<strong className="font-black bg-zinc-100 text-black px-2 py-1 border-2 border-zinc-100">
+							26 nodes
+						</strong>{" "}
+						(n1 to n26).
 					</p>
 
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div className="border border-[#27272a]  p-3 bg-[#18181b]/50">
-							<strong className="block text-[#ecfdf5] mb-1">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-zinc-100">
+						<div className="border-2 border-cyan-400 p-4 bg-zinc-900 shadow-[4px_4px_0px_0px_#22d3ee]">
+							<strong className="block text-cyan-400 text-lg mb-2 font-black uppercase">
 								Home Bases
 							</strong>
-							<span className="text-xs">
-								Player A:{" "}
-								<code className="bg-[#27272a] px-1 py-0.5 text-[#ecfdf5]">
-									n1
-								</code>
-								<br />
-								Player B:{" "}
-								<code className="bg-[#27272a] px-1 py-0.5 text-[#ecfdf5]">
-									n14
-								</code>
-								<br />
-								<span className="text-red-400 mt-1 block font-medium">
+							<div className="space-y-2 font-medium">
+								<div>
+									Player A:{" "}
+									<code className="bg-zinc-950 border-2 border-cyan-400 text-cyan-400 px-2 py-1 font-mono font-bold">
+										n1
+									</code>
+								</div>
+								<div>
+									Player B:{" "}
+									<code className="bg-zinc-950 border-2 border-cyan-400 text-cyan-400 px-2 py-1 font-mono font-bold">
+										n14
+									</code>
+								</div>
+								<span className="inline-block bg-rose-500 text-white px-2 py-1 border-2 border-zinc-100 font-bold text-sm mt-2 shadow-[2px_2px_0px_0px_#f4f4f5]">
 									Cannot be captured.
 								</span>
-							</span>
+							</div>
 						</div>
-						<div className="border border-[#27272a] p-3 bg-[#18181b]/50">
-							<strong className="block text-[#ecfdf5] mb-1">
+
+						<div className="border-2 border-fuchsia-400 p-4 bg-zinc-900 shadow-[4px_4px_0px_0px_#e879f9]">
+							<strong className="block text-fuchsia-400 text-lg mb-2 font-black uppercase">
 								Power Nodes
 							</strong>
-							<span className="text-xs">
-								Locations:{" "}
-								<code className="bg-[#27272a] px-1 py-0.5 text-[#ecfdf5]">
-									[4, 7, 11, 17, 20, 24]
-								</code>
-								<br />
-								<span className="text-[#10b981] mt-1 block font-medium">
+							<div className="space-y-2 font-medium">
+								<div>
+									Locations:{" "}
+									<code className="bg-zinc-950 border-2 border-fuchsia-400 text-fuchsia-400 px-2 py-1 font-mono font-bold block mt-1 w-fit">
+										[4, 7, 11, 17, 20, 24]
+									</code>
+								</div>
+								<span className="inline-block bg-lime-400 text-black px-2 py-1 border-2 border-zinc-100 font-bold text-sm mt-2 shadow-[2px_2px_0px_0px_#f4f4f5]">
 									High Economic Value
 								</span>
-							</span>
+							</div>
 						</div>
 					</div>
 				</section>
 
-				<div className="h-px bg-[#27272a]" />
+				<div className="border-b-4 border-zinc-100 border-dashed" />
 
 				{/* Section 2: Actions */}
 				<section className="space-y-6">
-					<h3 className="text-lg font-bold text-[#ecfdf5] flex items-center gap-2">
-						<span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#10b981]/10 text-[#10b981] text-xs">
+					<h3 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-wide">
+						<span className="flex items-center justify-center w-8 h-8 bg-zinc-100 text-black border-2 border-zinc-100 shadow-[2px_2px_0px_0px_#f4f4f5]">
 							2
 						</span>
 						Player Actions
 					</h3>
-					<p className="mb-4">
+					<p className="font-bold text-lg bg-zinc-100 text-black inline-block px-3 py-1 border-2 border-zinc-100 shadow-[2px_2px_0px_0px_#f4f4f5]">
 						Each round, simultaneously choose one action:
 					</p>
 
 					{/* Action A */}
-					<div className=" border border-[#27272a] bg-[#09090b] overflow-hidden">
-						<div className="bg-[#18181b] px-4 py-2 border-b border-[#27272a] font-bold text-[#ecfdf5]">
+					<div className="border-2 border-lime-400 bg-zinc-950 shadow-[4px_4px_0px_0px_#a3e635]">
+						<div className="bg-lime-400 px-4 py-3 border-b-2 border-lime-400 font-black text-black text-lg uppercase tracking-wider">
 							A. HARVEST
 						</div>
-						<div className="p-4 space-y-2">
-							<p>
+						<div className="p-5 space-y-4">
+							<p className="font-medium text-zinc-100">
 								Gain energy based on territory.{" "}
-								<em className="text-xs opacity-70">
+								<strong className="bg-zinc-100 text-black px-1">
 									(No passive income otherwise)
-								</em>
-								.
+								</strong>
 							</p>
-							<ul className="grid grid-cols-3 gap-2 text-center text-xs mt-2">
-								<li className="bg-[#27272a]/40 p-2 border border-[#27272a]">
-									<span className="block font-bold text-[#10b981]">
+							<ul className="grid grid-cols-3 gap-4 text-center font-bold">
+								<li className="bg-zinc-900 text-lime-400 p-3 border-2 border-lime-400 shadow-[2px_2px_0px_0px_#a3e635]">
+									<span className="block text-2xl mb-1 text-white">
 										+5E
 									</span>{" "}
 									Home
 								</li>
-								<li className="bg-[#27272a]/40 p-2 border border-[#27272a]">
-									<span className="block font-bold text-[#10b981]">
+								<li className="bg-zinc-900 text-lime-400 p-3 border-2 border-lime-400 shadow-[2px_2px_0px_0px_#a3e635]">
+									<span className="block text-2xl mb-1 text-white">
 										+5E
 									</span>{" "}
 									Power
 								</li>
-								<li className="bg-[#27272a]/40 p-2 border border-[#27272a]">
-									<span className="block font-bold text-[#10b981]">
+								<li className="bg-zinc-900 text-lime-400 p-3 border-2 border-lime-400 shadow-[2px_2px_0px_0px_#a3e635]">
+									<span className="block text-2xl mb-1 text-white">
 										+1E
 									</span>{" "}
 									Normal
@@ -135,41 +139,47 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 					</div>
 
 					{/* Action B */}
-					<div className=" border border-[#27272a] bg-[#09090b] overflow-hidden">
-						<div className="bg-[#18181b] px-4 py-2 border-b border-[#27272a] font-bold text-[#ecfdf5]">
-							B. EXPAND{" "}
-							<span className="font-mono font-normal opacity-50 text-xs ml-2 text-[#a1a1aa]">
+					<div className="border-2 border-cyan-400 bg-zinc-950 shadow-[4px_4px_0px_0px_#22d3ee]">
+						<div className="bg-cyan-400 px-4 py-3 border-b-2 border-cyan-400 font-black text-black text-lg uppercase tracking-wider flex items-center justify-between">
+							B. EXPAND
+							<span className="font-mono font-bold bg-zinc-950 text-cyan-400 border-2 border-cyan-400 px-2 py-0.5 text-sm shadow-[2px_2px_0px_0px_#22d3ee]">
 								[target_node]
 							</span>
 						</div>
-						<div className="p-4 space-y-3">
-							<p>
+						<div className="p-5 space-y-4 text-zinc-100">
+							<p className="font-medium">
 								Claim any unoccupied node. Cost:{" "}
-								<strong className="text-[#ecfdf5]">5E</strong>{" "}
+								<strong className="font-black text-lg bg-cyan-400 text-black px-2 py-0.5">
+									5E
+								</strong>{" "}
 								(Normal) or{" "}
-								<strong className="text-[#ecfdf5]">15E</strong>{" "}
+								<strong className="font-black text-lg bg-cyan-400 text-black px-2 py-0.5">
+									15E
+								</strong>{" "}
 								(Power).
 							</p>
 
-							<div className="bg-amber-900/10 border-l-2 border-amber-500 pl-3 py-2 text-xs space-y-1">
-								<strong className="text-amber-500 block">
+							<div className="bg-rose-500 text-white border-2 border-zinc-100 p-4 shadow-[4px_4px_0px_0px_#f4f4f5]">
+								<strong className="block font-black uppercase text-lg mb-2">
 									⚠️ Collision Rule
 								</strong>
-								<p>If both players target the same node:</p>
-								<ul className="list-disc pl-4 opacity-90">
+								<p className="font-bold mb-2">
+									If both players target the same node:
+								</p>
+								<ul className="list-disc pl-5 font-medium space-y-1">
 									<li>
 										Higher energy reserves wins (pays cost).
 									</li>
 									<li>
 										Loser gets nothing, loses{" "}
-										<strong className="text-[#ecfdf5]">
+										<strong className="font-black bg-white text-rose-500 px-1">
 											5E
 										</strong>{" "}
 										penalty.
 									</li>
 									<li>
 										If tied energy: neither wins, both lose{" "}
-										<strong className="text-[#ecfdf5]">
+										<strong className="font-black bg-white text-rose-500 px-1">
 											5E
 										</strong>
 										.
@@ -180,34 +190,38 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 					</div>
 
 					{/* Action C */}
-					<div className=" border border-[#27272a] bg-[#09090b] overflow-hidden">
-						<div className="bg-[#18181b] px-4 py-2 border-b border-[#27272a] font-bold text-[#ecfdf5]">
-							C. CONQUER{" "}
-							<span className="font-mono font-normal opacity-50 text-xs ml-2 text-[#a1a1aa]">
+					<div className="border-2 border-fuchsia-400 bg-zinc-950 shadow-[4px_4px_0px_0px_#e879f9]">
+						<div className="bg-fuchsia-400 px-4 py-3 border-b-2 border-fuchsia-400 font-black text-black text-lg uppercase tracking-wider flex items-center justify-between">
+							C. CONQUER
+							<span className="font-mono font-bold bg-zinc-950 text-fuchsia-400 border-2 border-fuchsia-400 px-2 py-0.5 text-sm shadow-[2px_2px_0px_0px_#e879f9]">
 								[target_node]
 							</span>
 						</div>
-						<div className="p-4 space-y-3">
-							<p>
+						<div className="p-5 space-y-4 text-zinc-100">
+							<p className="font-medium">
 								Steal an opponent's node. Base Cost:{" "}
-								<strong className="text-[#ecfdf5]">8E</strong>{" "}
+								<strong className="font-black text-lg bg-fuchsia-400 text-black px-2 py-0.5">
+									8E
+								</strong>{" "}
 								(Normal) or{" "}
-								<strong className="text-[#ecfdf5]">20E</strong>{" "}
+								<strong className="font-black text-lg bg-fuchsia-400 text-black px-2 py-0.5">
+									20E
+								</strong>{" "}
 								(Power).
 							</p>
-							<div className="bg-[#27272a]/40 p-3 rounded text-xs border border-[#27272a]">
-								<strong className="text-[#ecfdf5] block mb-1">
+							<div className="bg-zinc-900 p-4 border-2 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5]">
+								<strong className="block text-fuchsia-400 font-black uppercase mb-2">
 									🛡️ Defense Bonus
 								</strong>
-								<p>
+								<p className="font-medium">
 									Nodes gain{" "}
-									<strong className="text-[#ecfdf5]">
+									<strong className="font-black text-lg text-white">
 										+1 Cost
 									</strong>{" "}
 									for every neighbor also owned by the
 									defender.
 									<br />
-									<span className="opacity-70 italic">
+									<span className="block mt-2 bg-zinc-950 text-zinc-300 border-2 border-zinc-100 p-2 font-bold text-sm">
 										Example: Owning n1, n2, n3 means n2
 										costs +2 to steal.
 									</span>
@@ -217,56 +231,70 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 					</div>
 				</section>
 
-				<div className="h-px bg-[#27272a]" />
+				<div className="border-b-4 border-zinc-100 border-dashed" />
 
 				{/* Section 3: Interface */}
-				<section className="space-y-4">
-					<h3 className="text-lg font-bold text-[#ecfdf5] flex items-center gap-2">
-						<span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#10b981]/10 text-[#10b981] text-xs">
+				<section className="space-y-6">
+					<h3 className="text-xl font-black text-white flex items-center gap-3 uppercase tracking-wide">
+						<span className="flex items-center justify-center w-8 h-8 bg-zinc-100 text-black border-2 border-zinc-100 shadow-[2px_2px_0px_0px_#f4f4f5]">
 							3
 						</span>
 						Strategy Interface
 					</h3>
 
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 						<div>
-							<h4 className="font-semibold text-[#ecfdf5] mb-2 text-xs uppercase tracking-wider">
+							<h4 className="font-black text-white mb-3 text-lg uppercase tracking-widest border-b-4 border-zinc-100 inline-block pb-1">
 								Inputs
 							</h4>
-							<ul className="space-y-2 font-mono text-xs">
-								<li className="flex justify-between border-b border-[#27272a] pb-1">
-									<span className="text-sky-400">free</span>
-									<span>List[int] (Unoccupied)</span>
+							<ul className="space-y-3 font-mono font-bold text-sm">
+								<li className="flex justify-between items-center border-b-2 border-zinc-800 pb-2">
+									<span className="bg-cyan-400 text-black border-2 border-cyan-400 px-2 py-1 shadow-[2px_2px_0px_0px_#ffffff]">
+										free
+									</span>
+									<span className="text-zinc-300">
+										List[int] (Unoccupied)
+									</span>
 								</li>
-								<li className="flex justify-between border-b border-[#27272a] pb-1">
-									<span className="text-red-400">opp</span>
-									<span>List[int] (Enemy nodes)</span>
+								<li className="flex justify-between items-center border-b-2 border-zinc-800 pb-2">
+									<span className="bg-rose-500 text-white border-2 border-rose-500 px-2 py-1 shadow-[2px_2px_0px_0px_#ffffff]">
+										opp
+									</span>
+									<span className="text-zinc-300">
+										List[int] (Enemy nodes)
+									</span>
 								</li>
-								<li className="flex justify-between border-b border-[#27272a] pb-1">
-									<span className="text-[#10b981]">mine</span>
-									<span>List[int] (Your nodes)</span>
+								<li className="flex justify-between items-center border-b-2 border-zinc-800 pb-2">
+									<span className="bg-lime-400 text-black border-2 border-lime-400 px-2 py-1 shadow-[2px_2px_0px_0px_#ffffff]">
+										mine
+									</span>
+									<span className="text-zinc-300">
+										List[int] (Your nodes)
+									</span>
 								</li>
-								<li className="flex justify-between border-b border-[#27272a] pb-1">
-									<span className="text-amber-400">
+								<li className="flex justify-between items-center border-b-2 border-zinc-800 pb-2">
+									<span className="bg-yellow-400 text-black border-2 border-yellow-400 px-2 py-1 shadow-[2px_2px_0px_0px_#ffffff]">
 										energy
 									</span>
-									<span>int (Your balance)</span>
+									<span className="text-zinc-300">
+										int (Your balance)
+									</span>
 								</li>
 							</ul>
 						</div>
 
 						<div>
-							<h4 className="font-semibold text-[#ecfdf5] mb-2 text-xs uppercase tracking-wider">
+							<h4 className="font-black text-white mb-3 text-lg uppercase tracking-widest border-b-4 border-zinc-100 inline-block pb-1">
 								Return Format
 							</h4>
-							<div className="space-y-2 text-xs">
-								<code className="block bg-[#18181b] p-2 border border-[#27272a] text-[#ecfdf5]">
+							<div className="space-y-3 text-sm font-bold">
+								<code className="block bg-zinc-900 text-cyan-400 p-3 border-2 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5]">
 									["EXPAND", 3]
 								</code>
-								<code className="block bg-[#18181b] p-2 border border-[#27272a] text-[#ecfdf5]">
+								<code className="block bg-zinc-900 text-fuchsia-400 p-3 border-2 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5]">
 									["CONQUER", 7]
 								</code>
-								<code className="block bg-[#18181b] p-2 border border-[#27272a] text-[#ecfdf5]">
+								<code className="block bg-zinc-900 text-lime-400 p-3 border-2 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5]">
 									["HARVEST"]
 								</code>
 							</div>
@@ -275,60 +303,73 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 				</section>
 
 				{/* Summary Table */}
-				<section className=" border border-[#27272a] overflow-hidden">
-					<table className="w-full text-left text-xs">
-						<thead className="bg-[#18181b] text-[#ecfdf5]">
+				<section className="border-4 border-zinc-100 bg-zinc-950 overflow-x-auto">
+					<table className="w-full text-left border-collapse min-w-[500px]">
+						<thead className="bg-zinc-100 text-black font-black uppercase tracking-wider text-sm">
 							<tr>
-								<th className="py-3 px-4 font-semibold">
+								<th className="py-4 px-5 border-r-2 border-zinc-100">
 									Feature
 								</th>
-								<th className="py-3 px-4 font-semibold">
+								<th className="py-4 px-5 border-r-2 border-zinc-100">
 									Home
 								</th>
-								<th className="py-3 px-4 font-semibold">
+								<th className="py-4 px-5 border-r-2 border-zinc-100">
 									Power
 								</th>
-								<th className="py-3 px-4 font-semibold">
-									Normal
-								</th>
+								<th className="py-4 px-5">Normal</th>
 							</tr>
 						</thead>
-						<tbody className="divide-y divide-[#27272a]">
-							<tr className="hover:bg-[#27272a]/40 transition-colors">
-								<td className="py-3 px-4 font-medium text-[#ecfdf5]">
+						<tbody className="font-bold text-sm divide-y-2 divide-zinc-100 text-zinc-100">
+							<tr className="bg-zinc-900 hover:bg-zinc-800 transition-colors">
+								<td className="py-4 px-5 border-r-2 border-zinc-100 text-lime-400">
 									Harvest
 								</td>
-								<td className="py-3 px-4 text-[#10b981] font-mono">
+								<td className="py-4 px-5 border-r-2 border-zinc-100 font-black text-lg">
 									+5E
 								</td>
-								<td className="py-3 px-4 text-[#10b981] font-mono">
+								<td className="py-4 px-5 border-r-2 border-zinc-100 font-black text-lg">
 									+5E
 								</td>
-								<td className="py-3 px-4 text-[#10b981] font-mono">
+								<td className="py-4 px-5 font-black text-lg">
 									+1E
 								</td>
 							</tr>
-							<tr className="hover:bg-[#27272a]/40 transition-colors">
-								<td className="py-3 px-4 font-medium text-[#ecfdf5]">
+							<tr className="bg-zinc-950 hover:bg-zinc-900 transition-colors">
+								<td className="py-4 px-5 border-r-2 border-zinc-100 text-cyan-400">
 									Expand Cost
 								</td>
-								<td className="py-3 px-4 opacity-50">-</td>
-								<td className="py-3 px-4 font-mono">15E</td>
-								<td className="py-3 px-4 font-mono">5E</td>
+								<td className="py-4 px-5 border-r-2 border-zinc-100 text-zinc-500">
+									—
+								</td>
+								<td className="py-4 px-5 border-r-2 border-zinc-100 font-black text-lg">
+									15E
+								</td>
+								<td className="py-4 px-5 font-black text-lg">
+									5E
+								</td>
 							</tr>
-							<tr className="hover:bg-[#27272a]/40 transition-colors">
-								<td className="py-3 px-4 font-medium text-[#ecfdf5]">
+							<tr className="bg-zinc-900 hover:bg-zinc-800 transition-colors">
+								<td className="py-4 px-5 border-r-2 border-zinc-100 text-fuchsia-400">
 									Conquer Base
 								</td>
-								<td className="py-3 px-4 text-red-400">Lock</td>
-								<td className="py-3 px-4 font-mono">20E</td>
-								<td className="py-3 px-4 font-mono">8E</td>
+								<td className="py-4 px-5 border-r-2 border-zinc-100 bg-rose-500 text-white uppercase tracking-wider">
+									Lock
+								</td>
+								<td className="py-4 px-5 border-r-2 border-zinc-100 font-black text-lg">
+									20E
+								</td>
+								<td className="py-4 px-5 font-black text-lg">
+									8E
+								</td>
 							</tr>
-							<tr className="hover:bg-[#27272a]/40 transition-colors">
-								<td className="py-3 px-4 font-medium text-[#ecfdf5]">
+							<tr className="bg-zinc-950">
+								<td className="py-4 px-5 border-r-2 border-zinc-100 text-yellow-400">
 									Support Bonus
 								</td>
-								<td className="py-3 px-4" colSpan={3}>
+								<td
+									className="py-4 px-5 font-black uppercase text-zinc-300"
+									colSpan={3}
+								>
 									+1 Defense Cost per friendly neighbor
 								</td>
 							</tr>

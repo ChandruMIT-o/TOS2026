@@ -1,6 +1,6 @@
 import { Terminal, AlertCircle, CheckCircle2 } from "lucide-react";
 import { CollapsiblePanel } from "../layout/CollapsiblePanel";
-import { Badge } from "../../ui/Badge";
+import { cn } from "../../../../lib/utils"; // Preserving your util import if needed
 
 interface CodePreviewProps {
 	isCollapsed: boolean;
@@ -21,41 +21,80 @@ export function CodePreview({
 			icon={Terminal}
 			isCollapsed={isCollapsed}
 			onToggle={onToggle}
+			// Harsh container styling matching the RuleBook and Leaderboard
+			className="bg-zinc-950 border-4 border-zinc-100 text-zinc-100 font-sans overflow-visible"
 			actionElement={
 				// Status Badge in Header
-				<div className="group relative">
-					<Badge
-						variant={isValidatedByAI ? "warning" : "success"}
-						className="cursor-help"
+				<div className="group relative flex items-center">
+					<div
+						className={cn(
+							"cursor-help px-3 py-1 font-black text-xs uppercase tracking-widest border-2 flex items-center gap-2",
+							isValidatedByAI
+								? "bg-yellow-400 text-black border-yellow-400 shadow-[3px_3px_0px_0px_#facc15]"
+								: "bg-lime-400 text-black border-lime-400 shadow-[3px_3px_0px_0px_#a3e635]",
+						)}
 					>
 						{isValidatedByAI ? "AI VALIDATED" : "HUMAN VERIFIED"}
-					</Badge>
-					{/* Hover Tooltip */}
-					<div className="absolute right-0 top-full mt-2 w-64 p-3 bg-white text-black text-xs font-mono rounded-none shadow-[4px_4px_0px_black] border-2 border-black opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+					</div>
+
+					{/* Hover Tooltip - Brutalist Style */}
+					<div className="absolute right-0 top-full mt-4 w-72 p-4 bg-zinc-950 text-zinc-100 text-xs font-mono border-4 border-zinc-100 shadow-[6px_6px_0px_0px_#f4f4f5] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
 						{isValidatedByAI ? (
-							<span className="flex gap-2 font-bold uppercase">
-								<AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
-								Warning: Automated validation may have false
-								positives. Consult event coordinator if output
-								seems incorrect.
+							<span className="flex gap-3 font-bold uppercase leading-relaxed">
+								<AlertCircle
+									className="w-5 h-5 text-yellow-400 shrink-0"
+									strokeWidth={3}
+								/>
+								<span>
+									<strong className="text-yellow-400 block mb-1">
+										Warning:
+									</strong>
+									Automated validation may have false
+									positives. Consult event coordinator if
+									output seems incorrect.
+								</span>
 							</span>
 						) : (
-							<span className="flex gap-2 font-bold uppercase">
-								<CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-								Verified by Site Reliability Engineer.
+							<span className="flex gap-3 font-bold uppercase leading-relaxed">
+								<CheckCircle2
+									className="w-5 h-5 text-lime-400 shrink-0"
+									strokeWidth={3}
+								/>
+								<span>
+									<strong className="text-lime-400 block mb-1">
+										Secure:
+									</strong>
+									Verified by Site Reliability Engineer.
+								</span>
 							</span>
 						)}
 					</div>
 				</div>
 			}
 		>
-			<div className="h-full bg-slate-900 rounded-none border-2 border-slate-300 p-4 font-mono text-sm overflow-auto custom-scrollbar text-slate-300 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-				<div className="text-emerald-500 mb-2 font-bold">
-					# EXECUTION STARTED AT {new Date().toLocaleTimeString()}
-				</div>
-				<pre className="whitespace-pre-wrap">
-					{logs ||
-						`def optimize_strategy(market_data):
+			<div className="bg-zinc-950 p-6">
+				{/* Terminal Window Box */}
+				<div className="h-full bg-zinc-950 border-4 border-cyan-400 p-5 font-mono text-sm overflow-auto custom-scrollbar shadow-[6px_6px_0px_0px_#22d3ee] relative">
+					{/* Decorative Terminal Header */}
+					<div className="flex gap-2 border-b-4 border-cyan-400/30 pb-3 mb-4 sticky top-0 bg-zinc-950 z-10">
+						<div className="w-3 h-3 bg-rose-500 border border-rose-500" />
+						<div className="w-3 h-3 bg-yellow-400 border border-yellow-400" />
+						<div className="w-3 h-3 bg-lime-400 border border-lime-400" />
+						<span className="ml-auto text-xs font-black text-cyan-400 uppercase tracking-widest">
+							SYS_TERM_v2.0
+						</span>
+					</div>
+
+					<div className="text-fuchsia-400 mb-4 font-black tracking-wider uppercase flex items-center gap-2">
+						<span className="bg-fuchsia-400 text-black px-2 py-0.5">
+							INFO
+						</span>
+						EXECUTION STARTED AT {new Date().toLocaleTimeString()}
+					</div>
+
+					<pre className="whitespace-pre-wrap text-cyan-400 font-bold leading-loose">
+						{logs ||
+							`def optimize_strategy(market_data):
     """
     Generated Strategy Logic
     """
@@ -68,8 +107,10 @@ export function CodePreview({
     return "BUY" if market_data.trend > 0 else "SELL"
     
 # ... awaiting input stream ...`}
-				</pre>
-				<div className="text-emerald-500/50 mt-2 animate-pulse">_</div>
+						{/* Solid block pulsing cursor */}
+						<span className="inline-block w-2.5 h-4 bg-cyan-400 ml-1 translate-y-1 animate-pulse" />
+					</pre>
+				</div>
 			</div>
 		</CollapsiblePanel>
 	);

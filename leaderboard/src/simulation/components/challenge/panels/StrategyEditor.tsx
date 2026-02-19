@@ -94,17 +94,18 @@ export function StrategyEditor({
 			icon={isCollapsed ? Settings2 : FileText}
 			isCollapsed={isCollapsed}
 			onToggle={onToggle}
-			className="font-mono rounded-none border-2 border-white/20"
+			// Match the brutalist container style
+			className="bg-zinc-950 border-4 border-zinc-100 text-zinc-100 font-sans"
 		>
-			<div className="flex flex-col h-full gap-6 text-white font-mono p-1">
+			<div className="flex flex-col h-full gap-8 bg-zinc-950 p-6">
 				{/* 1. Header & Identity Section */}
-				<div className="flex flex-col gap-1">
-					<label className="text-[10px] font-bold text-[#00ff00] uppercase tracking-widest mb-1 flex items-center justify-between">
+				<div className="flex flex-col gap-2">
+					<label className="text-xs font-black text-lime-400 uppercase tracking-widest flex items-center justify-between border-b-4 border-zinc-100 pb-2">
 						<div className="flex items-center gap-2">
-							<Terminal className="w-3 h-3" />
+							<Terminal className="w-4 h-4" strokeWidth={3} />
 							Target_Identifier
 							{strategyName && (
-								<span className="text-white/50">
+								<span className="text-zinc-500 hidden sm:inline-block">
 									[{strategyName}]
 								</span>
 							)}
@@ -112,23 +113,29 @@ export function StrategyEditor({
 						{/* Availability Indicator */}
 						<div className="flex items-center gap-2">
 							{availability === "checking" && (
-								<Loader2 className="w-3 h-3 animate-spin text-yellow-500" />
+								<Loader2 className="w-4 h-4 animate-spin text-yellow-400" />
 							)}
 							{availability === "available" && (
-								<span className="text-[10px] text-emerald-500 font-bold flex items-center gap-1">
-									<CheckCircle2 className="w-3 h-3" />
+								<span className="text-xs text-black bg-lime-400 px-2 py-0.5 font-black flex items-center gap-1 border-2 border-lime-400 shadow-[2px_2px_0px_0px_#f4f4f5]">
+									<CheckCircle2
+										className="w-3 h-3"
+										strokeWidth={3}
+									/>
 									AVAILABLE
 								</span>
 							)}
 							{availability === "taken" && (
-								<span className="text-[10px] text-red-500 font-bold flex items-center gap-1">
-									<XCircle className="w-3 h-3" />
+								<span className="text-xs text-white bg-rose-500 px-2 py-0.5 font-black flex items-center gap-1 border-2 border-rose-500 shadow-[2px_2px_0px_0px_#f4f4f5]">
+									<XCircle
+										className="w-3 h-3"
+										strokeWidth={3}
+									/>
 									TAKEN
 								</span>
 							)}
 						</div>
 					</label>
-					<div className="relative group">
+					<div className="relative mt-2">
 						<Input
 							placeholder="ENTER_STRATEGY_NAME"
 							value={strategyName}
@@ -136,15 +143,16 @@ export function StrategyEditor({
 							onChange={(e) =>
 								setStrategyName(e.target.value.toUpperCase())
 							}
-							className={`w-full bg-[#111] border-2 rounded-none h-10 px-3 
-                                     font-bold tracking-widest text-white placeholder:text-white/20
-                                     focus:ring-0 transition-all duration-150
+							// Harsh input styling
+							className={`w-full bg-zinc-900 border-4 rounded-none h-14 px-4 
+                                     font-black text-lg tracking-widest text-white placeholder:text-zinc-600
+                                     focus:outline-none transition-all duration-75
                                      ${
 											availability === "taken"
-												? "border-red-500 focus:border-red-500 focus:shadow-[4px_4px_0px_0px_#ef4444]"
+												? "border-rose-500 focus:shadow-[6px_6px_0px_0px_#f43f5e]"
 												: availability === "available"
-													? "border-emerald-500 focus:border-emerald-500 focus:shadow-[4px_4px_0px_0px_#10b981]"
-													: "border-white/20 focus:border-[#00ff00] focus:shadow-[4px_4px_0px_0px_#00ff00]"
+													? "border-lime-400 focus:shadow-[6px_6px_0px_0px_#a3e635]"
+													: "border-zinc-100 focus:border-cyan-400 focus:shadow-[6px_6px_0px_0px_#22d3ee]"
 										}
                                      disabled:opacity-50 disabled:cursor-not-allowed`}
 						/>
@@ -152,38 +160,38 @@ export function StrategyEditor({
 				</div>
 
 				{/* 2. Control Grid */}
-				<div className="grid grid-cols-12 gap-4 items-end">
-					{/* Mode Toggles (Tabs Style) */}
+				<div className="grid grid-cols-12 gap-6 items-end">
+					{/* Mode Toggles */}
 					<div className="col-span-12 lg:col-span-7">
-						<label className="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-2 block">
+						<label className="text-xs text-zinc-400 font-black uppercase tracking-widest mb-3 block">
 							Input_Mode
 						</label>
-						<div className="flex border-2 border-white/20 bg-[#111]">
+						<div className="flex border-4 border-zinc-100 bg-zinc-950">
 							<button
 								onClick={() => setMode("prompt")}
-								disabled={isLocked}
-								className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150
+								className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-black uppercase tracking-wider transition-none
                                     ${
 										mode === "prompt"
-											? "bg-white text-black shadow-[inset_0_0_20px_rgba(0,0,0,0.1)]"
-											: "text-white/40 hover:text-white hover:bg-white/5"
+											? "bg-fuchsia-400 text-black border-r-4 border-zinc-100"
+											: "text-zinc-500 hover:text-white hover:bg-zinc-800 border-r-4 border-zinc-100"
 									} disabled:opacity-50 disabled:cursor-not-allowed`}
 							>
-								<ALargeSmall className="w-4 h-4" />
+								<ALargeSmall
+									className="w-5 h-5"
+									strokeWidth={3}
+								/>
 								Prompt
 							</button>
-							<div className="w-[2px] bg-white/20"></div>
 							<button
 								onClick={() => setMode("code")}
-								disabled={isLocked}
-								className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150
+								className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-black uppercase tracking-wider transition-none
                                     ${
 										mode === "code"
-											? "bg-[#00ff00] text-black shadow-[inset_0_0_20px_rgba(0,0,0,0.1)]"
-											: "text-white/40 hover:text-white hover:bg-white/5"
+											? "bg-cyan-400 text-black"
+											: "text-zinc-500 hover:text-white hover:bg-zinc-800"
 									} disabled:opacity-50 disabled:cursor-not-allowed`}
 							>
-								<Code className="w-4 h-4" />
+								<Code className="w-5 h-5" strokeWidth={3} />
 								Code
 							</button>
 						</div>
@@ -193,7 +201,7 @@ export function StrategyEditor({
 					<div className="col-span-12 lg:col-span-5">
 						{mode === "code" ? (
 							<>
-								<label className="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-2 block">
+								<label className="text-xs text-zinc-400 font-black uppercase tracking-widest mb-3 block">
 									Runtime_Env
 								</label>
 								<div className="relative">
@@ -203,10 +211,10 @@ export function StrategyEditor({
 											setLanguage(e.target.value)
 										}
 										disabled={isLocked}
-										className="appearance-none w-full bg-[#111] border-2 border-white/20 rounded-none py-2 pl-3 pr-10 
-                                                 text-xs font-bold text-white uppercase tracking-wider cursor-pointer
-                                                 focus:outline-none focus:border-[#00ff00] focus:shadow-[4px_4px_0px_0px_rgba(0,255,0,0.5)]
-                                                 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+										className="appearance-none w-full bg-zinc-900 border-4 border-zinc-100 rounded-none py-3 pl-4 pr-12 
+                                                 text-sm font-black text-white uppercase tracking-wider cursor-pointer
+                                                 focus:outline-none focus:border-yellow-400 focus:shadow-[4px_4px_0px_0px_#facc15]
+                                                 transition-none disabled:opacity-50 disabled:cursor-not-allowed"
 									>
 										{languages.map((l) => (
 											<option
@@ -217,14 +225,17 @@ export function StrategyEditor({
 											</option>
 										))}
 									</select>
-									<div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#00ff00]">
-										<ChevronDown className="w-4 h-4 stroke-[3]" />
+									<div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-100">
+										<ChevronDown
+											className="w-5 h-5"
+											strokeWidth={3}
+										/>
 									</div>
 								</div>
 							</>
 						) : (
-							<div className="h-full flex items-end pb-2">
-								<span className="text-[10px] text-white/30 font-mono bg-white/5 px-2 py-1">
+							<div className="h-full flex items-end pb-3">
+								<span className="text-xs text-black font-black bg-zinc-100 px-3 py-1 border-2 border-zinc-100 shadow-[2px_2px_0px_0px_#f4f4f5]">
 									MARKDOWN_ENABLED
 								</span>
 							</div>
@@ -233,19 +244,19 @@ export function StrategyEditor({
 				</div>
 
 				{/* 3. Editor Area */}
-				<div className="flex-1 flex flex-col min-h-[400px]">
+				<div className="flex-1 flex flex-col min-h-[600px]">
 					<div
-						className={`relative flex-1 border-2 transition-colors duration-200 
-                        ${mode === "code" ? "border-[#00ff00]/50" : "border-white/50"} 
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] bg-black opacity-${isLocked ? "50" : "100"}`}
+						className={`relative flex-1 border-4 transition-colors duration-75 
+                        ${mode === "code" ? "border-cyan-400" : "border-fuchsia-400"} 
+                        bg-black`}
 					>
 						{/* Decorative Label Tag */}
 						<div
-							className={`absolute -top-5 left-4 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest z-10 border-2
+							className={`absolute -top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest z-10 border-2 border-zinc-100
                             ${
 								mode === "code"
-									? "bg-[#00ff00] text-black border-black"
-									: "bg-white text-black border-black"
+									? "bg-cyan-400 text-black"
+									: "bg-fuchsia-400 text-black"
 							}`}
 						>
 							{mode === "prompt"
@@ -253,52 +264,68 @@ export function StrategyEditor({
 								: "Source_Buffer"}
 						</div>
 
-						{/* Overlay when locked to prevent interaction if Ace's readOnly isn't enough or for visual effect */}
+						{/* Overlay when locked */}
 						{isLocked && (
-							<div className="absolute inset-0 z-20 bg-black/10 cursor-not-allowed" />
+							<div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
+								<span className="bg-rose-500/80 backdrop-blur-sm text-white font-black px-6 py-2 border-4 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5] rotate-[-5deg] text-2xl tracking-widest">
+									SYSTEM LOCKED
+								</span>
+							</div>
 						)}
 
-						<AceEditor
-							mode={mode === "prompt" ? "markdown" : language}
-							theme="terminal"
-							name="strategy_editor"
-							onChange={(val) =>
-								mode === "prompt"
-									? setStrategyDesc(val)
-									: setStrategyCode(val)
-							}
-							value={
-								mode === "prompt" ? strategyDesc : strategyCode
-							}
-							readOnly={isLocked}
-							width="100%"
-							height="100%"
-							fontSize={14}
-							showPrintMargin={false}
-							showGutter={true}
-							highlightActiveLine={!isLocked}
-							setOptions={{
-								enableBasicAutocompletion: true,
-								enableLiveAutocompletion: true,
-								enableSnippets: true,
-								showLineNumbers: true,
-								tabSize: 4,
-								fontFamily: '"Fira Code", monospace',
-								cursorStyle: "wide", // Block cursor for terminal feel
-								useWorker: false,
-							}}
-							className="bg-black"
-						/>
+						<div className="h-full pt-4">
+							{" "}
+							{/* Padding to offset the overlapping label */}
+							<AceEditor
+								mode={mode === "prompt" ? "markdown" : language}
+								theme="terminal"
+								name="strategy_editor"
+								onChange={(val) =>
+									mode === "prompt"
+										? setStrategyDesc(val)
+										: setStrategyCode(val)
+								}
+								value={
+									mode === "prompt"
+										? strategyDesc
+										: strategyCode
+								}
+								readOnly={isLocked}
+								width="100%"
+								height="100%"
+								fontSize={15}
+								showPrintMargin={false}
+								showGutter={true}
+								highlightActiveLine={!isLocked}
+								setOptions={{
+									enableBasicAutocompletion: true,
+									enableLiveAutocompletion: true,
+									enableSnippets: true,
+									showLineNumbers: true,
+									tabSize: 4,
+									fontFamily: '"Fira Code", monospace',
+									cursorStyle: "wide", // Block cursor
+									useWorker: false,
+								}}
+								className="bg-black"
+							/>
+						</div>
 					</div>
 
 					{/* Footer Stats */}
-					<div className="mt-2 flex justify-between items-center border-t-2 border-white/5 pt-2">
+					<div className="mt-8 flex justify-between items-center border-t-4 border-zinc-800 pt-4">
 						<div className="flex gap-4">
-							<span className="text-[10px] font-bold text-[#00ff00]">
+							<span
+								className={
+									isLocked
+										? "text-rose-500 font-black text-sm"
+										: "text-lime-400 font-black text-sm"
+								}
+							>
 								STATUS: {isLocked ? "LOCKED" : "READY"}
 							</span>
 						</div>
-						<span className="text-[10px] text-white/40 font-bold bg-white/10 px-2 py-0.5">
+						<span className="text-xs text-black font-black bg-zinc-100 px-3 py-1 shadow-[2px_2px_0px_0px_#f4f4f5]">
 							LEN:{" "}
 							{mode === "prompt"
 								? (strategyDesc || "").length

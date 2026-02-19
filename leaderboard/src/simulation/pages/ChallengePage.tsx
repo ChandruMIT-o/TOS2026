@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useLoading } from "../../context/LoadingContext";
-import { Users, Lock, Loader2, Birdhouse } from "lucide-react";
+import { Users, Lock, Birdhouse } from "lucide-react";
 import { AttemptTabs } from "../components/challenge/controls/AttemptTabs";
 import { ChallengeLayout } from "../components/challenge/layout/ChallengeLayout";
 import { SubmissionDashboard } from "../components/challenge/submission/SubmissionDashboard";
@@ -356,7 +356,6 @@ export default function ChallengePage() {
 			<Dialog open={showTimeline} onOpenChange={setShowTimeline}>
 				<DialogHeader>
 					<DialogTitle className="text-xl font-bold uppercase tracking-widest flex items-center gap-2">
-						<Loader2 className="animate-spin text-emerald-500" />
 						Running Simulation
 					</DialogTitle>
 				</DialogHeader>
