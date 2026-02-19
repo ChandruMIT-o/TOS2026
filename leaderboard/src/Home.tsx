@@ -8,6 +8,8 @@ import TargetCursor from "./components/TargetCursor";
 import { HomeHeader } from "./components/HomeHeader";
 import { HomeContent } from "./components/HomeContent";
 import { Toast } from "./components/Toast";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./lib/firebase";
 
 function Home() {
 	const { setPageLoaded } = useLoading();
@@ -17,14 +19,23 @@ function Home() {
 
 	const [activeTab, setActiveTab] = useState("home");
 	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
-	const [isBriefing] = useState(true); // Controls "Briefing state" vs "Interactive State"
+	const [isBriefing, setIsBriefing] = useState(true); // Controls "Briefing state" vs "Interactive State"
+	const [secretClicks, setSecretClicks] = useState(0);
 	const [toastMessage, setToastMessage] = useState<string | null>(null);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const contentRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			setIsLoggedIn(!!user);
+		});
+		return () => unsubscribe();
+	}, []);
 
 	const tabs = [
 		{ id: "home", label: "Briefing", disabled: false },
 		{ id: "registration", label: "Registration", disabled: isBriefing },
-		{ id: "testing", label: "Testing Env", disabled: isBriefing },
+		{ id: "rulebook", label: "Rulebook", disabled: !isLoggedIn },
 		{ id: "leaderboard", label: "Leaderboard", disabled: isBriefing },
 	];
 
@@ -51,7 +62,7 @@ function Home() {
 	// Scroll Detection for Performance Mode
 	useEffect(() => {
 		const handleScroll = () => {
-			if (activeTab !== "home" && activeTab !== "testing") {
+			if (activeTab !== "home" && activeTab !== "rulebook") {
 				if (isPerformanceMode) setIsPerformanceMode(false);
 				return;
 			}
@@ -139,7 +150,7 @@ function Home() {
 				hoverDuration={0.2}
 			/>
 			{/* Background Layer */}
-			{activeTab === "testing" ||
+			{activeTab === "rulebook" ||
 			(activeTab === "home" && isPerformanceMode) ? (
 				<TacticalGrid />
 			) : (
@@ -163,11 +174,17 @@ function Home() {
 						tabs={tabs}
 						activeTab={activeTab}
 						onTabChange={handleTabChange}
-						onDisabledTabClick={() =>
-							setToastMessage(
-								"Team reg opens on 21st. But, buy the event ticket in the main website.",
-							)
-						}
+						onDisabledTabClick={(id) => {
+							if (id === "rulebook") {
+								setToastMessage(
+									"Please login to view the rulebook.",
+								);
+							} else {
+								setToastMessage(
+									"Team reg opens on 21st. But, buy the event ticket in the main website.",
+								);
+							}
+						}}
 						primaryColor={primaryColor}
 					/>
 				</div>
@@ -192,7 +209,22 @@ function Home() {
 						<span>LON: 118.2437 W</span>
 						<span>SECURE</span>
 					</div>
-					<p>© 2026 TOS // OPERATIONAL PROTOCOL v1.0</p>
+					<p>
+						© 2026 T
+						<span
+							onClick={() => {
+								if (secretClicks + 1 === 3) {
+									setIsBriefing((prev) => !prev);
+									setSecretClicks(0);
+								} else {
+									setSecretClicks((prev) => prev + 1);
+								}
+							}}
+						>
+							O
+						</span>
+						S // OPERATIONAL PROTOCOL v1.0
+					</p>
 				</footer>
 			</div>
 		</div>

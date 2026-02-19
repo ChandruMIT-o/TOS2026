@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Suspense, lazy, useState } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import { LoadingProvider, useLoading } from "./context/LoadingContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Lazy load components
 const Home = lazy(() => import("./Home"));
@@ -31,7 +32,14 @@ function AppContent() {
 			>
 				<Routes>
 					<Route path="/" element={<Home />} />
-					<Route path="/sim" element={<ChallengePage />} />
+					<Route
+						path="/sim"
+						element={
+							<ProtectedRoute>
+								<ChallengePage />
+							</ProtectedRoute>
+						}
+					/>
 				</Routes>
 			</Suspense>
 		</Router>

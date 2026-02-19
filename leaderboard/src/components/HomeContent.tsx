@@ -23,9 +23,9 @@ export const HomeContent: React.FC<HomeContentProps> = ({
 	return (
 		<main
 			className={`flex-1 w-full relative group transition-all duration-100 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-				activeTab === "testing" && isPerformanceMode
+				activeTab === "rulebook" && isPerformanceMode
 					? "w-full max-w-none px-0"
-					: activeTab === "home" || activeTab === "testing"
+					: activeTab === "home" || activeTab === "rulebook"
 						? "max-w-[98vw] px-0"
 						: activeTab === "leaderboard"
 							? "max-w-4xl"
@@ -56,14 +56,14 @@ export const HomeContent: React.FC<HomeContentProps> = ({
 					<div
 						ref={contentRef}
 						className={`relative ${
-							activeTab === "testing" ||
+							activeTab === "rulebook" ||
 							(activeTab === "home" && isPerformanceMode)
 								? ""
 								: "bg-[#0a0a0a]/98 backdrop-blur-xl border border-white/10 p-6 md:p-10 shadow-2xl rounded-sm"
 						}`}
 					>
-						{/* Decorative Brackets & Glow - Hide in testing */}
-						{activeTab !== "testing" && (
+						{/* Decorative Brackets & Glow - Hide in rulebook */}
+						{activeTab !== "rulebook" && (
 							<>
 								<div
 									className="absolute top-0 left-0 w-5 h-5 border-l-3 border-t-3 transition-colors duration-500"
@@ -118,7 +118,7 @@ export const HomeContent: React.FC<HomeContentProps> = ({
 							{activeTab === "registration" && (
 								<Registration primaryColor={primaryColor} />
 							)}
-							{activeTab === "testing" && <TestingEnv />}
+							{activeTab === "rulebook" && <TestingEnv />}
 							{activeTab === "leaderboard" && (
 								<Leaderboard primaryColor={primaryColor} />
 							)}
