@@ -11,8 +11,20 @@ const INITIAL_STATE: ChallengeState = {
 	remainingTrials: 2,
 	isSubmissionLocked: false,
 	attempts: {
-		1: { id: 1, status: "ACTIVE", strategyName: "", code: "" },
-		2: { id: 2, status: "LOCKED", strategyName: "", code: "" },
+		1: {
+			id: 1,
+			status: "ACTIVE",
+			strategyName: "",
+			strategyDesc: "",
+			code: "",
+		},
+		2: {
+			id: 2,
+			status: "LOCKED",
+			strategyName: "",
+			strategyDesc: "",
+			code: "",
+		},
 	},
 };
 
@@ -31,7 +43,7 @@ export function useAttemptLogic(teamName: string | null) {
 		if (savedStrat) {
 			try {
 				const parsed = JSON.parse(savedStrat);
-				if (parsed.code || parsed.name) {
+				if (parsed.code || parsed.name || parsed.desc) {
 					setState((prev) => ({
 						...prev,
 						attempts: {
@@ -40,6 +52,10 @@ export function useAttemptLogic(teamName: string | null) {
 								...prev.attempts[1],
 								code:
 									prev.attempts[1].code || parsed.code || "",
+								strategyDesc:
+									prev.attempts[1].strategyDesc ||
+									parsed.desc ||
+									"",
 								strategyName:
 									prev.attempts[1].strategyName ||
 									parsed.name ||
@@ -57,21 +73,26 @@ export function useAttemptLogic(teamName: string | null) {
 	// Save to local storage on change
 	useEffect(() => {
 		const current = state.attempts[1]; // Primarily saving attempt 1 for now
-		if (current.code || current.strategyName) {
+		if (current.code || current.strategyName || current.strategyDesc) {
 			localStorage.setItem(
 				"STRATEGY_DEFINITION",
 				JSON.stringify({
 					name: current.strategyName,
+					desc: current.strategyDesc,
 					code: current.code,
 				}),
 			);
 		}
-	}, [state.attempts[1].code, state.attempts[1].strategyName]);
+	}, [
+		state.attempts[1].code,
+		state.attempts[1].strategyName,
+		state.attempts[1].strategyDesc,
+	]);
 
 	// Update text/name for a specific attempt
 	const updateAttempt = (
 		id: 1 | 2,
-		field: "strategyName" | "code",
+		field: "strategyName" | "code" | "strategyDesc",
 		value: string,
 	) => {
 		setState((prev) => ({
@@ -123,7 +144,7 @@ export function useAttemptLogic(teamName: string | null) {
 				draft_id: attemptId === 1 ? "draft_1" : "draft_2",
 				strategy_name: state.attempts[attemptId].strategyName,
 				strategy_code: state.attempts[attemptId].code,
-				strategy_desc: "Imported from Editor", // Default desc if just code
+				strategy_desc: state.attempts[attemptId].strategyDesc, // Default desc if just code
 			};
 
 			const result = await challengeApi.runSimulation(

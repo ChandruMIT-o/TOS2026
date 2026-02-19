@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from firebase_functions import https_fn, options
 from firebase_admin import firestore, get_app, initialize_app
 from google.cloud.firestore_v1.base_query import FieldFilter
+from firebase_functions.options import MemoryOption
 
 # Internal Imports
 from loader import load_strategy_from_code
@@ -31,7 +32,8 @@ def get_unique_strategy_name(db, base_name: str) -> str:
     return f"{base_name}_{int(datetime.now().timestamp())}"
 
 @https_fn.on_request(
-    cors=options.CorsOptions(cors_origins="*", cors_methods=["post"])
+    memory=MemoryOption.MB_512,
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post", "options"])
 )
 def lock_selection(req: https_fn.Request) -> https_fn.Response:
     """

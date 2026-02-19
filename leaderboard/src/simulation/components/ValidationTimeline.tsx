@@ -18,48 +18,80 @@ interface ValidationTimelineProps {
 	className?: string;
 }
 
+// Map out the neo-brutalist color palettes and icons for each state
+const statusConfig = {
+	pending: {
+		bg: "bg-white",
+		icon: Circle,
+		iconClass: "text-black",
+	},
+	loading: {
+		bg: "bg-cyan-300",
+		icon: Loader2,
+		iconClass: "text-black animate-spin",
+	},
+	success: {
+		bg: "bg-lime-400", // Vibrant green
+		icon: CheckCircle2,
+		iconClass: "text-black",
+	},
+	error: {
+		bg: "bg-rose-400", // Stark red/pink
+		icon: XCircle,
+		iconClass: "text-black",
+	},
+	warning: {
+		bg: "bg-yellow-400",
+		icon: AlertTriangle,
+		iconClass: "text-black",
+	},
+};
+
 export function ValidationTimeline({
 	steps,
 	className,
 }: ValidationTimelineProps) {
 	return (
-		<div className={cn("space-y-4", className)}>
-			{steps.map((step) => (
-				<div key={step.id} className="flex items-start gap-3">
-					<div className="flex-shrink-0 mt-0.5">
-						{step.status === "pending" && (
-							<Circle className="w-5 h-5 text-slate-600" />
-						)}
-						{step.status === "loading" && (
-							<Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
-						)}
-						{step.status === "success" && (
-							<CheckCircle2 className="w-5 h-5 text-emerald-400" />
-						)}
-						{step.status === "error" && (
-							<XCircle className="w-5 h-5 text-red-500" />
-						)}
-						{step.status === "warning" && (
-							<AlertTriangle className="w-5 h-5 text-amber-400" />
-						)}
-					</div>
-					<div className="flex-1">
-						<p
+		<div className={cn("relative flex flex-col gap-5 py-2", className)}>
+			{/* Hard black vertical connecting line */}
+			<div className="absolute left-[23px] top-6 bottom-6 w-1 bg-black z-0" />
+
+			{steps.map((step) => {
+				const config = statusConfig[step.status];
+				const Icon = config.icon;
+
+				return (
+					<div
+						key={step.id}
+						className="relative z-10 flex items-center gap-4 group"
+					>
+						{/* Icon Box */}
+						<div
 							className={cn(
-								"text-sm font-medium",
-								step.status === "pending" && "text-slate-500",
-								step.status === "loading" && "text-blue-300",
-								step.status === "success" && "text-emerald-300",
-								step.status === "error" && "text-red-400",
-								step.status === "warning" && "text-amber-300",
+								"flex-shrink-0 w-12 h-12 flex items-center justify-center rounded border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+								config.bg,
 							)}
 						>
-							{step.label}
-						</p>
-						{/* Optional: progress bar line connecting steps could go here if we wanted complex UI */}
+							<Icon
+								className={cn("w-6 h-6", config.iconClass)}
+								strokeWidth={2.5}
+							/>
+						</div>
+
+						{/* Text Box */}
+						<div
+							className={cn(
+								"flex-1 border-2 border-black rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-4 py-3",
+								config.bg,
+							)}
+						>
+							<p className="text-sm md:text-base font-bold text-black tracking-wide uppercase">
+								{step.label}
+							</p>
+						</div>
 					</div>
-				</div>
-			))}
+				);
+			})}
 		</div>
 	);
 }

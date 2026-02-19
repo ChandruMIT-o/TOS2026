@@ -97,6 +97,25 @@ function Home() {
 		};
 	}, [activeTab, isPerformanceMode]);
 
+	useEffect(() => {
+		const setTabFromHash = () => {
+			const hash = window.location.hash.replace("#", "");
+			if (hash && tabs.some((t) => t.id === hash)) {
+				setActiveTab(hash);
+			}
+		};
+
+		setTabFromHash(); // initial load
+		window.addEventListener("hashchange", setTabFromHash);
+
+		return () => window.removeEventListener("hashchange", setTabFromHash);
+	}, []);
+
+	const handleTabChange = (tabId: string) => {
+		setActiveTab(tabId);
+		window.location.hash = tabId;
+	};
+
 	const handleBackgroundClick = (e: React.MouseEvent) => {
 		const target = e.target as HTMLElement;
 		if (
@@ -143,7 +162,7 @@ function Home() {
 					<Tabs
 						tabs={tabs}
 						activeTab={activeTab}
-						onTabChange={setActiveTab}
+						onTabChange={handleTabChange}
 						onDisabledTabClick={() =>
 							setToastMessage(
 								"Team reg opens on 21st. But, buy the event ticket in the main website.",

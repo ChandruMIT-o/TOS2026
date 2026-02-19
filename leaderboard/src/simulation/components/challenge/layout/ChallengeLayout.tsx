@@ -23,8 +23,11 @@ import type {
 interface ChallengeLayoutProps {
 	strategyName: string;
 	setStrategyName: (val: string) => void;
-	strategyCode: string;
+	strategyCode: string; // The code
 	setStrategyCode: (val: string) => void;
+	strategyDesc: string; // The markdown/prompt
+	setStrategyDesc: (val: string) => void;
+	isLocked: boolean;
 	logs?: string;
 	validationStatus?: ValidationStatus;
 	onRunTest: () => void;
@@ -37,6 +40,9 @@ export function ChallengeLayout({
 	setStrategyName,
 	strategyCode,
 	setStrategyCode,
+	strategyDesc,
+	setStrategyDesc,
+	isLocked,
 	logs, // Unused in this file but passed? No, need to pass to CodePreview?
 	validationStatus, // Need to pass to CodePreview?
 	onRunTest,
@@ -100,6 +106,9 @@ export function ChallengeLayout({
 					setStrategyName={setStrategyName}
 					strategyCode={strategyCode}
 					setStrategyCode={setStrategyCode}
+					strategyDesc={strategyDesc}
+					setStrategyDesc={setStrategyDesc}
+					isLocked={isLocked}
 				/>
 			</div>
 
@@ -109,7 +118,13 @@ export function ChallengeLayout({
 					<TestRunButton
 						onRun={handleTestRun}
 						disabled={
+							// 1. System/Lock State
+							isLocked ||
 							isRunning ||
+							// 2. Input Validation (Must have Name + (Code OR Prompt))
+							!strategyName?.trim() ||
+							(!strategyCode?.trim() && !strategyDesc?.trim()) ||
+							// 3. Execution State
 							validationStatus === "PENDING" ||
 							validationStatus === "AI_VALIDATED" ||
 							validationStatus === "HUMAN_VERIFIED" ||

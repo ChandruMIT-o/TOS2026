@@ -37,6 +37,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	const [isInitializing, setIsInitializing] = useState(true);
 	const [confirmLogout, setConfirmLogout] = useState(false);
 	const [confirmAbort, setConfirmAbort] = useState(false);
+	const [hasDrafts, setHasDrafts] = useState(false);
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -60,6 +61,12 @@ export function Registration({ primaryColor }: RegistrationProps) {
 					const team = await getTeamByMemberUid(loggedInUser.id);
 					if (team) {
 						setTeamName(team.team_name);
+						if (
+							team.drafts &&
+							(team.drafts.draft_1 || team.drafts.draft_2)
+						) {
+							setHasDrafts(true);
+						}
 						setMode(team.mode as "SOLO" | "DUO");
 						// If DUO, we should ideally fetch partner details.
 						if (team.mode === "DUO" && team.members.length > 1) {
@@ -157,6 +164,12 @@ export function Registration({ primaryColor }: RegistrationProps) {
 			const team = await getTeamByMemberUid(loggedInUser.id);
 			if (team) {
 				setTeamName(team.team_name);
+				if (
+					team.drafts &&
+					(team.drafts.draft_1 || team.drafts.draft_2)
+				) {
+					setHasDrafts(true);
+				}
 				setMode(team.mode as "SOLO" | "DUO");
 				if (team.mode === "DUO" && team.members.length > 1) {
 					const partnerUid = team.members.find(
@@ -498,16 +511,22 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						</div>
 
 						{!confirmAbort ? (
-							<button
-								onClick={() => setConfirmAbort(true)}
-								style={{
-									borderColor: primaryColor,
-									color: primaryColor,
-								}}
-								className="cursor-target w-full py-4 border border-white/10 hover:bg-white/5 uppercase tracking-widest transition-all mt-8"
-							>
-								[ ABORT TEAM OPERATION ]
-							</button>
+							hasDrafts ? (
+								<div className="text-center mt-8 p-4 border border-white/10 bg-white/5 text-white/50 font-mono text-sm uppercase tracking-widest">
+									[ TEAM LOCKED - DRAFTS SUBMITTED ]
+								</div>
+							) : (
+								<button
+									onClick={() => setConfirmAbort(true)}
+									style={{
+										borderColor: primaryColor,
+										color: primaryColor,
+									}}
+									className="cursor-target w-full py-4 border border-white/10 hover:bg-white/5 uppercase tracking-widest transition-all mt-8"
+								>
+									[ ABORT TEAM OPERATION ]
+								</button>
+							)
 						) : (
 							<div className="space-y-4 p-4 border border-red-500/30 bg-red-950/10 rounded mt-8">
 								<div className="text-red-400 text-sm font-bold tracking-widest uppercase">

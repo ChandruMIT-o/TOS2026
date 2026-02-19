@@ -137,6 +137,11 @@ export function Leaderboard({
 			{/* HEADER SECTION */}
 			<div className="p-4 md:p-6 border-b border-white/20 flex flex-col md:flex-row justify-between items-start md:items-end gap-3 bg-neutral-900/50">
 				<div>
+					<img
+						src="/vite.svg"
+						alt="Logo"
+						className="w-15 h-15 items-center justify-center"
+					/>
 					<div className="flex items-center gap-3 text-[10px] md:text-xs font-mono uppercase opacity-60 mb-1">
 						<div className="flex items-center gap-2">
 							<span
@@ -168,7 +173,7 @@ export function Leaderboard({
 					<button
 						onClick={refresh}
 						disabled={loading}
-						className="flex items-center gap-2 px-3 py-1 text-md font-mono font-bold border border-white/20 hover:bg-white hover:text-black transition-colors disabled:opacity-50"
+						className="cursor-target flex items-center gap-2 px-3 py-1 text-md font-mono font-bold border border-white/20 hover:bg-white hover:text-black transition-colors disabled:opacity-50"
 					>
 						<RefreshCw
 							className={`w-3 h-3 ${loading ? "animate-spin" : ""}`}
@@ -266,7 +271,7 @@ export function Leaderboard({
 								<div className="col-span-1 md:col-span-3 flex items-center">
 									<div className="flex items-center gap-2 px-2 py-1 rounded bg-white/5 group-hover:bg-black/5 border border-white/10 group-hover:border-black/10">
 										<Cpu className="w-3 h-3 opacity-70" />
-										<span className="font-mono text-[11px] uppercase tracking-tight">
+										<span className="font-mono text-sm uppercase tracking-tight">
 											{item.strategy}
 										</span>
 									</div>

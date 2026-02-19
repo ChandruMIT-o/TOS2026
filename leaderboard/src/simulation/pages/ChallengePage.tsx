@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useLoading } from "../../context/LoadingContext";
-import { Home, Users, Lock, Loader2 } from "lucide-react";
+import { Users, Lock, Loader2, Birdhouse } from "lucide-react";
 import { AttemptTabs } from "../components/challenge/controls/AttemptTabs";
 import { ChallengeLayout } from "../components/challenge/layout/ChallengeLayout";
 import { SubmissionDashboard } from "../components/challenge/submission/SubmissionDashboard";
@@ -10,6 +10,7 @@ import Dither from "./Dither";
 import type { LeaderboardEntry } from "../types/challenge";
 import { ValidationTimeline } from "../components/ValidationTimeline";
 import { Dialog, DialogHeader, DialogTitle } from "../components/ui/Dialog";
+import { useNavigate } from "react-router-dom";
 
 // Auth & Database
 import { auth } from "../../lib/firebase";
@@ -23,6 +24,7 @@ export default function ChallengePage() {
 	// --- 1. Auth & Team State ---
 	const [teamName, setTeamName] = React.useState<string | null>(null);
 	const [isAuthLoading, setIsAuthLoading] = React.useState(true);
+	const navigate = useNavigate();
 
 	// --- 2. Logic Hooks ---
 	// We pass teamName to the hook so it can use it for API calls
@@ -130,6 +132,8 @@ export default function ChallengePage() {
 						newAttempts[1] = {
 							...newAttempts[1],
 							code: d1.code || newAttempts[1].code,
+							strategyDesc:
+								d1.strategy_desc || newAttempts[1].strategyDesc,
 							strategyName:
 								d1.strategy_name || newAttempts[1].strategyName,
 							status: d1.tournament_result
@@ -184,6 +188,8 @@ export default function ChallengePage() {
 						newAttempts[2] = {
 							...newAttempts[2],
 							code: d2.code || newAttempts[2].code,
+							strategyDesc:
+								d2.strategy_desc || newAttempts[2].strategyDesc,
 							strategyName:
 								d2.strategy_name || newAttempts[2].strategyName,
 							status: d2.tournament_result
@@ -267,8 +273,31 @@ export default function ChallengePage() {
 								</h3>
 								<p className="text-zinc-400 font-mono text-sm">
 									Strategy has been finalized. No further
-									changes allowed.
+									changes allowed. (Roughly takes 1 minute to
+									update Leaderboard)
 								</p>
+								<button
+									onClick={() => navigate("/#leaderboard")}
+									className="
+										mt-4
+										px-6 py-1
+										text-lg font-extrabold uppercase tracking-wider
+										bg-yellow-300 text-black
+										border-4 border-black
+										shadow-[6px_6px_0px_#000]
+										active:shadow-[2px_2px_0px_#000]
+										active:translate-x-[4px]
+										active:translate-y-[4px]
+										hover:shadow-[2px_2px_0px_#000]
+										hover:translate-x-[4px]
+										hover:translate-y-[4px]
+										transition-all
+										hover:bg-slate-100
+										select-none
+									"
+								>
+									Leaderboard
+								</button>
 							</div>
 						</div>
 					)}
@@ -290,6 +319,19 @@ export default function ChallengePage() {
 				strategyCode={currentAttemptData.code}
 				setStrategyCode={(val) =>
 					updateAttempt(currentAttemptId as 1 | 2, "code", val)
+				}
+				strategyDesc={currentAttemptData.strategyDesc}
+				setStrategyDesc={(val) =>
+					updateAttempt(
+						currentAttemptId as 1 | 2,
+						"strategyDesc",
+						val,
+					)
+				}
+				isLocked={
+					currentAttemptData.status === "LOCKED" ||
+					currentAttemptData.status === "COMPLETED" ||
+					isSubmissionLocked
 				}
 				// Execution Data
 				logs={currentAttemptData.executionResult?.logs}
@@ -349,7 +391,7 @@ export default function ChallengePage() {
 							className="flex items-center justify-center h-10 w-10 border border-black hover:bg-black hover:text-white transition-colors flex-shrink-0"
 							title="Return to Root"
 						>
-							<Home size={18} />
+							<Birdhouse />
 						</button>
 
 						<div className="flex flex-col justify-center">

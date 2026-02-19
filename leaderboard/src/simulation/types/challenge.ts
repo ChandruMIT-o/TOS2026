@@ -22,7 +22,8 @@ export interface AttemptData {
 	id: number; // 1 or 2
 	status: "LOCKED" | "ACTIVE" | "COMPLETED";
 	strategyName: string;
-	code: string; // The markdown/strategy text
+	strategyDesc: string; // The markdown/strategy text
+	code: string; // The executable code
 	executionResult?: {
 		score: number;
 		wins: number;

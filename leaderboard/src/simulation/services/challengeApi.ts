@@ -38,66 +38,8 @@ export const challengeApi = {
 		// The prompt said: "We need to integrate simulation ... with the functions".
 		// I will leave the mock leaderboard for now to focus on the critical path.
 
-		const MOCK_LEADERBOARD: LeaderboardEntry[] = [
-			{
-				rank: 1,
-				strategy: "NEXUS_PRIME",
-				points: 984,
-				isPlayer: false,
-				wins: 45,
-				draws: 3,
-				losses: 2,
-				total_nodes: 15432,
-				matches: 50,
-			},
-			{
-				rank: 2,
-				strategy: "VORTEX_AI",
-				points: 951,
-				isPlayer: false,
-				wins: 42,
-				draws: 5,
-				losses: 3,
-				total_nodes: 14210,
-				matches: 50,
-			},
-			{
-				rank: 3,
-				strategy: "CYBER_GHOST",
-				points: 928,
-				isPlayer: false,
-				wins: 40,
-				draws: 6,
-				losses: 4,
-				total_nodes: 13500,
-				matches: 50,
-			},
-			{
-				rank: 4,
-				strategy: "IRON_CLAD",
-				points: 882,
-				isPlayer: false,
-				wins: 38,
-				draws: 4,
-				losses: 8,
-				total_nodes: 12800,
-				matches: 50,
-			},
-			{
-				rank: 5,
-				strategy: "ECHO_UNIT",
-				points: 859,
-				isPlayer: false,
-				wins: 35,
-				draws: 7,
-				losses: 8,
-				total_nodes: 11950,
-				matches: 50,
-			},
-		];
-		return new Promise((resolve) =>
-			setTimeout(() => resolve(MOCK_LEADERBOARD), 800),
-		);
+		// Return empty array initially as requested by user
+		return [];
 	},
 
 	// Run Simulation -> calling submit_draft
@@ -234,5 +176,24 @@ export const challengeApi = {
 				callback(null);
 			}
 		});
+	},
+	// Check Strategy Name Availability
+	checkStrategyAvailability: async (
+		strategyName: string,
+	): Promise<boolean> => {
+		try {
+			// Check if the strategy name exists in the 'strategies' collection
+			const strategyRef = doc(db, "strategies", strategyName);
+			const strategySnap = await getDoc(strategyRef);
+			return !strategySnap.exists();
+		} catch (error) {
+			console.error("Check Strategy Availability Error:", error);
+			// Default to true (available) if check fails to avoid blocking user,
+			// but log error. Or could throw. Let's return false to be safe?
+			// Actually, if DB is down, maybe we shouldn't block.
+			// But for uniqueness, false (not available) might be safer to prevent overwrites if logic existed.
+			// However, here we just want to give visual feedback.
+			return false;
+		}
 	},
 };

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from firebase_functions import https_fn, options
 from firebase_admin import firestore, initialize_app, get_app
 from google.cloud.firestore_v1.base_query import FieldFilter
+from firebase_functions.options import MemoryOption
 
 # Internal Imports
 import llm.gemini_call
@@ -91,7 +92,8 @@ def check_signature_uniqueness(strategy_code: str) -> bool:
 # --- MAIN CLOUD FUNCTION ---
 
 @https_fn.on_request(
-    cors=options.CorsOptions(cors_origins="*", cors_methods=["post"])
+    memory=MemoryOption.MB_512,
+    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post", "options"])
 )
 def submit_draft(req: https_fn.Request) -> https_fn.Response:
     """
