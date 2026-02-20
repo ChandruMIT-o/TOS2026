@@ -293,11 +293,20 @@ export function StrategyEditor({
 								mode={mode === "prompt" ? "markdown" : language}
 								theme="terminal"
 								name="strategy_editor"
-								onChange={(val) =>
-									mode === "prompt"
-										? setStrategyDesc(val)
-										: setStrategyCode(val)
-								}
+								onChange={(val) => {
+									if (mode === "prompt") {
+										const wordCount =
+											val.trim() === ""
+												? 0
+												: val.trim().split(/\s+/)
+														.length;
+										if (wordCount <= 350)
+											setStrategyDesc(val);
+									} else {
+										if (val.length <= 7500)
+											setStrategyCode(val);
+									}
+								}}
 								value={
 									mode === "prompt"
 										? strategyDesc
@@ -339,10 +348,9 @@ export function StrategyEditor({
 							</span>
 						</div>
 						<span className="text-xs text-black font-black bg-zinc-100 px-3 py-1 shadow-[2px_2px_0px_0px_#f4f4f5]">
-							LEN:{" "}
 							{mode === "prompt"
-								? (strategyDesc || "").length
-								: (strategyCode || "").length}
+								? `WORDS: ${(strategyDesc || "").trim() === "" ? 0 : (strategyDesc || "").trim().split(/\s+/).length} / 350`
+								: `CHARS: ${(strategyCode || "").length} / 7500`}
 						</span>
 					</div>
 				</div>

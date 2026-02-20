@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLoading } from "./context/LoadingContext";
 import { Tabs } from "./components/Tabs";
-import LetterGlitch from "./components/LetterGlitch";
 import { TacticalGrid } from "./components/TacticalGrid";
 import { charList, colorPairs } from "./Config";
 import TargetCursor from "./components/TargetCursor";
@@ -161,6 +160,7 @@ function Home() {
 						characters={glitchChars}
 						outerVignette={true}
 					/> */}
+					<TacticalGrid />
 				</div>
 			)}
 

@@ -31,10 +31,6 @@ def get_unique_strategy_name(db, base_name: str) -> str:
     # Fallback with timestamp if someone really spammed "_o"
     return f"{base_name}_{int(datetime.now().timestamp())}"
 
-@https_fn.on_request(
-    memory=MemoryOption.MB_512,
-    cors=options.CorsOptions(cors_origins="*", cors_methods=["get", "post", "options"])
-)
 def lock_selection(req: https_fn.Request) -> https_fn.Response:
     """
     Payload:

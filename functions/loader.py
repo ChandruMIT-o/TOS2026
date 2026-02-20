@@ -47,6 +47,38 @@ def load_strategy_from_code(source_code, name="uploaded_strategy"):
         print(f"Error parsing strategy code: {e}")
         return None
 
+def load_strategy_with_error(source_code, name="uploaded_strategy"):
+    """
+    Like load_strategy_from_code, but returns (function, error_message).
+    """
+    try:
+        module_name = f"dynamic_strat_{name}"
+        mod = types.ModuleType(module_name)
+        exec(source_code, mod.__dict__)
+        
+        found_func = None
+        if "strategy" in mod.__dict__ and callable(mod.strategy):
+            found_func = mod.strategy
+            if not validate_signature(found_func):
+                return None, "Function 'strategy' found, but it does not accept exactly 4 arguments: (free, opp, mine, energy)."
+        
+        if not found_func:
+            for n, obj in mod.__dict__.items():
+                if isinstance(obj, types.FunctionType) and n != "strategy":
+                    # Check signature
+                    if validate_signature(obj):
+                        found_func = obj
+                        break
+                    else:
+                        return None, f"Function '{n}' does not accept exactly 4 arguments: (free, opp, mine, energy)."
+                        
+        if found_func:
+            return found_func, None
+            
+        return None, "No valid Python function found in the generated code."
+    except Exception as e:
+        return None, f"Execution/Syntax Error: {str(e)}"
+
 def load_strategies(folder_path="raw_code"):
     strategies = []
     

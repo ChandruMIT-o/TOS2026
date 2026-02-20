@@ -21,8 +21,14 @@ def get_gemini_client():
         client = genai.Client(api_key=API_KEY)
     return client
 
-# Define the model ID (Using the one from your snippet, or fallback to stable flash)
-MODEL_ID = os.getenv("GEMINI_MODEL", "gemini-2.5-flash") 
+# Define the model IDs
+MODELS_TO_TRY = [
+    os.getenv("GEMINI_MODEL_ALPHA", "gemini-3.1-pro-preview"),
+    os.getenv("GEMINI_MODEL_BETA", "gemini-3-pro-preview"),
+    os.getenv("GEMINI_MODEL_GAMMA", "gemini-2.5-pro")
+]
+# Clean up any None values if env vars are missing
+MODELS_TO_TRY = [m for m in MODELS_TO_TRY if m]
 
 # --- PATH CONFIGURATION ---
 # Get the directory where THIS script (gemini_call.py) is located.
@@ -43,6 +49,27 @@ def _clean_response(text: str) -> str:
         text = text[:-3]
     return text.strip()
 
+def _generate_with_fallback(client, contents: str, temperature: float = 0.1) -> str:
+    last_error = None
+    for model_id in MODELS_TO_TRY:
+        try:
+            print(f"[INFO] Trying model: {model_id}")
+            response = client.models.generate_content(
+                model=model_id,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=4096,
+                    top_p=0.95,
+                )
+            )
+            return _clean_response(response.text)
+        except Exception as e:
+            last_error = e
+            print(f"[WARN] Model {model_id} failed: {str(e)}")
+            continue
+    raise Exception(f"All models exhausted. Last error: {str(last_error)}")
+
 def generate_strategy_from_desc(strategy_name: str, strategy_desc: str) -> str:
     """
     Reads prompt.md, injects the description, and generates a Python strategy function.
@@ -61,18 +88,8 @@ def generate_strategy_from_desc(strategy_name: str, strategy_desc: str) -> str:
     final_prompt = final_prompt.replace("{USER_STRATEGY_DESCRIPTION}", strategy_desc)
 
     try:
-        # NEW SDK CALL
         client = get_gemini_client()
-        response = client.models.generate_content(
-            model=MODEL_ID,
-            contents=final_prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.1,        # Low temp for code precision
-                max_output_tokens=4096,
-                top_p=0.95,
-            )
-        )
-        return _clean_response(response.text)
+        return _generate_with_fallback(client, final_prompt)
     except Exception as e:
         return f"Error generating code: {str(e)}"
 
@@ -94,20 +111,32 @@ def generate_strategy_from_code(strategy_name: str, strategy_code: str) -> str:
     final_prompt = final_prompt.replace("{USER_CODE}", strategy_code)
 
     try:
-        # NEW SDK CALL
         client = get_gemini_client()
-        response = client.models.generate_content(
-            model=MODEL_ID,
-            contents=final_prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.1,
-                max_output_tokens=4096,
-                top_p=0.95,
-            )
-        )
-        return _clean_response(response.text)
+        return _generate_with_fallback(client, final_prompt)
     except Exception as e:
         return f"Error translating/validating code: {str(e)}"
+
+def fix_strategy_code(strategy_name: str, broken_code: str, error_msg: str) -> str:
+    """
+    Attempts to fix a broken strategy code given the execution error message.
+    """
+    final_prompt = f"""You previously generated the following code for a strategy named '{strategy_name}':
+```python
+{broken_code}
+```
+
+However, validating this code produced the following error:
+{error_msg}
+
+Please fix the code so that it works correctly without errors. 
+The strategy must be a Python function accepting EXACTLY 4 arguments: (free, opp, mine, energy). 
+DO NOT INCLUDE ANY TEXT OTHER THAN THE FIXED PYTHON CODE INSIDE ```python TAGS.
+"""
+    try:
+        client = get_gemini_client()
+        return _generate_with_fallback(client, final_prompt)
+    except Exception as e:
+        return f"Error fixing code: {str(e)}"
 
 # --- Example Usage ---
 if __name__ == "__main__":

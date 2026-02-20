@@ -4,7 +4,6 @@ from tournament import fetch_strategies_from_firestore, run_league
 
 # --- FUNCTION 1: TOURNAMENT TRIGGER (Background) ---
 # Triggers on Create, Update, or Delete in 'strategies' collection
-@firestore_fn.on_document_written(document="strategies/{strat_id}")
 def run_tournament(event: firestore_fn.Event[firestore_fn.Change[firestore_fn.DocumentSnapshot]]) -> None:
     """
     Automatic Tournament Runner:
