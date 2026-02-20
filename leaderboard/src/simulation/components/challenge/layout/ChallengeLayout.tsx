@@ -62,6 +62,7 @@ export function ChallengeLayout({
 
 	// --- State for Test Run Modal ---
 	const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
+	const [validationAlertOpen, setValidationAlertOpen] = React.useState(false);
 
 	// --- Handlers ---
 	const toggleLeftRuleBook = () =>
@@ -83,6 +84,13 @@ export function ChallengeLayout({
 		);
 
 	const handleTestRun = () => {
+		if (
+			!strategyName?.trim() ||
+			(!strategyCode?.trim() && !strategyDesc?.trim())
+		) {
+			setValidationAlertOpen(true);
+			return;
+		}
 		setIsConfirmOpen(true);
 	};
 
@@ -121,10 +129,7 @@ export function ChallengeLayout({
 							// 1. System/Lock State
 							isLocked ||
 							isRunning ||
-							// 2. Input Validation (Must have Name + (Code OR Prompt))
-							!strategyName?.trim() ||
-							(!strategyCode?.trim() && !strategyDesc?.trim()) ||
-							// 3. Execution State
+							// 2. Execution State
 							validationStatus === "PENDING" ||
 							validationStatus === "AI_VALIDATED" ||
 							validationStatus === "HUMAN_VERIFIED" ||
@@ -178,6 +183,35 @@ export function ChallengeLayout({
 							className="rounded-none"
 						>
 							Confirm & Run
+						</Button>
+					</div>
+				</DialogFooter>
+			</Dialog>
+
+			{/* --- VALIDATION ERROR DIALOG --- */}
+			<Dialog
+				open={validationAlertOpen}
+				onOpenChange={setValidationAlertOpen}
+			>
+				<DialogHeader>
+					<DialogTitle className="text-red-500">
+						Missing Information
+					</DialogTitle>
+					<DialogDescription>
+						Please fill in all the required fields. You must provide
+						a valid <strong>Strategy Name</strong> and either write{" "}
+						<strong>Code</strong> or provide a{" "}
+						<strong>Prompt</strong> before running the simulation.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogFooter>
+					<div className="flex w-full gap-2 justify-end mt-4">
+						<Button
+							onClick={() => setValidationAlertOpen(false)}
+							variant="outline"
+							className="rounded-none text-zinc-300 font-mono uppercase text-xs"
+						>
+							Understood
 						</Button>
 					</div>
 				</DialogFooter>

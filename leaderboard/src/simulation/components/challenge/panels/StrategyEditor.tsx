@@ -18,10 +18,6 @@ import { simulationTheme } from "../../../theme";
 
 // Modes
 import "ace-builds/src-noconflict/mode-python";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/mode-typescript";
-import "ace-builds/src-noconflict/mode-csharp";
 import "ace-builds/src-noconflict/mode-markdown";
 
 // Theme (Strictly Terminal)
@@ -59,13 +55,7 @@ export function StrategyEditor({
 		"idle" | "checking" | "available" | "taken"
 	>("idle");
 
-	const languages = [
-		{ value: "python", label: "PYTHON" },
-		{ value: "java", label: "JAVA" },
-		{ value: "javascript", label: "JAVASCRIPT" },
-		{ value: "typescript", label: "TYPESCRIPT" },
-		{ value: "csharp", label: "C#" },
-	];
+	const languages = [{ value: "python", label: "PYTHON" }];
 
 	// Debounced check for strategy name availability
 	useEffect(() => {
@@ -147,9 +137,17 @@ export function StrategyEditor({
 							placeholder="ENTER_STRATEGY_NAME"
 							value={strategyName}
 							disabled={isLocked}
-							onChange={(e) =>
-								setStrategyName(e.target.value.toUpperCase())
-							}
+							onChange={(e) => {
+								const val = e.target.value.toUpperCase();
+								if (val === "") {
+									setStrategyName(val);
+									return;
+								}
+								if (val.length > 16) return;
+								if (/[^A-Z0-9]/.test(val)) return;
+								if (/^[0-9]/.test(val)) return;
+								setStrategyName(val);
+							}}
 							// Harsh input styling
 							className={`w-full ${simulationTheme.colors.panels.bg.surface} border-4 rounded-none h-14 px-4 
                                      font-black text-lg tracking-widest ${simulationTheme.colors.panels.text.light} placeholder:text-zinc-600
@@ -254,6 +252,12 @@ export function StrategyEditor({
 					</div>
 				</div>
 
+				<span className="w-[150px] text-xs text-black font-black bg-zinc-100 px-3 py-1 shadow-[2px_2px_0px_0px_#f4f4f5]">
+					{mode === "prompt"
+						? `WORDS: ${(strategyDesc || "").trim() === "" ? 0 : (strategyDesc || "").trim().split(/\s+/).length} / 350`
+						: `CHARS: ${(strategyCode || "").length} / 7000`}
+				</span>
+
 				{/* 3. Editor Area */}
 				<div className="flex-1 flex flex-col min-h-[600px]">
 					<div
@@ -300,11 +304,26 @@ export function StrategyEditor({
 												? 0
 												: val.trim().split(/\s+/)
 														.length;
-										if (wordCount <= 250)
+										if (wordCount <= 350) {
 											setStrategyDesc(val);
+										} else {
+											const parts = val.split(/(\s+)/);
+											let truncated = "";
+											let count = 0;
+											for (const p of parts) {
+												if (p.trim().length > 0)
+													count++;
+												if (count > 350) break;
+												truncated += p;
+											}
+											setStrategyDesc(truncated);
+										}
 									} else {
-										if (val.length <= 5000)
+										if (val.length <= 7000) {
 											setStrategyCode(val);
+										} else {
+											setStrategyCode(val.slice(0, 7000));
+										}
 									}
 								}}
 								value={
@@ -347,11 +366,6 @@ export function StrategyEditor({
 								STATUS: {isLocked ? "LOCKED" : "READY"}
 							</span>
 						</div>
-						<span className="text-xs text-black font-black bg-zinc-100 px-3 py-1 shadow-[2px_2px_0px_0px_#f4f4f5]">
-							{mode === "prompt"
-								? `WORDS: ${(strategyDesc || "").trim() === "" ? 0 : (strategyDesc || "").trim().split(/\s+/).length} / 250`
-								: `CHARS: ${(strategyCode || "").length} / 5000`}
-						</span>
 					</div>
 				</div>
 			</div>

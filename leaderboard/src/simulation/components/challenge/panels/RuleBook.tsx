@@ -31,7 +31,8 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 						</strong>
 						. Two strategies battle for dominance over a circular
 						network. Victory requires balancing your energy economy
-						against aggressive expansion.
+						against aggressive expansion. Each Strategy will fight
+						against every other startegy in a Round robin.
 					</p>
 				</div>
 

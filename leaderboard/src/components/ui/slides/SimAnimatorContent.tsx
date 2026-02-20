@@ -47,7 +47,7 @@ export function SimAnimatorContent() {
 				<div className="flex flex-col">
 					<h2 className="text-3xl font-black text-white uppercase tracking-tight flex items-center gap-3">
 						<Activity className="text-emerald-500" />
-						Live Telemetry
+						Simulated Data
 					</h2>
 					<p className="text-white/50 text-sm mt-1">
 						Step through the simulation to audit strategy execution
@@ -127,7 +127,7 @@ export function SimAnimatorContent() {
 						{/* Player A Panel */}
 						<div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-5 flex flex-col">
 							<h3 className="text-emerald-500 font-bold uppercase tracking-widest border-b border-emerald-500/20 pb-3 mb-4">
-								Player A
+								The Sniper
 							</h3>
 
 							<div className="space-y-4 flex-1">
@@ -185,7 +185,7 @@ export function SimAnimatorContent() {
 						{/* Player B Panel */}
 						<div className="bg-[#FA003F]/5 border border-[#FA003F]/50 rounded-xl p-5 flex flex-col">
 							<h3 className="text-[#FA003F] font-bold uppercase tracking-widest border-b border-[#FA003F]/20 pb-3 mb-4">
-								Player B
+								The Hoarder
 							</h3>
 
 							<div className="space-y-4 flex-1">

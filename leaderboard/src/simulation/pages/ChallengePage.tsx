@@ -381,7 +381,7 @@ export default function ChallengePage() {
 			<Dialog open={showTimeline} onOpenChange={setShowTimeline}>
 				<DialogHeader>
 					<DialogTitle className="text-xl font-bold uppercase tracking-widest flex items-center gap-2">
-						Running Simulation
+						Running Simulation ~ 1-2 Mins
 					</DialogTitle>
 				</DialogHeader>
 				<div className="py-4">

@@ -139,12 +139,17 @@ export function useAttemptLogic(teamName: string | null) {
 		setTimelineSteps(initialSteps);
 
 		try {
+			const currentAttempt = state.attempts[attemptId];
+			const hasCode = !!currentAttempt.code?.trim();
+
 			const payload: DraftSubmission = {
 				team_name: teamName,
 				draft_id: attemptId === 1 ? "draft_1" : "draft_2",
-				strategy_name: state.attempts[attemptId].strategyName,
-				strategy_code: state.attempts[attemptId].code,
-				strategy_desc: state.attempts[attemptId].strategyDesc, // Default desc if just code
+				strategy_name: currentAttempt.strategyName,
+				strategy_code: hasCode ? currentAttempt.code : undefined,
+				strategy_desc: hasCode
+					? undefined
+					: currentAttempt.strategyDesc,
 			};
 
 			const result = await challengeApi.runSimulation(

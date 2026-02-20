@@ -2,18 +2,109 @@
 
 import { Crosshair, ShieldAlert, Cpu } from "lucide-react";
 
+const sniperCode = `def strat_sniper(free, opp, mine, energy):
+    # 1. Target vulnerable isolated nodes
+    valid_opp = get_valid_targets(opp)
+
+    if valid_opp and energy >= 10:
+        isolated = []
+
+        for t in valid_opp:
+            neighbors = get_neighbors(t)
+            defense = sum(1 for n in neighbors if n in opp)
+
+            if defense == 0:
+                isolated.append(t)
+
+        if isolated:
+            return ["CONQUER", isolated[0]]
+
+    # 2. Hoard for Power Node snipes
+    opp_power = [n for n in valid_opp if n in POWER_NODES]
+
+    if opp_power and energy >= 25:
+        return ["CONQUER", opp_power[0]]
+
+    if free and energy >= 5:
+        return ["EXPAND", free[0]]
+
+    return ["HARVEST"]`;
+
+const hoarderCode = `def strat_hoarder(free, opp, mine, energy):
+    # 1. Prioritize Power Nodes when affordable
+    if energy >= 16 and free:
+        free_power = [n for n in free if n in POWER_NODES]
+
+        if free_power:
+            return ["EXPAND", free_power[0]]
+        else:
+            return ["EXPAND", free[0]]
+
+    # 2. Steady normal expansion
+    if energy >= 6 and energy < 15:
+        normal = [n for n in free if n not in POWER_NODES]
+
+        if normal:
+            return ["EXPAND", normal[0]]
+
+    # 3. Late-game energy dump
+    valid_opp = get_valid_targets(opp)
+
+    if energy > 30 and valid_opp:
+        return ["CONQUER", valid_opp[0]]
+
+    return ["HARVEST"]`;
+
 export function StrategyExamplesContent() {
 	return (
 		<div className="space-y-8 animate-in fade-in zoom-in-95 duration-500 h-full flex flex-col">
-			<div className="flex items-center gap-3 mb-4">
+			{/* HEADER */}
+			<div className="flex items-center gap-3">
 				<Cpu className="text-white/80" size={28} />
 				<h2 className="text-3xl font-black text-white uppercase tracking-tighter">
-					Archetype Analysis
+					Example Strategies
 				</h2>
 			</div>
 
+			{/* DESCRIPTIONS */}
+			<div className="grid grid-cols-2 gap-6">
+				<div className="bg-[#F70001]/10 border border-[#F70001]/20 rounded-xl p-4">
+					<div className="flex items-center gap-2 mb-2">
+						<Crosshair size={16} className="text-[#F70001]" />
+						<h3 className="text-sm font-bold text-white uppercase tracking-wider">
+							The Sniper – Tactical Aggression
+						</h3>
+					</div>
+					<p className="text-sm text-white/70 leading-relaxed">
+						A precision strike strategy that avoids prolonged fights
+						and instead waits for high-value opportunities. It hunts
+						isolated enemy nodes, saves energy for decisive Power
+						Node captures, and expands only when efficient. Designed
+						for players who prefer calculated bursts of dominance
+						over steady growth.
+					</p>
+				</div>
+
+				<div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+					<div className="flex items-center gap-2 mb-2">
+						<ShieldAlert size={16} className="text-blue-400" />
+						<h3 className="text-sm font-bold text-white uppercase tracking-wider">
+							The Hoarder – Economic Scaling
+						</h3>
+					</div>
+					<p className="text-sm text-white/70 leading-relaxed">
+						A resource-first strategy focused on long-term
+						advantage. It prioritizes affordable Power Nodes,
+						expands in controlled phases, and converts large energy
+						reserves into late-game conquests. Ideal for players who
+						win through superior economy rather than early conflict.
+					</p>
+				</div>
+			</div>
+
+			{/* CODE GRID */}
 			<div className="grid grid-cols-2 gap-8 flex-1">
-				{/* STRATEGY: THE SNIPER */}
+				{/* SNIPER */}
 				<div className="bg-black/50 border border-red-500/20 rounded-xl flex flex-col overflow-hidden">
 					<div className="bg-[#F70001]/10 px-4 py-3 border-b border-[#F70001]/20 flex items-center justify-between">
 						<div className="flex items-center gap-2">
@@ -26,71 +117,15 @@ export function StrategyExamplesContent() {
 							AGGRESSIVE
 						</span>
 					</div>
-					<div className="p-4 flex-1 overflow-y-auto font-mono text-xs text-white/70">
-						<pre className="space-y-1">
-							<span className="text-blue-400">def</span>{" "}
-							<span className="text-yellow-200">
-								strat_sniper
-							</span>
-							(free, opp, mine, energy):
-							<span className="text-white/40">
-								# 1. Target vulnerable isolated nodes
-							</span>
-							valid_opp = get_valid_targets(opp)
-							<span className="text-pink-400">
-								if
-							</span> valid_opp{" "}
-							<span className="text-pink-400">and</span> energy
-							&gt;= <span className="text-orange-300">10</span>:
-							isolated = []
-							<span className="text-pink-400">for</span> t{" "}
-							<span className="text-pink-400">in</span> valid_opp:
-							neighbors = get_neighbors(t) defense ={" "}
-							<span className="text-blue-400">sum</span>(
-							<span className="text-orange-300">1</span>{" "}
-							<span className="text-pink-400">for</span> n{" "}
-							<span className="text-pink-400">in</span> neighbors{" "}
-							<span className="text-pink-400">if</span> n{" "}
-							<span className="text-pink-400">in</span> opp)
-							<span className="text-pink-400">if</span> defense =={" "}
-							<span className="text-orange-300">0</span>:
-							isolated.append(t)
-							<span className="text-pink-400">if</span> isolated:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"CONQUER"</span>,
-							isolated[<span className="text-orange-300">0</span>
-							]]
-							<span className="text-white/40">
-								# 2. Hoard for Power Node snipes
-							</span>
-							opp_power = [n{" "}
-							<span className="text-pink-400">for</span> n{" "}
-							<span className="text-pink-400">in</span> valid_opp{" "}
-							<span className="text-pink-400">if</span> n{" "}
-							<span className="text-pink-400">in</span>{" "}
-							POWER_NODES]
-							<span className="text-pink-400">
-								if
-							</span> opp_power{" "}
-							<span className="text-pink-400">and</span> energy
-							&gt;= <span className="text-orange-300">25</span>:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"CONQUER"</span>,
-							opp_power[<span className="text-orange-300">0</span>
-							]]
-							<span className="text-pink-400">if</span> free{" "}
-							<span className="text-pink-400">and</span> energy
-							&gt;= <span className="text-orange-300">5</span>:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"EXPAND"</span>,
-							free[<span className="text-orange-300">0</span>]]
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"HARVEST"</span>]
+
+					<div className="p-4 flex-1 overflow-y-auto">
+						<pre className="whitespace-pre text-xs font-mono text-white/70 leading-relaxed">
+							<code>{sniperCode}</code>
 						</pre>
 					</div>
 				</div>
 
-				{/* STRATEGY: THE HOARDER */}
+				{/* HOARDER */}
 				<div className="bg-black/50 border border-blue-500/20 rounded-xl flex flex-col overflow-hidden">
 					<div className="bg-blue-500/10 px-4 py-3 border-b border-blue-500/20 flex items-center justify-between">
 						<div className="flex items-center gap-2">
@@ -103,66 +138,10 @@ export function StrategyExamplesContent() {
 							ECONOMY
 						</span>
 					</div>
-					<div className="p-4 flex-1 overflow-y-auto font-mono text-xs text-white/70">
-						<pre className="space-y-1">
-							<span className="text-blue-400">def</span>{" "}
-							<span className="text-yellow-200">
-								strat_hoarder
-							</span>
-							(free, opp, mine, energy):
-							<span className="text-white/40">
-								# 1. Prioritize Power Nodes when affordable
-							</span>
-							<span className="text-pink-400">if</span> energy
-							&gt;= <span className="text-orange-300">16</span>{" "}
-							<span className="text-pink-400">and</span> free:
-							free_power = [n{" "}
-							<span className="text-pink-400">for</span> n{" "}
-							<span className="text-pink-400">in</span> free{" "}
-							<span className="text-pink-400">if</span> n{" "}
-							<span className="text-pink-400">in</span>{" "}
-							POWER_NODES]
-							<span className="text-pink-400">if</span>{" "}
-							free_power:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"EXPAND"</span>,
-							free_power[
-							<span className="text-orange-300">0</span>]]
-							<span className="text-pink-400">else</span>:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"EXPAND"</span>,
-							free[<span className="text-orange-300">0</span>]]
-							<span className="text-white/40">
-								# 2. Steady normal expansion
-							</span>
-							<span className="text-pink-400">if</span> energy
-							&gt;= <span className="text-orange-300">6</span>{" "}
-							<span className="text-pink-400">and</span> energy
-							&lt; <span className="text-orange-300">15</span>:
-							normal = [n{" "}
-							<span className="text-pink-400">for</span> n{" "}
-							<span className="text-pink-400">in</span> free{" "}
-							<span className="text-pink-400">if</span> n{" "}
-							<span className="text-pink-400">not in</span>{" "}
-							POWER_NODES]
-							<span className="text-pink-400">if</span> normal:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"EXPAND"</span>,
-							normal[<span className="text-orange-300">0</span>]]
-							<span className="text-white/40">
-								# 3. Late-game energy dump
-							</span>
-							valid_opp = get_valid_targets(opp)
-							<span className="text-pink-400">if</span> energy
-							&gt; <span className="text-orange-300">30</span>{" "}
-							<span className="text-pink-400">and</span>{" "}
-							valid_opp:
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"CONQUER"</span>,
-							valid_opp[<span className="text-orange-300">0</span>
-							]]
-							<span className="text-pink-400">return</span> [
-							<span className="text-green-300">"HARVEST"</span>]
+
+					<div className="p-4 flex-1 overflow-y-auto">
+						<pre className="whitespace-pre text-xs font-mono text-white/70 leading-relaxed">
+							<code>{hoarderCode}</code>
 						</pre>
 					</div>
 				</div>

@@ -138,7 +138,8 @@ export function RegistrationLogin({
 						style={{ color: primaryColor }}
 						className="text-sm uppercase tracking-widest font-bold pl-1 flex items-center gap-3"
 					>
-						<Cpu size={16} /> 02. Security Clearance
+						<Cpu size={16} /> 02. Security Clearance [Tekhora
+						Password]
 					</label>
 
 					<div className="relative">

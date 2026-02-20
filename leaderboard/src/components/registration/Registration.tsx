@@ -388,7 +388,6 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						key="mode"
 						onSelectMode={handleModeSelect}
 						primaryColor={primaryColor}
-						onBack={() => setStep("LOGIN")}
 					/>
 				)}
 
@@ -510,6 +509,20 @@ export function Registration({ primaryColor }: RegistrationProps) {
 							)}
 						</div>
 
+						<button
+							onClick={() =>
+								(window.location.href = "/#rulebook")
+							}
+							style={{
+								borderColor: primaryColor,
+								backgroundColor: primaryColor,
+								color: "black",
+							}}
+							className="cursor-target font-bold w-fit-content px-6 py-4 border border-white/10 hover:bg-white/5 uppercase tracking-widest transition-all"
+						>
+							[ Continue to RULEBOOK ]
+						</button>
+
 						{!confirmAbort ? (
 							hasDrafts ? (
 								<div className="text-center mt-8 p-4 border border-white/10 bg-white/5 text-white/50 font-mono text-sm uppercase tracking-widest">
@@ -522,7 +535,7 @@ export function Registration({ primaryColor }: RegistrationProps) {
 										borderColor: primaryColor,
 										color: primaryColor,
 									}}
-									className="cursor-target w-full py-4 border border-white/10 hover:bg-white/5 uppercase tracking-widest transition-all mt-8"
+									className="cursor-target w-full py-4 border border-white/10 hover:bg-white/5 uppercase tracking-widest transition-all"
 								>
 									[ ABORT TEAM OPERATION ]
 								</button>

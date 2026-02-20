@@ -13,7 +13,8 @@ export function ProblemContent() {
 					"This is a turn-based, iterated tactical simulation where
 					two strategies battle for dominance over a circular network
 					of nodes. To win, you must manage your energy economy
-					effectively while outmaneuvering your opponent's expansion."
+					effectively while outmaneuvering your opponent's expansion.
+					"
 				</p>
 			</div>
 

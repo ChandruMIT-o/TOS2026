@@ -119,19 +119,21 @@ export function CodePreview({
 						className={`whitespace-pre-wrap ${simulationTheme.colors.panels.text.info} font-bold leading-loose`}
 					>
 						{logs ||
-							`def optimize_strategy(market_data):
+							`def strategy_name(free: list, mine: list, opp: list, energy: int) -> list:
     """
-    Generated Strategy Logic
-    """
-    risk_factor = calculate_risk(market_data)
+    Determines the next move based on current game state.
     
-    if risk_factor > 0.8:
-        return "HOLD"
+    Args:
+        "free": [1, 5, 8...], // List of all currently unoccupied nodes.
+        "mine": [2, 3], // List of all nodes currently occupied by you.
+        "opp": [14], // List of all nodes currently occupied by the opponent.
+        "energy": 50, // The amount of energy you currently have.
         
-    # Optimizing for volatility
-    return "BUY" if market_data.trend > 0 else "SELL"
-    
-# ... awaiting input stream ...`}
+    Returns:
+        One of:
+        - ["HARVEST"]
+        - ["EXPAND", target_id] (e.g., ["EXPAND", 3])
+        - ["CONQUER", target_id] (e.g., ["CONQUER", 14])`}
 						{/* Solid block pulsing cursor */}
 						<span
 							className={`inline-block w-2.5 h-4 ${simulationTheme.colors.panels.bg.info} ml-1 translate-y-1 animate-pulse`}

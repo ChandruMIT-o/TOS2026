@@ -27,27 +27,6 @@ export function TrainingContent() {
 					Launch Simulator
 				</button>
 			</div>
-
-			<div className="grid grid-cols-3 gap-4 w-full max-w-2xl mt-8">
-				<div className="bg-white/5 p-4 rounded border border-white/10 flex flex-col items-center gap-2">
-					<div className="text-emerald-500 font-mono text-xl">0</div>
-					<div className="text-[10px] text-white/40 uppercase tracking-widest">
-						Wins
-					</div>
-				</div>
-				<div className="bg-white/5 p-4 rounded border border-white/10 flex flex-col items-center gap-2">
-					<div className="text-white font-mono text-xl">8</div>
-					<div className="text-[10px] text-white/40 uppercase tracking-widest">
-						Games Played
-					</div>
-				</div>
-				<div className="bg-white/5 p-4 rounded border border-white/10 flex flex-col items-center gap-2">
-					<div className="text-red-500 font-mono text-xl">12%</div>
-					<div className="text-[10px] text-white/40 uppercase tracking-widest">
-						Win Rate
-					</div>
-				</div>
-			</div>
 		</div>
 	);
 }

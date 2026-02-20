@@ -30,7 +30,6 @@ export interface Round {
 		B: Result;
 	};
 }
-
 export const matchData: Round[] = [
 	{
 		round: 1,
@@ -43,6 +42,18 @@ export const matchData: Round[] = [
 	},
 	{
 		round: 2,
+		inputs: { A: { energy: 5, nodes: 1 }, B: { energy: 5, nodes: 1 } },
+		choices: {
+			A: { type: "EXPAND", targetNode: 2 },
+			B: { type: "HARVEST" },
+		},
+		results: {
+			A: { text: "expanded to Node 2 (Cost: 5)" },
+			B: { text: "harvested +5 Energy" },
+		},
+	},
+	{
+		round: 3,
 		inputs: { A: { energy: 0, nodes: 2 }, B: { energy: 10, nodes: 1 } },
 		choices: {
 			A: { type: "HARVEST" },
@@ -54,7 +65,16 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 3,
+		round: 4,
+		inputs: { A: { energy: 6, nodes: 2 }, B: { energy: 5, nodes: 2 } },
+		choices: { A: { type: "HARVEST" }, B: { type: "HARVEST" } },
+		results: {
+			A: { text: "harvested +6 Energy" },
+			B: { text: "harvested +6 Energy" },
+		},
+	},
+	{
+		round: 5,
 		inputs: { A: { energy: 12, nodes: 2 }, B: { energy: 11, nodes: 2 } },
 		choices: {
 			A: { type: "CONQUER", targetNode: 3 },
@@ -66,19 +86,40 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 4,
-		inputs: { A: { energy: 11, nodes: 3 }, B: { energy: 1, nodes: 3 } },
+		round: 6,
+		inputs: { A: { energy: 4, nodes: 3 }, B: { energy: 6, nodes: 2 } },
 		choices: {
-			A: { type: "HARVEST", invalid: true },
-			B: { type: "HARVEST" },
+			A: { type: "HARVEST" },
+			B: { type: "EXPAND", targetNode: 6 },
 		},
+		results: {
+			A: { text: "harvested +7 Energy" },
+			B: { text: "expanded to Node 6 (Cost: 5)" },
+		},
+	},
+	{
+		round: 7,
+		inputs: { A: { energy: 11, nodes: 3 }, B: { energy: 1, nodes: 3 } },
+		choices: { A: { type: "HARVEST" }, B: { type: "HARVEST" } },
 		results: {
 			A: { text: "harvested +7 Energy" },
 			B: { text: "harvested +7 Energy" },
 		},
 	},
 	{
-		round: 5,
+		round: 8,
+		inputs: { A: { energy: 18, nodes: 3 }, B: { energy: 8, nodes: 3 } },
+		choices: {
+			A: { type: "EXPAND", targetNode: 4 },
+			B: { type: "EXPAND", targetNode: 8 },
+		},
+		results: {
+			A: { text: "expanded to Node 4 (Cost: 15)" },
+			B: { text: "expanded to Node 8 (Cost: 5)" },
+		},
+	},
+	{
+		round: 9,
 		inputs: { A: { energy: 3, nodes: 4 }, B: { energy: 3, nodes: 4 } },
 		choices: { A: { type: "HARVEST" }, B: { type: "HARVEST" } },
 		results: {
@@ -87,10 +128,22 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 6,
+		round: 10,
+		inputs: { A: { energy: 15, nodes: 4 }, B: { energy: 11, nodes: 4 } },
+		choices: {
+			A: { type: "CONQUER", targetNode: 8 },
+			B: { type: "EXPAND", targetNode: 9 },
+		},
+		results: {
+			A: { text: "conquered Node 8 from B (Cost: 8)" },
+			B: { text: "expanded to Node 9 (Cost: 5)" },
+		},
+	},
+	{
+		round: 11,
 		inputs: { A: { energy: 7, nodes: 5 }, B: { energy: 6, nodes: 4 } },
 		choices: {
-			A: { type: "HARVEST", invalid: true },
+			A: { type: "HARVEST" },
 			B: { type: "EXPAND", targetNode: 10 },
 		},
 		results: {
@@ -99,10 +152,22 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 7,
+		round: 12,
+		inputs: { A: { energy: 20, nodes: 5 }, B: { energy: 1, nodes: 5 } },
+		choices: {
+			A: { type: "EXPAND", targetNode: 7 },
+			B: { type: "HARVEST" },
+		},
+		results: {
+			A: { text: "expanded to Node 7 (Cost: 15)" },
+			B: { text: "harvested +9 Energy" },
+		},
+	},
+	{
+		round: 13,
 		inputs: { A: { energy: 5, nodes: 6 }, B: { energy: 10, nodes: 5 } },
 		choices: {
-			A: { type: "HARVEST", invalid: true },
+			A: { type: "HARVEST" },
 			B: { type: "EXPAND", targetNode: 12 },
 		},
 		results: {
@@ -111,7 +176,19 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 8,
+		round: 14,
+		inputs: { A: { energy: 23, nodes: 6 }, B: { energy: 5, nodes: 6 } },
+		choices: {
+			A: { type: "CONQUER", targetNode: 12 },
+			B: { type: "HARVEST" },
+		},
+		results: {
+			A: { text: "conquered Node 12 from B (Cost: 8)" },
+			B: { text: "harvested +9 Energy" },
+		},
+	},
+	{
+		round: 15,
 		inputs: { A: { energy: 15, nodes: 7 }, B: { energy: 14, nodes: 5 } },
 		choices: {
 			A: { type: "EXPAND", targetNode: 11 },
@@ -123,7 +200,19 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 9,
+		round: 16,
+		inputs: { A: { energy: 0, nodes: 8 }, B: { energy: 9, nodes: 6 } },
+		choices: {
+			A: { type: "HARVEST" },
+			B: { type: "EXPAND", targetNode: 15 },
+		},
+		results: {
+			A: { text: "harvested +24 Energy" },
+			B: { text: "expanded to Node 15 (Cost: 5)" },
+		},
+	},
+	{
+		round: 17,
 		inputs: { A: { energy: 24, nodes: 8 }, B: { energy: 4, nodes: 7 } },
 		choices: {
 			A: { type: "EXPAND", targetNode: 16 },
@@ -135,7 +224,19 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 10,
+		round: 18,
+		inputs: { A: { energy: 19, nodes: 9 }, B: { energy: 15, nodes: 7 } },
+		choices: {
+			A: { type: "EXPAND", targetNode: 17 },
+			B: { type: "HARVEST" },
+		},
+		results: {
+			A: { text: "expanded to Node 17 (Cost: 15)" },
+			B: { text: "harvested +11 Energy" },
+		},
+	},
+	{
+		round: 19,
 		inputs: { A: { energy: 4, nodes: 10 }, B: { energy: 26, nodes: 7 } },
 		choices: {
 			A: { type: "HARVEST" },
@@ -147,123 +248,15 @@ export const matchData: Round[] = [
 		},
 	},
 	{
-		round: 11,
-		inputs: { A: { energy: 14, nodes: 11 }, B: { energy: 6, nodes: 8 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 18 },
-			B: { type: "EXPAND", targetNode: 19 },
-		},
-		results: {
-			A: { text: "conquered Node 18 from B (Cost: 8)" },
-			B: { text: "expanded to Node 19 (Cost: 5)" },
-		},
-	},
-	{
-		round: 12,
-		inputs: { A: { energy: 1, nodes: 13 }, B: { energy: 13, nodes: 8 } },
-		choices: {
-			A: { type: "HARVEST" },
-			B: { type: "EXPAND", targetNode: 22 },
-		},
-		results: {
-			A: { text: "harvested +37 Energy" },
-			B: { text: "expanded to Node 22 (Cost: 5)" },
-		},
-	},
-	{
-		round: 13,
-		inputs: { A: { energy: 30, nodes: 14 }, B: { energy: 3, nodes: 9 } },
-		choices: {
-			A: { type: "EXPAND", targetNode: 24 },
-			B: { type: "HARVEST" },
-		},
-		results: {
-			A: { text: "expanded to Node 24 (Cost: 15)" },
-			B: { text: "harvested +13 Energy" },
-		},
-	},
-	{
-		round: 14,
-		inputs: { A: { energy: 10, nodes: 15 }, B: { energy: 11, nodes: 10 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 25 },
-			B: { type: "EXPAND", targetNode: 26 },
-		},
-		results: {
-			A: { text: "conquered Node 25 from B (Cost: 8)" },
-			B: { text: "expanded to Node 26 (Cost: 5)" },
-		},
-	},
-	{
-		round: 15,
-		inputs: { A: { energy: 46, nodes: 16 }, B: { energy: 20, nodes: 10 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 26 },
-			B: { type: "HARVEST" },
-		},
-		results: {
-			A: { text: "conquered Node 26 from B (Cost: 8)" },
-			B: { text: "harvested +13 Energy" },
-		},
-	},
-	{
-		round: 16,
-		inputs: { A: { energy: 83, nodes: 16 }, B: { energy: 23, nodes: 10 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 2 },
-			B: { type: "HARVEST" },
-		},
-		results: {
-			A: { text: "conquered Node 2 from B (Cost: 8)" },
-			B: { text: "harvested +13 Energy" },
-		},
-	},
-	{
-		round: 17,
-		inputs: { A: { energy: 120, nodes: 16 }, B: { energy: 26, nodes: 10 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 2 },
-			B: { type: "HARVEST" },
-		},
-		results: {
-			A: { text: "conquered Node 2 from B (Cost: 8)" },
-			B: { text: "harvested +13 Energy" },
-		},
-	},
-	{
-		round: 18,
-		inputs: { A: { energy: 157, nodes: 16 }, B: { energy: 29, nodes: 10 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 2 },
-			B: { type: "HARVEST" },
-		},
-		results: {
-			A: { text: "conquered Node 2 from B (Cost: 8)" },
-			B: { text: "harvested +13 Energy" },
-		},
-	},
-	{
-		round: 19,
-		inputs: { A: { energy: 194, nodes: 16 }, B: { energy: 32, nodes: 10 } },
-		choices: {
-			A: { type: "CONQUER", targetNode: 2 },
-			B: { type: "CONQUER", targetNode: 3 },
-		},
-		results: {
-			A: { text: "conquered Node 2 from B (Cost: 8)" },
-			B: { text: "conquered Node 3 from A (Cost: 10)" },
-		},
-	},
-	{
 		round: 20,
-		inputs: { A: { energy: 178, nodes: 17 }, B: { energy: 35, nodes: 9 } },
+		inputs: { A: { energy: 34, nodes: 10 }, B: { energy: 11, nodes: 8 } },
 		choices: {
-			A: { type: "HARVEST" },
-			B: { type: "CONQUER", targetNode: 2 },
+			A: { type: "CONQUER", targetNode: 20 },
+			B: { type: "EXPAND", targetNode: 18 },
 		},
 		results: {
-			A: { text: "harvested +45 Energy" },
-			B: { text: "conquered Node 2 from A (Cost: 10)" },
+			A: { text: "conquered Node 20 from B (Cost: 8)" },
+			B: { text: "expanded to Node 18 (Cost: 5)" },
 		},
 	},
 ];

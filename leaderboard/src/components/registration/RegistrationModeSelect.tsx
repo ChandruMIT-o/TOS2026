@@ -4,13 +4,11 @@ import { Users, Target } from "lucide-react";
 type RegistrationModeSelectProps = {
 	onSelectMode: (mode: "SOLO" | "DUO") => void;
 	primaryColor: string;
-	onBack: () => void;
 };
 
 export function RegistrationModeSelect({
 	onSelectMode,
 	primaryColor = "#10b981", // Default Emerald
-	onBack,
 }: RegistrationModeSelectProps) {
 	// Reusable Card Component to keep code clean
 	const ModeCard = ({
@@ -149,15 +147,6 @@ export function RegistrationModeSelect({
 					delay={0.2}
 				/>
 			</div>
-
-			{/* Back Action */}
-			<button
-				onClick={onBack}
-				style={{ borderColor: primaryColor }}
-				className="cursor-target w-full py-4 border border-white/10 text-white/40 hover:text-white uppercase tracking-widest text-xs mt-4 hover:bg-white/5 rounded-sm transition-colors"
-			>
-				Return to Authentication
-			</button>
 		</motion.div>
 	);
 }
