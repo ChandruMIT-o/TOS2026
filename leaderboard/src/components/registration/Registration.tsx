@@ -17,6 +17,7 @@ import {
 	rejectInvite,
 	getTeamByMemberUid,
 	getUserProfile,
+	verifyUserTicket,
 	type TeamFormation,
 } from "../../database/api/Invitation";
 
@@ -42,21 +43,24 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			if (currentUser) {
-				const loggedInUser: User = {
-					id: currentUser.uid,
-					email: currentUser.email || "",
-					name:
-						currentUser.displayName ||
-						currentUser.email?.split("@")[0] ||
-						"Unknown",
-					phone: "", // Fetch from DB if needed
-					ticketId: "",
-					hasTicket: false,
-				};
-
-				setUser(loggedInUser);
-
 				try {
+					// 0. Verify Ticket Before Proceeding
+					const ticketId = await verifyUserTicket(currentUser.uid);
+
+					const loggedInUser: User = {
+						id: currentUser.uid,
+						email: currentUser.email || "",
+						name:
+							currentUser.displayName ||
+							currentUser.email?.split("@")[0] ||
+							"Unknown",
+						phone: "", // Fetch from DB if needed
+						ticketId: ticketId,
+						hasTicket: true,
+					};
+
+					setUser(loggedInUser);
+
 					// 1. Check if user is already in a team
 					const team = await getTeamByMemberUid(loggedInUser.id);
 					if (team) {
@@ -128,10 +132,13 @@ export function Registration({ primaryColor }: RegistrationProps) {
 						}
 					}
 				} catch (e) {
-					console.error("Error checking invites/teams", e);
-					if (isInitializing) {
-						setStep("MODE_SELECTION");
-					}
+					console.error(
+						"Error checking invites/teams or missing ticket:",
+						e,
+					);
+					await logout();
+					setUser(null);
+					setStep("LOGIN");
 				}
 			} else {
 				// No user is signed in

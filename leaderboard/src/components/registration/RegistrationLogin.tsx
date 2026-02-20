@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "../ui/Input"; // Assuming this is your shadcn or custom input
 import { Terminal, ShieldAlert, ExternalLink, Cpu, Wifi } from "lucide-react";
 import type { User } from "./types";
-import { login } from "../../auth/session";
+import { login, logout } from "../../auth/session";
 import { cn } from "../../lib/utils";
 import { Eye, EyeOff } from "lucide-react";
-
+import { verifyUserTicket } from "../../database/api/Invitation";
 type RegistrationLoginProps = {
 	onLoginSuccess: (user: User) => void;
 	primaryColor: string;
@@ -30,13 +30,17 @@ export function RegistrationLogin({
 		try {
 			// Real login call
 			const userCredential = await login(email, password);
+
+			// Check for valid ticket in orders collection via shared logic
+			const ticketId = await verifyUserTicket(userCredential.uid);
+
 			const user: User = {
 				id: userCredential.uid,
 				email: userCredential.email || email,
 				name: userCredential.displayName || email.split("@")[0], // Fallback if no display name
 				phone: "", // TODO: Fetch from profile if exists
-				ticketId: "",
-				hasTicket: false,
+				ticketId: ticketId,
+				hasTicket: true,
 			};
 
 			// Artificial delay to show off the "Authenticating" state
@@ -44,6 +48,7 @@ export function RegistrationLogin({
 
 			onLoginSuccess(user);
 		} catch (err: any) {
+			await logout(); // Ensure user is logged out so they aren't stuck halfway
 			// Sanitize Firebase Format: "Firebase: Error (auth/invalid-credential)." -> "Error (auth/invalid-credential)"
 			const errorMessage = err.message || "CONNECTION SEVERED";
 			const sanitizedError = errorMessage

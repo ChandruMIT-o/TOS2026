@@ -31,6 +31,16 @@ const INVITES_COLLECTION = "tos_invites";
 
 // Create a new invite
 export const createInvite = async (inviter: User, inviteeEmail: string) => {
+	// check if invitee exists in users collection
+	const usersQ = query(
+		collection(db, "users"),
+		where("email", "==", inviteeEmail),
+	);
+	const usersSnapshot = await getDocs(usersQ);
+	if (usersSnapshot.empty) {
+		throw new Error("No operative found with this email address.");
+	}
+
 	// check if invitee has any pending invite or accepted invite (AS INVITEE)
 	const q = query(
 		collection(db, INVITES_COLLECTION),
@@ -233,4 +243,63 @@ export const checkTeamNameExists = async (teamName: string) => {
 	const teamRef = doc(db, "tos_teams", teamName);
 	const teamSnap = await getDoc(teamRef);
 	return teamSnap.exists();
+};
+
+// Verify user has a valid event ticket
+export const verifyUserTicket = async (uid: string) => {
+	// First, check if the user is explicitly registered for TOS
+	const userRef = doc(db, "users", uid);
+	const userSnap = await getDoc(userRef);
+
+	if (userSnap.exists()) {
+		const userData = userSnap.data();
+		if (userData.tos_registered === true) {
+			return "TOS_PRE_REGISTERED";
+		}
+	}
+
+	const ordersQuery = query(
+		collection(db, "orders"),
+		where("userId", "==", uid),
+		where("status", "==", "PAID"),
+	);
+	const ordersSnapshot = await getDocs(ordersQuery);
+
+	if (ordersSnapshot.empty) {
+		throw new Error(
+			"No order found. Please ensure you have purchased an eligible pass.",
+		);
+	}
+
+	const validEventIds = [
+		"pass-global",
+		"pass-tech",
+		"combo1",
+		"combo2",
+		"combo3",
+	];
+	let hasValidTicket = false;
+	let ticketId = "";
+
+	for (const docSnap of ordersSnapshot.docs) {
+		const data = docSnap.data();
+		if (data.items && Array.isArray(data.items)) {
+			for (const item of data.items) {
+				if (item.eventId && validEventIds.includes(item.eventId)) {
+					hasValidTicket = true;
+					ticketId = docSnap.id;
+					break;
+				}
+			}
+		}
+		if (hasValidTicket) break;
+	}
+
+	if (!hasValidTicket) {
+		throw new Error(
+			"No valid ticket found. Please ensure you have purchased an eligible pass.",
+		);
+	}
+
+	return ticketId;
 };
