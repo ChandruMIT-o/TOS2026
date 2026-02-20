@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User as UserIcon, Phone, Ticket } from "lucide-react";
+import { User as UserIcon, Ticket } from "lucide-react";
 import type { User } from "./types";
 
 type RegistrationSoloProps = {
@@ -40,15 +40,6 @@ export function RegistrationSolo({
 						</label>
 						<div className="text-lg font-mono text-white border-b border-white/20 pb-2">
 							{user.name}
-						</div>
-					</div>
-
-					<div className="space-y-2">
-						<label className="text-xs text-white/40 uppercase tracking-widest flex items-center gap-2">
-							<Phone size={12} /> Priority Com-Link
-						</label>
-						<div className="text-lg font-mono text-white border-b border-white/20 pb-2">
-							{user.phone}
 						</div>
 					</div>
 

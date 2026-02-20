@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChevronDown, ChevronRight, type LucideIcon } from "lucide-react";
 import { Card } from "../../ui/Card";
 import { cn } from "../../../../lib/utils";
+import { simulationTheme } from "../../../theme";
 
 interface CollapsiblePanelProps {
 	title: string;
@@ -32,7 +33,7 @@ export function CollapsiblePanel({
 		>
 			{/* Header */}
 			<div
-				className="group flex items-center justify-between px-4 py-3 border-b border-black bg-[#ececec] text-black text-black cursor-pointer hover:bg-white hover:text-black transition-colors"
+				className={`group flex items-center justify-between px-4 py-3 border-b border-black ${simulationTheme.colors.bg.header} ${simulationTheme.colors.text.inverse} cursor-pointer ${simulationTheme.colors.bg.headerHover} transition-colors`}
 				onClick={onToggle}
 			>
 				<div className="flex items-center gap-2 font-bold font-mono text-sm uppercase tracking-wide">

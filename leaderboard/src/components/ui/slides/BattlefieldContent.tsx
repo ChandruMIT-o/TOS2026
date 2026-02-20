@@ -34,7 +34,7 @@ export function BattlefieldContent() {
 
 				{/* Dynamic Info Panel */}
 				<div
-					className={`w-64 p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${
+					className={`cursor-target w-64 p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${
 						hoveredNode
 							? hoveredNode.type === "POWER"
 								? "bg-purple-500/10 border-purple-500/50"
@@ -138,7 +138,7 @@ export function BattlefieldContent() {
 							<div
 								key={node.id}
 								style={{ left: `${x}px`, top: `${y}px` }}
-								className={`${baseClasses} ${colorClasses}`}
+								className={`${baseClasses} ${colorClasses} cursor-target`}
 								onMouseEnter={() => setHoveredNode(node)}
 								onMouseLeave={() => setHoveredNode(null)}
 							>

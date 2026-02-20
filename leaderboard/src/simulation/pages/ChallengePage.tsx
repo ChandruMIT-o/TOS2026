@@ -17,6 +17,8 @@ import { auth } from "../../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getTeamByMemberUid } from "../../database/api/Invitation";
 import { challengeApi } from "../services/challengeApi";
+import { simulationTheme, setSimulationTheme, onThemeChange } from "../theme";
+import ThemeSwitch from "../components/ui/themeToggle";
 
 export default function ChallengePage() {
 	const { setPageLoaded } = useLoading();
@@ -47,6 +49,7 @@ export default function ChallengePage() {
 
 	// --- 3. Local UI State ---
 	const [activeTab, setActiveTab] = React.useState("attempt-1");
+	const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
 	// --- 4. Initialization Effects ---
 	React.useEffect(() => {
@@ -54,6 +57,14 @@ export default function ChallengePage() {
 	}, [setPageLoaded]);
 
 	// Fetch Auth & Team
+	React.useEffect(() => {
+		const unsubTheme = onThemeChange(() => {
+			// Trigger a re-render
+			forceUpdate();
+		});
+		return () => unsubTheme();
+	}, []);
+
 	React.useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (user) => {
 			if (user) {
@@ -244,7 +255,9 @@ export default function ChallengePage() {
 	// --- 6. Render ---
 	if (isAuthLoading) {
 		return (
-			<div className="flex h-screen items-center justify-center bg-black text-emerald-500 font-mono animate-pulse">
+			<div
+				className={`flex h-screen items-center justify-center ${simulationTheme.colors.bg.loading} ${simulationTheme.colors.text.accent} font-mono animate-pulse`}
+			>
 				INITIALIZING UPLINK...
 			</div>
 		);
@@ -265,36 +278,46 @@ export default function ChallengePage() {
 						For now, we adhere to the strict scope of integrating "functions" and "ChallengePage".
 					*/}
 					{isSubmissionLocked && (
-						<div className="absolute inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
-							<div className="bg-zinc-900 border border-emerald-500/50 p-8 max-w-md text-center">
-								<Lock className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-								<h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-widest">
+						<div
+							className={`absolute inset-0 ${simulationTheme.colors.bg.overlay} flex items-center justify-center z-50 backdrop-blur-sm`}
+						>
+							<div
+								className={`${simulationTheme.colors.bg.modal} border ${simulationTheme.colors.border.accent} p-8 max-w-md text-center`}
+							>
+								<Lock
+									className={`w-12 h-12 ${simulationTheme.colors.text.accent} mx-auto mb-4`}
+								/>
+								<h3
+									className={`text-2xl font-bold ${simulationTheme.colors.text.title} mb-2 uppercase tracking-widest`}
+								>
 									System Locked
 								</h3>
-								<p className="text-zinc-400 font-mono text-sm">
+								<p
+									className={`${simulationTheme.colors.text.secondary} font-mono text-sm`}
+								>
 									Strategy has been finalized. No further
 									changes allowed. (Roughly takes 1 minute to
 									update Leaderboard)
 								</p>
 								<button
 									onClick={() => navigate("/#leaderboard")}
-									className="
+									className={`
 										mt-4
 										px-6 py-1
 										text-lg font-extrabold uppercase tracking-wider
-										bg-yellow-300 text-black
-										border-4 border-black
-										shadow-[6px_6px_0px_#000]
-										active:shadow-[2px_2px_0px_#000]
+										${simulationTheme.colors.bg.buttonPrimary} ${simulationTheme.colors.text.primary}
+										border-4 ${simulationTheme.colors.border.button}
+										${simulationTheme.colors.shadow.button}
+										active:${simulationTheme.colors.shadow.buttonActive}
 										active:translate-x-[4px]
 										active:translate-y-[4px]
-										hover:shadow-[2px_2px_0px_#000]
+										hover:${simulationTheme.colors.shadow.buttonHover}
 										hover:translate-x-[4px]
 										hover:translate-y-[4px]
 										transition-all
-										hover:bg-slate-100
+										${simulationTheme.colors.bg.buttonHover}
 										select-none
-									"
+									`}
 								>
 									Leaderboard
 								</button>
@@ -351,7 +374,9 @@ export default function ChallengePage() {
 	};
 
 	return (
-		<div className="flex flex-col h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-emerald-500/30">
+		<div
+			className={`flex flex-col h-screen ${simulationTheme.colors.bg.main} ${simulationTheme.colors.text.main} overflow-hidden font-sans ${simulationTheme.colors.selection}`}
+		>
 			{/* Timeline Dialog */}
 			<Dialog open={showTimeline} onOpenChange={setShowTimeline}>
 				<DialogHeader>
@@ -368,7 +393,7 @@ export default function ChallengePage() {
 				{/* Dither only for submission tab */}
 				{activeTab === "submission" && (
 					<Dither
-						waveColor={[0.6, 0.4, 0.1]}
+						waveColor={simulationTheme.colors.dither.waveColor}
 						disableAnimation={false}
 						enableMouseInteraction={true}
 						mouseRadius={0.3}
@@ -381,35 +406,49 @@ export default function ChallengePage() {
 			</div>
 
 			{/* Top Navigation Bar - Updated */}
-			<div className="w-full bg-slate-200 text-black border-b border-black z-50 h-[64px] shadow-lg relative">
+			<div
+				className={`w-full ${simulationTheme.colors.bg.nav} ${simulationTheme.colors.text.primary} border-b ${simulationTheme.colors.border.main} z-50 h-[64px] shadow-lg relative`}
+			>
 				<div className="grid grid-cols-[280px_1fr_280px] divide-x divide-black h-full">
 					{/* 1. LEFT: EXIT + IDENTITY */}
-					<div className="flex items-center h-full px-4 gap-4 bg-slate-200">
+					<div
+						className={`flex items-center h-full px-4 gap-4 ${simulationTheme.colors.bg.nav}`}
+					>
 						<button
 							onClick={handleGoHome}
-							className="flex items-center justify-center h-10 w-10 border border-black hover:bg-black hover:text-white transition-colors flex-shrink-0"
+							className={`flex items-center justify-center h-10 w-10 border ${simulationTheme.colors.border.main} ${simulationTheme.colors.bg.navBtnHover} ${simulationTheme.colors.text.navBtnHover} transition-colors flex-shrink-0`}
 							title="Return to Root"
 						>
-							<Birdhouse />
+							<Birdhouse className="w-6 h-6" />
 						</button>
 
 						<div className="flex flex-col justify-center">
-							<span className="font-mono text-[10px] uppercase opacity-60 leading-tight">
-								Simulation_ID
+							<span className="font-black uppercase tracking-tighter text-xl leading-none">
+								ToS
 							</span>
-							<div className="flex items-baseline gap-2">
-								<span className="font-black uppercase tracking-tighter text-xl leading-none">
-									ToS
-								</span>
-								<span className="font-bold font-mono text-sm uppercase tracking-tight opacity-100">
-									Edition 4
-								</span>
-							</div>
+							<span className="font-bold font-mono text-sm uppercase tracking-tight opacity-100">
+								Edition_4
+							</span>
+						</div>
+
+						{/* Theme Toggle */}
+						<div className="self-center w-full flex justify-end">
+							<ThemeSwitch
+								checked={
+									simulationTheme.colors.bg.main ===
+									"bg-zinc-950"
+								} // simple dark mode check
+								onChange={(checked) =>
+									setSimulationTheme(checked)
+								}
+							/>
 						</div>
 					</div>
 
 					{/* 2. CENTER: TABS */}
-					<div className="relative flex items-center justify-center bg-slate-200 px-4 h-full">
+					<div
+						className={`relative flex items-center justify-center ${simulationTheme.colors.bg.nav} px-4 h-full`}
+					>
 						<div className="w-full max-w-[500px]">
 							<AttemptTabs
 								activeTab={activeTab}
@@ -422,7 +461,9 @@ export default function ChallengePage() {
 					</div>
 
 					{/* 3. RIGHT: TEAM + SYSTEM INFO */}
-					<div className="flex items-center justify-between h-full px-4 bg-slate-200">
+					<div
+						className={`flex items-center justify-between h-full px-4 ${simulationTheme.colors.bg.nav}`}
+					>
 						{/* Team Name Display */}
 						<div className="flex flex-col">
 							<span className="font-mono text-[10px] uppercase opacity-60 leading-tight flex items-center gap-1">
@@ -438,8 +479,12 @@ export default function ChallengePage() {
 							<span className="font-mono text-[10px] uppercase opacity-60 mb-1">
 								v2.4.RC
 							</span>
-							<div className="flex items-center gap-1.5 border border-black px-2 py-1 bg-white/50">
-								<span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+							<div
+								className={`flex items-center gap-1.5 border ${simulationTheme.colors.border.main} px-2 py-1 ${simulationTheme.colors.bg.statusBadge}`}
+							>
+								<span
+									className={`w-1.5 h-1.5 ${simulationTheme.colors.status.online} rounded-full animate-pulse`}
+								/>
 								<span className="text-[10px] font-bold uppercase tracking-wider">
 									Online
 								</span>

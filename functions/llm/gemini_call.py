@@ -22,7 +22,6 @@ def get_gemini_client():
     return client
 
 # Define the model ID (Using the one from your snippet, or fallback to stable flash)
-# Define the model ID (Using the one from your snippet, or fallback to stable flash)
 MODEL_ID = os.getenv("GEMINI_MODEL", "gemini-2.5-flash") 
 
 # --- PATH CONFIGURATION ---

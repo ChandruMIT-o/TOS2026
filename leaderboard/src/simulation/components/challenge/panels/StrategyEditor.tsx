@@ -14,6 +14,7 @@ import { Input } from "../../ui/Input";
 import { useState, useEffect } from "react";
 import AceEditor from "react-ace";
 import { challengeApi } from "../../../services/challengeApi";
+import { simulationTheme } from "../../../theme";
 
 // Modes
 import "ace-builds/src-noconflict/mode-python";
@@ -95,9 +96,11 @@ export function StrategyEditor({
 			isCollapsed={isCollapsed}
 			onToggle={onToggle}
 			// Match the brutalist container style
-			className="bg-zinc-950 border-4 border-zinc-100 text-zinc-100 font-sans"
+			className={`${simulationTheme.colors.panels.bg.base} border-4 ${simulationTheme.colors.panels.border.base} ${simulationTheme.colors.panels.text.base} font-sans`}
 		>
-			<div className="flex flex-col h-full gap-8 bg-zinc-950 p-6">
+			<div
+				className={`flex flex-col h-full gap-8 ${simulationTheme.colors.panels.bg.base} p-6`}
+			>
 				{/* 1. Header & Identity Section */}
 				<div className="flex flex-col gap-2">
 					<label className="text-xs font-black text-lime-400 uppercase tracking-widest flex items-center justify-between border-b-4 border-zinc-100 pb-2">
@@ -116,7 +119,9 @@ export function StrategyEditor({
 								<Loader2 className="w-4 h-4 animate-spin text-yellow-400" />
 							)}
 							{availability === "available" && (
-								<span className="text-xs text-black bg-lime-400 px-2 py-0.5 font-black flex items-center gap-1 border-2 border-lime-400 shadow-[2px_2px_0px_0px_#f4f4f5]">
+								<span
+									className={`text-xs ${simulationTheme.colors.panels.text.dark} ${simulationTheme.colors.panels.bg.success} px-2 py-0.5 font-black flex items-center gap-1 border-2 ${simulationTheme.colors.panels.border.success} shadow-[2px_2px_0px_0px_#f4f4f5]`}
+								>
 									<CheckCircle2
 										className="w-3 h-3"
 										strokeWidth={3}
@@ -125,7 +130,9 @@ export function StrategyEditor({
 								</span>
 							)}
 							{availability === "taken" && (
-								<span className="text-xs text-white bg-rose-500 px-2 py-0.5 font-black flex items-center gap-1 border-2 border-rose-500 shadow-[2px_2px_0px_0px_#f4f4f5]">
+								<span
+									className={`text-xs ${simulationTheme.colors.panels.text.light} ${simulationTheme.colors.panels.bg.error} px-2 py-0.5 font-black flex items-center gap-1 border-2 ${simulationTheme.colors.panels.border.error} shadow-[2px_2px_0px_0px_#f4f4f5]`}
+								>
 									<XCircle
 										className="w-3 h-3"
 										strokeWidth={3}
@@ -144,8 +151,8 @@ export function StrategyEditor({
 								setStrategyName(e.target.value.toUpperCase())
 							}
 							// Harsh input styling
-							className={`w-full bg-zinc-900 border-4 rounded-none h-14 px-4 
-                                     font-black text-lg tracking-widest text-white placeholder:text-zinc-600
+							className={`w-full ${simulationTheme.colors.panels.bg.surface} border-4 rounded-none h-14 px-4 
+                                     font-black text-lg tracking-widest ${simulationTheme.colors.panels.text.light} placeholder:text-zinc-600
                                      focus:outline-none transition-all duration-75
                                      ${
 											availability === "taken"
@@ -166,14 +173,16 @@ export function StrategyEditor({
 						<label className="text-xs text-zinc-400 font-black uppercase tracking-widest mb-3 block">
 							Input_Mode
 						</label>
-						<div className="flex border-4 border-zinc-100 bg-zinc-950">
+						<div
+							className={`flex border-4 ${simulationTheme.colors.panels.border.base} ${simulationTheme.colors.panels.bg.base}`}
+						>
 							<button
 								onClick={() => setMode("prompt")}
 								className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-black uppercase tracking-wider transition-none
                                     ${
 										mode === "prompt"
-											? "bg-fuchsia-400 text-black border-r-4 border-zinc-100"
-											: "text-zinc-500 hover:text-white hover:bg-zinc-800 border-r-4 border-zinc-100"
+											? `${simulationTheme.colors.panels.bg.accent} ${simulationTheme.colors.panels.text.dark} border-r-4 ${simulationTheme.colors.panels.border.base}`
+											: `${simulationTheme.colors.panels.text.muted} hover:text-white ${simulationTheme.colors.panels.bg.surfaceHover} border-r-4 ${simulationTheme.colors.panels.border.base}`
 									} disabled:opacity-50 disabled:cursor-not-allowed`}
 							>
 								<ALargeSmall
@@ -187,8 +196,8 @@ export function StrategyEditor({
 								className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-black uppercase tracking-wider transition-none
                                     ${
 										mode === "code"
-											? "bg-cyan-400 text-black"
-											: "text-zinc-500 hover:text-white hover:bg-zinc-800"
+											? `${simulationTheme.colors.panels.bg.info} ${simulationTheme.colors.panels.text.dark}`
+											: `${simulationTheme.colors.panels.text.muted} hover:text-white ${simulationTheme.colors.panels.bg.surfaceHover}`
 									} disabled:opacity-50 disabled:cursor-not-allowed`}
 							>
 								<Code className="w-5 h-5" strokeWidth={3} />
@@ -211,10 +220,10 @@ export function StrategyEditor({
 											setLanguage(e.target.value)
 										}
 										disabled={isLocked}
-										className="appearance-none w-full bg-zinc-900 border-4 border-zinc-100 rounded-none py-3 pl-4 pr-12 
-                                                 text-sm font-black text-white uppercase tracking-wider cursor-pointer
+										className={`appearance-none w-full ${simulationTheme.colors.panels.bg.surface} border-4 ${simulationTheme.colors.panels.border.base} rounded-none py-3 pl-4 pr-12 
+                                                 text-sm font-black ${simulationTheme.colors.panels.text.light} uppercase tracking-wider cursor-pointer
                                                  focus:outline-none focus:border-yellow-400 focus:shadow-[4px_4px_0px_0px_#facc15]
-                                                 transition-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                                 transition-none disabled:opacity-50 disabled:cursor-not-allowed`}
 									>
 										{languages.map((l) => (
 											<option
@@ -235,7 +244,9 @@ export function StrategyEditor({
 							</>
 						) : (
 							<div className="h-full flex items-end pb-3">
-								<span className="text-xs text-black font-black bg-zinc-100 px-3 py-1 border-2 border-zinc-100 shadow-[2px_2px_0px_0px_#f4f4f5]">
+								<span
+									className={`text-xs ${simulationTheme.colors.panels.text.dark} font-black ${simulationTheme.colors.panels.bg.surfaceAlt} px-3 py-1 border-2 ${simulationTheme.colors.panels.border.base} shadow-[2px_2px_0px_0px_#f4f4f5]`}
+								>
 									MARKDOWN_ENABLED
 								</span>
 							</div>
@@ -252,11 +263,11 @@ export function StrategyEditor({
 					>
 						{/* Decorative Label Tag */}
 						<div
-							className={`absolute -top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest z-10 border-2 border-zinc-100
+							className={`absolute -top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest z-10 border-2 ${simulationTheme.colors.panels.border.base}
                             ${
 								mode === "code"
-									? "bg-cyan-400 text-black"
-									: "bg-fuchsia-400 text-black"
+									? `${simulationTheme.colors.panels.bg.info} ${simulationTheme.colors.panels.text.dark}`
+									: `${simulationTheme.colors.panels.bg.accent} ${simulationTheme.colors.panels.text.dark}`
 							}`}
 						>
 							{mode === "prompt"
@@ -267,7 +278,9 @@ export function StrategyEditor({
 						{/* Overlay when locked */}
 						{isLocked && (
 							<div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
-								<span className="bg-rose-500/80 backdrop-blur-sm text-white font-black px-6 py-2 border-4 border-zinc-100 shadow-[4px_4px_0px_0px_#f4f4f5] rotate-[-5deg] text-2xl tracking-widest">
+								<span
+									className={`${simulationTheme.colors.panels.bg.error}/80 backdrop-blur-sm ${simulationTheme.colors.panels.text.light} font-black px-6 py-2 border-4 ${simulationTheme.colors.panels.border.base} shadow-[4px_4px_0px_0px_#f4f4f5] rotate-[-5deg] text-2xl tracking-widest`}
+								>
 									SYSTEM LOCKED
 								</span>
 							</div>

@@ -10,10 +10,12 @@ import {
 } from "lucide-react";
 import { BattlefieldContent } from "./ui/slides/BattlefieldContent";
 import { MechanicsContent } from "./ui/slides/MechanicsContent";
-import { StrategyContent } from "./ui/slides/StrategyContent";
+import { StrategyExamplesContent } from "./ui/slides/StrategyExamplesContent";
+import { SimAnimatorContent } from "./ui/slides/SimAnimatorContent";
 import { ProblemContent } from "./ui/slides/ProblemContent";
 import { SpecsContent } from "./ui/slides/SpecsContent";
 import { TrainingContent } from "./ui/slides/TrainingContent";
+import { TournamentContent } from "./ui/slides/TournamentContent";
 
 export function TestingEnv() {
 	const [currentSlide, setCurrentSlide] = useState(0);
@@ -24,6 +26,11 @@ export function TestingEnv() {
 			title: "Mission Briefing",
 			component: <ProblemContent />,
 		},
+		{
+			id: "tournament",
+			title: "Tournament Structure",
+			component: <TournamentContent />,
+		},
 		{ id: "arena", title: "The Arena", component: <BattlefieldContent /> },
 		{
 			id: "mechanics",
@@ -33,7 +40,12 @@ export function TestingEnv() {
 		{
 			id: "strategy",
 			title: "Strategic Intel",
-			component: <StrategyContent />,
+			component: <StrategyExamplesContent />,
+		},
+		{
+			id: "sim",
+			title: "Sim Animator",
+			component: <SimAnimatorContent />,
 		},
 		{ id: "specs", title: "Tech Specs", component: <SpecsContent /> },
 		{
@@ -233,7 +245,7 @@ export function TestingEnv() {
 					</button>
 					{/* Launch Simulator Button */}
 					<button
-						onClick={() => (window.location.href = "/sim")}
+						onClick={() => window.open("/sim", "_blank")}
 						className="cursor-target bg-emerald-600/90 hover:bg-emerald-500 text-white px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-[0.15em] transition-all shadow-lg hover:shadow-emerald-500/40 active:scale-95 flex items-center gap-3 border border-emerald-400/30 ml-4"
 					>
 						<Activity size={16} className="animate-pulse" />

@@ -1,4 +1,4 @@
-import { Trophy, Target, Activity, Calendar } from "lucide-react";
+import { Trophy, Target, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/Card";
 import { cn } from "../../../../lib/utils";
 
@@ -56,7 +56,7 @@ export function AttemptCard({
 							</div>
 							<CardTitle
 								className={cn(
-									"text-2xl font-black uppercase tracking-tighter leading-none",
+									"text-4xl font-black uppercase tracking-tighter leading-none",
 									isSelected ? "text-emerald-400" : "",
 								)}
 							>
@@ -144,12 +144,6 @@ export function AttemptCard({
 								<Activity size={14} /> Total Nodes
 							</span>
 							<span>{attempt.total_nodes.toLocaleString()}</span>
-						</div>
-						<div className="flex justify-between text-sm uppercase font-mono font-bold">
-							<span className="flex items-center gap-2 opacity-70">
-								<Calendar size={14} /> Date
-							</span>
-							<span className="text-xs">{attempt.date}</span>
 						</div>
 					</div>
 				</CardContent>

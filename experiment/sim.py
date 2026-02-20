@@ -229,4 +229,4 @@ if __name__ == "__main__":
     from strategies import strat_sniper, strat_hoarder
     sim = GameSimRecorded(strat_sniper, strat_hoarder)
     data = sim.play_game()
-    plot_game_analysis(data, "Sniper", "Hoarder")
+    # plot_game_analysis(data, "Sniper", "Hoarder")
