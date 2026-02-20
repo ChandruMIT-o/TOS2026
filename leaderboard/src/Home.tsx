@@ -18,7 +18,7 @@ function Home() {
 
 	const [activeTab, setActiveTab] = useState("home");
 	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
-	const [isBriefing, setIsBriefing] = useState(true); // Controls "Briefing state" vs "Interactive State"
+	const [isBriefing, setIsBriefing] = useState(false); // Controls "Briefing state" vs "Interactive State"
 	const [secretClicks, setSecretClicks] = useState(0);
 	const [toastMessage, setToastMessage] = useState<string | null>(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);

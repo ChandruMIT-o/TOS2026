@@ -35,18 +35,25 @@ MODELS_TO_TRY = [m for m in MODELS_TO_TRY if m]
 # This ensures we can find prompt.md and prompt_2.md regardless of where the code is executed from.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+import re
+
 def _clean_response(text: str) -> str:
     """
-    Helper to strip Markdown formatting (backticks) from the LLM response.
+    Helper to extract Python code from the LLM response.
     """
+
+    print("$$$$$$$$$$$$$", text)
+
     if not text: return ""
-    text = text.strip()
-    if text.startswith("```python"):
-        text = text[9:]
-    elif text.startswith("```"):
-        text = text[3:]
-    if text.endswith("```"):
-        text = text[:-3]
+    
+    # Fully closed python block
+    match = re.search(r"```python\n(.*?)\n```", text, re.DOTALL)
+    if match: return match.group(1).strip()
+    
+    # Fully closed generic block
+    match = re.search(r"```(.*?)```", text, re.DOTALL)
+    if match: return match.group(1).strip()
+            
     return text.strip()
 
 def _generate_with_fallback(client, contents: str, temperature: float = 0.1) -> str:
@@ -59,7 +66,7 @@ def _generate_with_fallback(client, contents: str, temperature: float = 0.1) -> 
                 contents=contents,
                 config=types.GenerateContentConfig(
                     temperature=temperature,
-                    max_output_tokens=4096,
+                    max_output_tokens=65000,
                     top_p=0.95,
                 )
             )
@@ -153,10 +160,10 @@ if __name__ == "__main__":
     # Test 2: From Raw Code
     print("\n--- Generating from Raw Code ---")
     raw_input = """
-    function play(nrg, opps) {
-        if (nrg > 50) return CONQUER(opps[0]);
-        else return HARVEST;
-    }
+    def play(nrg, opps):
+        if nrg > 50:
+            return ["CONQUER", opps[0]]
+        return ["HARVEST"]
     """
-    transpiled_code = generate_strategy_from_code("JS_Converter_Bot", raw_input)
+    transpiled_code = generate_strategy_from_code("Py_Converter_Bot", raw_input)
     print(transpiled_code)

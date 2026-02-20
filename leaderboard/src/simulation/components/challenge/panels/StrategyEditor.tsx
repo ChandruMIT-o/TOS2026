@@ -300,10 +300,10 @@ export function StrategyEditor({
 												? 0
 												: val.trim().split(/\s+/)
 														.length;
-										if (wordCount <= 350)
+										if (wordCount <= 250)
 											setStrategyDesc(val);
 									} else {
-										if (val.length <= 7500)
+										if (val.length <= 5000)
 											setStrategyCode(val);
 									}
 								}}
@@ -349,8 +349,8 @@ export function StrategyEditor({
 						</div>
 						<span className="text-xs text-black font-black bg-zinc-100 px-3 py-1 shadow-[2px_2px_0px_0px_#f4f4f5]">
 							{mode === "prompt"
-								? `WORDS: ${(strategyDesc || "").trim() === "" ? 0 : (strategyDesc || "").trim().split(/\s+/).length} / 350`
-								: `CHARS: ${(strategyCode || "").length} / 7500`}
+								? `WORDS: ${(strategyDesc || "").trim() === "" ? 0 : (strategyDesc || "").trim().split(/\s+/).length} / 250`
+								: `CHARS: ${(strategyCode || "").length} / 5000`}
 						</span>
 					</div>
 				</div>

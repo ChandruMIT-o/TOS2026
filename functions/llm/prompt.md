@@ -68,7 +68,7 @@ Each strategy is a Python function that receives the current game state and retu
 
 **Strict Technical Constraints (CRITICAL):**
 
-VERY IMPORTANT: CODE Line should be under 200 Lines.
+IMPORTANT: NO COMMENT ALLOWED IN THE CODE. EXCEPT for the function doc string. No Conversational Fillers allowed.
 
 1. **Dynamic Function Name:** You must output a single function named exactly equal to the `STRATEGY_NAME` provided.
 
@@ -77,7 +77,7 @@ VERY IMPORTANT: CODE Line should be under 200 Lines.
 2. **Self-Contained:** All imports (e.g., `import random`, `import math`) must be defined **inside** the function. Do not rely on global scope.
 3. **No External Helpers:** Do not create helper functions outside the main strategy function. If logic is complex, nest the helper function _inside_ the main function or flatten the logic.
 4. **Loader Compatibility:** The output must be pure Python code compatible with `exec()`.
-5. **Output Format:** Return **ONLY** the python code. Do not include Markdown backticks (```python) or conversational filler.
+5. **Output Format:** Return the Python code within the standard Markdown code block (`python ... `). Do not include any conversational filler.
 
 **Logic & Safety Guidelines:**
 

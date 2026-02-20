@@ -91,21 +91,6 @@ def check_signature_uniqueness(strategy_code: str) -> bool:
 
 # --- MAIN CLOUD FUNCTION ---
 
-def update_pipeline_progress(team_name: str, draft_id: str, step: str, details: str = "", status: str = "in_progress"):
-    if not team_name or not draft_id:
-        return
-    try:
-        db = firestore.client()
-        doc_ref = db.collection("tos_temp").document(f"{team_name}_{draft_id}")
-        doc_ref.set({
-            "step": step,
-            "details": details,
-            "status": status,
-            "updatedAt": firestore.SERVER_TIMESTAMP
-        }, merge=True, timeout=2.0)
-    except Exception as e:
-        print(f"[WARN] Failed to update progress: {e}")
-
 def submit_draft(req: https_fn.Request) -> https_fn.Response:
     """
     Payload:
@@ -156,32 +141,26 @@ def submit_draft(req: https_fn.Request) -> https_fn.Response:
                 headers={"Content-Type": "application/json"}
             )
 
-        update_pipeline_progress(team_name, draft_id, "Initializing", "Starting draft submission pipeline...")
-
         # 2. Generate / Transpile Code
         final_code = ""
         description_used = ""
         
         if strat_desc:
             print(f"[INFO] Generating code from description for {team_name}...")
-            update_pipeline_progress(team_name, draft_id, "Generating Logic", "Translating description into python strategy...")
             final_code = llm.gemini_call.generate_strategy_from_desc(strat_name, strat_desc)
             description_used = strat_desc
         else:
             print(f"[INFO] Transpiling raw code for {team_name}...")
-            update_pipeline_progress(team_name, draft_id, "Generating Logic", "Translating raw code into strict python strategy...")
             final_code = llm.gemini_call.generate_strategy_from_code(strat_name, strat_code)
             description_used = "Imported from Raw Code"
 
         # 3. Validate Python Code
         print("[INFO] Validating generated code...")
-        update_pipeline_progress(team_name, draft_id, "Validating Logic", "Checking strategy for errors and evaluating strict game rules...")
         print(final_code)
         user_func, error_msg = load_strategy_with_error(final_code, strat_name)
         
         if not user_func:
             print(f"[WARN] Generated code broke: {error_msg}. Making one more attempt to fix it...")
-            update_pipeline_progress(team_name, draft_id, "Fixing Logic", "Attempting to auto-correct syntax or logic errors...")
             fixed_code = llm.gemini_call.fix_strategy_code(strat_name, final_code, error_msg)
             print("[INFO] Validating fixed code...")
             print(fixed_code)
@@ -189,7 +168,6 @@ def submit_draft(req: https_fn.Request) -> https_fn.Response:
             user_func, second_error_msg = load_strategy_with_error(fixed_code, strat_name)
             
             if not user_func:
-                update_pipeline_progress(team_name, draft_id, "Failed", "Strategy parsing broke completely.", "error")
                 return https_fn.Response(
                     json.dumps({
                         "error": f"Generated code broke twice. First attempt error: {error_msg}. Second attempt error: {second_error_msg}",
@@ -202,12 +180,10 @@ def submit_draft(req: https_fn.Request) -> https_fn.Response:
             final_code = fixed_code
 
         # 4. Signature Verification
-        update_pipeline_progress(team_name, draft_id, "Verifying Signature", "Evaluating uniqueness against the global database...")
         is_unique = check_signature_uniqueness(final_code)
         
         # 5. Run Tournament (Simulation)
         print("[INFO] Running simulation against defaulters...")
-        update_pipeline_progress(team_name, draft_id, "Running Simulation", "Battling your strategy against system defaulters...")
         user_competitor = {
             "name": strat_name,
             "func": user_func,
@@ -260,8 +236,6 @@ def submit_draft(req: https_fn.Request) -> https_fn.Response:
             f"drafts.{draft_id}": draft_obj.to_dict()
         })
 
-        update_pipeline_progress(team_name, draft_id, "Completed", "Draft synchronized successfully.", "success")
-
         return https_fn.Response(
             json.dumps({
                 "status": "success", 
@@ -275,18 +249,6 @@ def submit_draft(req: https_fn.Request) -> https_fn.Response:
 
     except Exception as e:
         print(f"[ERROR] Pipeline failed: {str(e)}")
-        try:
-            req_json = req.get_json(silent=True)
-            if req_json is None:
-                req_json = req.get_json(force=True, silent=True) or {}
-            
-            if isinstance(req_json, dict):
-                t_name = req_json.get("team_name")
-                d_id = req_json.get("draft_id")
-                if t_name and d_id:
-                    update_pipeline_progress(t_name, d_id, "Failed", f"Unexpected pipeline failure: {str(e)}", "error")
-        except Exception as inner_e:
-            print(f"[WARN] Failed to update progress to failed state: {inner_e}")
             
         return https_fn.Response(
             json.dumps({"error": str(e)}),
