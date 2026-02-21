@@ -9,6 +9,7 @@ import { HomeContent } from "./components/HomeContent";
 import { Toast } from "./components/Toast";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./lib/firebase";
+import LetterGlitch from "./components/LetterGlitch";
 
 function Home() {
 	const { setPageLoaded } = useLoading();
@@ -19,6 +20,7 @@ function Home() {
 	const [activeTab, setActiveTab] = useState("home");
 	const [isPerformanceMode, setIsPerformanceMode] = useState(false);
 	const [isBriefing, setIsBriefing] = useState(false); // Controls "Briefing state" vs "Interactive State"
+	const [isBackgroundEnabled, setIsBackgroundEnabled] = useState(false);
 	const [secretClicks, setSecretClicks] = useState(0);
 	const [toastMessage, setToastMessage] = useState<string | null>(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -148,19 +150,58 @@ function Home() {
 				hideDefaultCursor
 				hoverDuration={0.2}
 			/>
+
+			{/* Background Toggle Button */}
+			<div className="fixed top-4 left-4 z-50 hidden md:flex items-center gap-3 group">
+				<button
+					type="button"
+					onClick={(e) => {
+						e.stopPropagation();
+						setIsBackgroundEnabled(!isBackgroundEnabled);
+					}}
+					className={`w-10 h-5 rounded-full p-1 flex items-center transition-colors duration-300 ${
+						isBackgroundEnabled
+							? "bg-[#33ff33]/40"
+							: "bg-slate-700/50"
+					}`}
+				>
+					<div
+						className={`w-3 h-3 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+							isBackgroundEnabled
+								? "translate-x-5"
+								: "translate-x-0"
+						}`}
+					/>
+				</button>
+				<span
+					className="text-xs text-slate-500 font-mono tracking-wider cursor-pointer select-none"
+					onClick={(e) => {
+						e.stopPropagation();
+						setIsBackgroundEnabled(!isBackgroundEnabled);
+					}}
+				>
+					GLITCH
+				</span>
+
+				{/* Warning Tooltip */}
+				<div className="absolute left-0 top-8 opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 border border-orange-900/50 text-orange-400 text-[10px] font-mono py-1.5 px-3 rounded whitespace-nowrap pointer-events-none backdrop-blur-sm shadow-xl">
+					[WARNING] Background effect may cause lag issues
+				</div>
+			</div>
+
 			{/* Background Layer */}
 			{activeTab === "rulebook" ||
-			(activeTab === "home" && isPerformanceMode) ? (
+			(activeTab === "home" && isPerformanceMode) ||
+			!isBackgroundEnabled ? (
 				<TacticalGrid />
 			) : (
 				<div className="fixed inset-0 z-0 opacity-80">
-					{/* <LetterGlitch
+					<LetterGlitch
 						glitchSpeed={200}
 						glitchColors={glitchColors}
 						characters={glitchChars}
 						outerVignette={true}
-					/> */}
-					<TacticalGrid />
+					/>
 				</div>
 			)}
 
