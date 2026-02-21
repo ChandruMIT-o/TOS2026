@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import { getLeaderboardData } from "../database/api/LeaderboardData";
 
 import {
@@ -117,6 +118,23 @@ export function Leaderboard({
 }) {
 	const { data, loading, error, lastUpdated, refresh } = useLeaderboardData();
 
+	useEffect(() => {
+		confetti({
+			particleCount: 150,
+			spread: 70,
+			origin: { y: 0.6 },
+			colors: [
+				"#26ccff",
+				"#a25afd",
+				"#ff5e7e",
+				"#88ff5a",
+				"#fcff42",
+				"#ffa62d",
+				"#ff36ff",
+			],
+		});
+	}, []);
+
 	// Formatter for time
 	const formatTime = (date: Date | null) => {
 		if (!date) return "--:--:--";
@@ -164,8 +182,18 @@ export function Leaderboard({
 							UPDATED: {formatTime(lastUpdated)}
 						</div>
 					</div>
-					<h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9]">
-						Current Standings
+					<div className="text-sm md:text-md font-mono opacity-80 mb-1 mt-4 text-white">
+						A hearty{" "}
+						<span style={{ color: primaryColor }}>
+							congratulations
+						</span>{" "}
+						to all of you.
+					</div>
+					<h1
+						style={{ color: primaryColor }}
+						className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-[0.9]"
+					>
+						Final Standings
 					</h1>
 				</div>
 

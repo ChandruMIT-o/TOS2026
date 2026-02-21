@@ -7,7 +7,7 @@ from firebase_functions.options import set_global_options, MemoryOption
 initialize_app()
 set_global_options(max_instances=10, timeout_sec=540)
 
-@firestore_fn.on_document_written(document="strategies/{strat_id}")
+@firestore_fn.on_document_written(document="strategies/{strat_id}", memory=1024)
 def run_tournament(event: firestore_fn.Event[firestore_fn.Change[firestore_fn.DocumentSnapshot]]) -> None:
     from tournament_runner import run_tournament as _run_tournament
     return _run_tournament(event)
