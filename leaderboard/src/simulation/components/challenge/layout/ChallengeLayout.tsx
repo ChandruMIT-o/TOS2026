@@ -100,9 +100,9 @@ export function ChallengeLayout({
 	};
 
 	return (
-		<div className="flex flex-col md:flex-row h-full w-full">
+		<div className="flex flex-col md:flex-row h-full w-full overflow-y-auto overflow-x-hidden md:overflow-hidden">
 			{/* --- LEFT COLUMN --- */}
-			<div className="flex-1 flex flex-col min-w-0">
+			<div className="flex-none md:flex-1 flex flex-col min-w-0 min-h-0 h-max md:h-full pb-4 md:pb-0">
 				<RuleBook
 					isCollapsed={activeLeftPanel !== "rulebook"}
 					onToggle={toggleLeftRuleBook}
@@ -121,7 +121,7 @@ export function ChallengeLayout({
 			</div>
 
 			{/* --- CENTER CONTROL --- */}
-			<div className="flex flex-col items-center justify-center relative shrink-0 gap-4">
+			<div className="flex flex-col items-center justify-center relative shrink-0 gap-4 py-4 md:py-0">
 				<div className="relative z-10">
 					<TestRunButton
 						onRun={handleTestRun}
@@ -145,7 +145,7 @@ export function ChallengeLayout({
 			</div>
 
 			{/* --- RIGHT COLUMN --- */}
-			<div className="flex-1 flex flex-col min-w-0">
+			<div className="flex-none md:flex-1 flex flex-col min-w-0 min-h-0 h-max md:h-full pb-8 md:pb-0">
 				<Leaderboard
 					isCollapsed={activeRightPanel !== "leaderboard"}
 					onToggle={toggleRightLeaderboard}

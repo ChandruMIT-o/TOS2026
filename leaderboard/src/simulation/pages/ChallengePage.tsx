@@ -407,12 +407,12 @@ export default function ChallengePage() {
 
 			{/* Top Navigation Bar - Updated */}
 			<div
-				className={`w-full ${simulationTheme.colors.bg.nav} ${simulationTheme.colors.text.primary} border-b ${simulationTheme.colors.border.main} z-50 h-[64px] shadow-lg relative`}
+				className={`w-full ${simulationTheme.colors.bg.nav} ${simulationTheme.colors.text.primary} border-b ${simulationTheme.colors.border.main} z-50 min-h-[64px] shadow-lg relative`}
 			>
-				<div className="grid grid-cols-[280px_1fr_280px] divide-x divide-black h-full">
+				<div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr_280px] divide-y lg:divide-y-0 lg:divide-x divide-black h-full">
 					{/* 1. LEFT: EXIT + IDENTITY */}
 					<div
-						className={`flex items-center h-full px-4 gap-4 ${simulationTheme.colors.bg.nav}`}
+						className={`flex items-center h-[64px] lg:h-full px-4 gap-4 ${simulationTheme.colors.bg.nav}`}
 					>
 						<button
 							onClick={handleGoHome}
@@ -447,7 +447,7 @@ export default function ChallengePage() {
 
 					{/* 2. CENTER: TABS */}
 					<div
-						className={`relative flex items-center justify-center ${simulationTheme.colors.bg.nav} px-4 h-full`}
+						className={`relative flex items-center justify-center ${simulationTheme.colors.bg.nav} px-4 py-2 lg:py-0 h-auto min-h-[64px] lg:h-full`}
 					>
 						<div className="w-full max-w-[500px]">
 							<AttemptTabs
@@ -462,7 +462,7 @@ export default function ChallengePage() {
 
 					{/* 3. RIGHT: TEAM + SYSTEM INFO */}
 					<div
-						className={`flex items-center justify-between h-full px-4 ${simulationTheme.colors.bg.nav}`}
+						className={`flex items-center justify-between h-[64px] lg:h-full px-4 py-2 lg:py-0 ${simulationTheme.colors.bg.nav}`}
 					>
 						{/* Team Name Display */}
 						<div className="flex flex-col">

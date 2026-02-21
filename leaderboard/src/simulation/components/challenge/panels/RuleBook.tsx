@@ -18,7 +18,7 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 			className={`${simulationTheme.colors.panels.bg.base} border-4 ${simulationTheme.colors.panels.border.base} ${simulationTheme.colors.panels.text.base} font-sans`}
 		>
 			<div
-				className={`flex flex-col gap-8 text-base leading-relaxed ${simulationTheme.colors.panels.bg.base} p-6`}
+				className={`flex flex-col gap-8 text-base leading-relaxed ${simulationTheme.colors.panels.bg.base} p-3 md:p-6`}
 			>
 				{/* Intro Section */}
 				<div
@@ -145,7 +145,7 @@ export function RuleBook({ isCollapsed, onToggle }: RuleBookProps) {
 									(No passive income otherwise)
 								</strong>
 							</p>
-							<ul className="grid grid-cols-3 gap-4 text-center font-bold">
+							<ul className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center font-bold">
 								<li className="bg-zinc-900 text-lime-400 p-3 border-2 border-lime-400 shadow-[2px_2px_0px_0px_#a3e635]">
 									<span className="block text-2xl mb-1 text-white">
 										+5E

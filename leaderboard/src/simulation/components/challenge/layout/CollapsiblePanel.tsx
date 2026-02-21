@@ -27,7 +27,9 @@ export function CollapsiblePanel({
 		<Card
 			className={cn(
 				"flex flex-col overflow-hidden transition-all duration-300 ease-in-out rounded-none border-black border",
-				isCollapsed ? "flex-none h-[50px]" : "flex-1 h-full", // Flex magic here
+				isCollapsed
+					? "flex-none h-[50px]"
+					: "flex-none h-auto md:flex-1 md:h-full", // Flex magic here
 				className,
 			)}
 		>
@@ -56,7 +58,7 @@ export function CollapsiblePanel({
 			{/* Content */}
 			<div
 				className={cn(
-					"flex-1 overflow-auto transition-opacity duration-200 p-4",
+					"flex-1 overflow-auto transition-opacity duration-200 p-4 min-h-0",
 					isCollapsed
 						? "opacity-0 pointer-events-none"
 						: "opacity-100",

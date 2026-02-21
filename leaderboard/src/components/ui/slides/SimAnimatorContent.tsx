@@ -42,11 +42,11 @@ export function SimAnimatorContent() {
 		setRoundIdx((prev) => Math.min(matchData.length - 1, prev + 1));
 
 	return (
-		<div className="space-y-6 h-full flex flex-col animate-in fade-in duration-500">
-			<div className="flex justify-between items-center">
+		<div className="space-y-6 h-full flex flex-col animate-in fade-in duration-500 pb-8 md:pb-0">
+			<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
 				<div className="flex flex-col">
-					<h2 className="text-3xl font-black text-white uppercase tracking-tight flex items-center gap-3">
-						<Activity className="text-emerald-500" />
+					<h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+						<Activity className="text-emerald-500 w-6 h-6 md:w-8 md:h-8" />
 						Simulated Data
 					</h2>
 					<p className="text-white/50 text-sm mt-1">
@@ -80,49 +80,51 @@ export function SimAnimatorContent() {
 				</div>
 			</div>
 
-			<div className="flex-1 grid grid-cols-5 gap-4">
+			<div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
 				{/* The Map */}
-				<div className="col-span-2 bg-black/40 rounded-2xl border border-white/10 relative flex items-center justify-center overflow-hidden">
-					<div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-white/10" />
-					{Array.from({ length: 26 }, (_, i) => {
-						const id = i + 1;
-						const angleDeg = i * (360 / 26) - 90;
-						const angleRad = angleDeg * (Math.PI / 180);
-						const radius = 140;
-						const x = Math.cos(angleRad) * radius;
-						const y = Math.sin(angleRad) * radius;
+				<div className="col-span-1 md:col-span-2 bg-black/40 rounded-2xl border border-white/10 relative flex items-center justify-center overflow-hidden min-h-[320px] md:min-h-0">
+					<div className="absolute inset-0 flex items-center justify-center scale-[0.85] md:scale-100 mt-2 md:mt-0">
+						<div className="absolute w-[280px] h-[280px] rounded-full border border-dashed border-white/10" />
+						{Array.from({ length: 26 }, (_, i) => {
+							const id = i + 1;
+							const angleDeg = i * (360 / 26) - 90;
+							const angleRad = angleDeg * (Math.PI / 180);
+							const radius = 140;
+							const x = Math.cos(angleRad) * radius;
+							const y = Math.sin(angleRad) * radius;
 
-						const isPower = [4, 7, 11, 17, 20, 24].includes(id);
-						const owner = nodeOwners[id];
+							const isPower = [4, 7, 11, 17, 20, 24].includes(id);
+							const owner = nodeOwners[id];
 
-						let bgClass =
-							"bg-white/5 border-white/20 text-white/30";
-						if (owner === "A")
-							bgClass =
-								"bg-emerald-500 border-emerald-400 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)] z-10 scale-110";
-						if (owner === "B")
-							bgClass =
-								"bg-[#FA003F] border-[#FA003F] text-white shadow-[0_0_15px_rgba(247,0,1,0.5)] z-10 scale-110";
-						else if (isPower)
-							bgClass =
-								"bg-purple-500/20 border-purple-500/50 text-purple-300";
+							let bgClass =
+								"bg-white/5 border-white/20 text-white/30";
+							if (owner === "A")
+								bgClass =
+									"bg-emerald-500 border-emerald-400 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)] z-10 scale-110";
+							if (owner === "B")
+								bgClass =
+									"bg-[#FA003F] border-[#FA003F] text-white shadow-[0_0_15px_rgba(247,0,1,0.5)] z-10 scale-110";
+							else if (isPower)
+								bgClass =
+									"bg-purple-500/20 border-purple-500/50 text-purple-300";
 
-						return (
-							<div
-								key={id}
-								style={{
-									transform: `translate(${x}px, ${y}px)`,
-								}}
-								className={`absolute w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${bgClass}`}
-							>
-								{id}
-							</div>
-						);
-					})}
+							return (
+								<div
+									key={id}
+									style={{
+										transform: `translate(${x}px, ${y}px)`,
+									}}
+									className={`absolute w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${bgClass}`}
+								>
+									{id}
+								</div>
+							);
+						})}
+					</div>
 				</div>
 
 				{/* Turn Data Inspector */}
-				<div className="col-span-3 space-y-4 flex-1">
+				<div className="col-span-1 md:col-span-3 space-y-4 flex-1">
 					<div className="grid grid-rows-2 gap-4 flex-1">
 						{/* Player A Panel */}
 						<div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-5 flex flex-col">

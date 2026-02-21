@@ -89,11 +89,11 @@ export function StrategyEditor({
 			className={`${simulationTheme.colors.panels.bg.base} border-4 ${simulationTheme.colors.panels.border.base} ${simulationTheme.colors.panels.text.base} font-sans`}
 		>
 			<div
-				className={`flex flex-col h-full gap-8 ${simulationTheme.colors.panels.bg.base} p-6`}
+				className={`flex flex-col h-full gap-8 ${simulationTheme.colors.panels.bg.base} p-3 md:p-6`}
 			>
 				{/* 1. Header & Identity Section */}
 				<div className="flex flex-col gap-2">
-					<label className="text-xs font-black text-lime-400 uppercase tracking-widest flex items-center justify-between border-b-4 border-zinc-100 pb-2">
+					<label className="text-xs font-black text-lime-400 uppercase tracking-widest flex flex-wrap gap-y-2 items-center justify-between border-b-4 border-zinc-100 pb-2">
 						<div className="flex items-center gap-2">
 							<Terminal className="w-4 h-4" strokeWidth={3} />
 							Target_Identifier
@@ -259,7 +259,7 @@ export function StrategyEditor({
 				</span>
 
 				{/* 3. Editor Area */}
-				<div className="flex-1 flex flex-col min-h-[600px]">
+				<div className="flex-1 flex flex-col min-h-[400px] lg:min-h-[600px]">
 					<div
 						className={`relative flex-1 border-4 transition-colors duration-75 
                         ${mode === "code" ? "border-cyan-400" : "border-fuchsia-400"} 

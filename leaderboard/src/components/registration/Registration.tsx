@@ -320,41 +320,43 @@ export function Registration({ primaryColor }: RegistrationProps) {
 	};
 
 	return (
-		<div className="w-full max-w-2xl mx-auto pt-10 px-4">
+		<div className="w-full max-w-2xl mx-auto pt-4 md:pt-10 px-2 md:px-4">
 			{/* Header */}
-			<div className="flex items-center gap-5 border-b border-white/10 pb-8">
-				<div className="p-4 bg-white/5 border border-white/10 rounded-md shadow-[0_0_20px_rgba(255,255,255,0.05)]">
-					<Terminal
-						className="w-8 h-8 text-emerald-400"
-						style={{ color: primaryColor }}
-					/>
-				</div>
-				<div>
-					<h2 className="text-2xl font-bold uppercase tracking-[0.2em] text-white">
-						Unit Registration
-					</h2>
-					<div className="flex items-center gap-3 mt-2">
-						<div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-						<p
+			<div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-5 border-b border-white/10 pb-4 md:pb-8">
+				<div className="flex items-center gap-4 md:gap-5">
+					<div className="p-3 md:p-4 bg-white/5 border border-white/10 rounded-md shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+						<Terminal
+							className="w-6 h-6 md:w-8 md:h-8 text-emerald-400"
 							style={{ color: primaryColor }}
-							className="text-sm text-emerald-500/80 font-mono uppercase tracking-widest"
-						>
-							System Online // {step.replace("_", " ")}
-						</p>
+						/>
+					</div>
+					<div>
+						<h2 className="text-xl md:text-2xl font-bold uppercase tracking-[0.2em] text-white">
+							Unit Registration
+						</h2>
+						<div className="flex items-center gap-2 md:gap-3 mt-1 md:mt-2">
+							<div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+							<p
+								style={{ color: primaryColor }}
+								className="text-xs md:text-sm text-emerald-500/80 font-mono uppercase tracking-widest"
+							>
+								System Online // {step.replace("_", " ")}
+							</p>
+						</div>
 					</div>
 				</div>
 				{step !== "LOGIN" && (
-					<>
+					<div className="flex w-full md:w-auto md:ml-auto mt-2 md:mt-0">
 						{!confirmLogout ? (
 							<button
 								onClick={() => setConfirmLogout(true)}
-								className="cursor-target ml-auto text-md uppercase tracking-widest text-red-200 hover:text-red-400 border border-red-200 hover:border-red-500/50 px-3 py-1 bg-red-950/20 transition-all"
+								className="cursor-target w-full md:w-auto text-sm md:text-md uppercase tracking-widest text-red-200 hover:text-red-400 border border-red-200 hover:border-red-500/50 px-3 py-2 md:py-1 bg-red-950/20 transition-all text-center"
 							>
 								[ LOG OUT ]
 							</button>
 						) : (
-							<div className="ml-auto flex items-center gap-2">
-								<span className="text-xs tracking-widest text-red-300">
+							<div className="flex items-center justify-between md:justify-end gap-2 w-full">
+								<span className="text-xs tracking-widest text-red-300 md:ml-auto">
 									CONFIRM?
 								</span>
 
@@ -363,20 +365,20 @@ export function Registration({ primaryColor }: RegistrationProps) {
 										resetRegistration();
 										setConfirmLogout(false);
 									}}
-									className="cursor-target text-xs uppercase tracking-widest text-green-200 hover:text-green-400 border border-green-200 hover:border-green-500/50 px-2 py-1 bg-green-950/20 transition-all"
+									className="cursor-target flex-1 md:flex-none text-xs uppercase tracking-widest text-green-200 hover:text-green-400 border border-green-200 hover:border-green-500/50 px-2 py-2 md:py-1 bg-green-950/20 transition-all text-center"
 								>
 									YES
 								</button>
 
 								<button
 									onClick={() => setConfirmLogout(false)}
-									className="cursor-target text-xs uppercase tracking-widest text-slate-300 hover:text-white border border-slate-400 hover:border-white/50 px-2 py-1 bg-slate-800/40 transition-all"
+									className="cursor-target flex-1 md:flex-none text-xs uppercase tracking-widest text-slate-300 hover:text-white border border-slate-400 hover:border-white/50 px-2 py-2 md:py-1 bg-slate-800/40 transition-all text-center"
 								>
 									NO
 								</button>
 							</div>
 						)}
-					</>
+					</div>
 				)}
 			</div>
 

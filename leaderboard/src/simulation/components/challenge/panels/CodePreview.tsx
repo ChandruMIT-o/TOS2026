@@ -79,10 +79,12 @@ export function CodePreview({
 				</div>
 			}
 		>
-			<div className={`${simulationTheme.colors.panels.bg.base} p-6`}>
+			<div
+				className={`h-full flex flex-col ${simulationTheme.colors.panels.bg.base} p-3 md:p-6`}
+			>
 				{/* Terminal Window Box */}
 				<div
-					className={`h-full ${simulationTheme.colors.panels.bg.base} border-4 ${simulationTheme.colors.panels.border.info} p-5 font-mono text-sm overflow-auto custom-scrollbar shadow-[6px_6px_0px_0px_#22d3ee] relative`}
+					className={`flex-1 min-h-[300px] lg:min-h-0 lg:h-full ${simulationTheme.colors.panels.bg.base} border-4 ${simulationTheme.colors.panels.border.info} p-5 font-mono text-sm overflow-auto custom-scrollbar shadow-[6px_6px_0px_0px_#22d3ee] relative`}
 				>
 					{/* Decorative Terminal Header */}
 					<div
@@ -105,7 +107,7 @@ export function CodePreview({
 					</div>
 
 					<div
-						className={`${simulationTheme.colors.panels.text.accent} mb-4 font-black tracking-wider uppercase flex items-center gap-2`}
+						className={`${simulationTheme.colors.panels.text.accent} mb-4 font-black tracking-wider uppercase flex flex-col sm:flex-row sm:items-center items-start gap-2 text-xs sm:text-sm`}
 					>
 						<span
 							className={`${simulationTheme.colors.panels.bg.accent} ${simulationTheme.colors.panels.text.dark} px-2 py-0.5`}

@@ -3,8 +3,8 @@ import { Code2 } from "lucide-react";
 export function SpecsContent() {
 	return (
 		<div className="space-y-8 pb-6">
-			<h1 className="text-3xl font-bold text-white uppercase tracking-tight flex items-center gap-3">
-				<Code2 className="text-purple-500" size={32} />
+			<h1 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-tight flex items-center gap-3">
+				<Code2 className="text-purple-500 w-6 h-6 md:w-8 md:h-8" />
 				Technical Specifications
 			</h1>
 

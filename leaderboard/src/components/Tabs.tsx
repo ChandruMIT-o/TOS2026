@@ -24,7 +24,7 @@ export function Tabs({
 	onDisabledTabClick,
 }: TabsProps) {
 	return (
-		<div className="cursor-hidden relative flex p-1 bg-black/60 border border-white/10 w-fit max-w-full overflow-x-auto mx-auto mb-12 backdrop-blur-sm rounded-sm">
+		<div className="cursor-hidden relative flex flex-col md:flex-row gap-1 md:gap-0 p-1 bg-black/60 border border-white/10 w-full md:w-fit max-w-full overflow-x-auto mx-auto mb-6 md:mb-12 backdrop-blur-sm rounded-sm">
 			{/* Optional: Decorative Grid Background behind tabs */}
 
 			{tabs.map((tab) => {
@@ -41,7 +41,7 @@ export function Tabs({
 							}
 						}}
 						className={cn(
-							"cursor-target relative px-4 py-2 md:px-8 md:py-3 text-xs md:text-sm font-bold uppercase tracking-widest md:tracking-[0.2em] font-mono transition-colors duration-300 z-10 outline-none whitespace-nowrap flex items-center gap-2",
+							"cursor-target relative px-4 py-3 md:px-8 md:py-3 text-sm md:text-sm font-bold uppercase tracking-widest md:tracking-[0.2em] font-mono transition-colors duration-300 z-10 outline-none whitespace-nowrap flex items-center justify-center md:justify-start gap-2",
 							isActive
 								? "text-emerald-400"
 								: "text-white/40 hover:text-white/70",

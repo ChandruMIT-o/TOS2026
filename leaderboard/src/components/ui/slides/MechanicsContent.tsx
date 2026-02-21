@@ -3,8 +3,8 @@ import { Sprout, Expand, Shield, Info } from "lucide-react";
 export function MechanicsContent() {
 	return (
 		<div className="space-y-10 animate-in fade-in duration-700">
-			<div className="text-center space-y-4 mb-10">
-				<h2 className="text-3xl font-black text-white uppercase tracking-tighter">
+			<div className="text-center space-y-4 mb-6 md:mb-10 px-2 md:px-0">
+				<h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">
 					Player Actions
 				</h2>
 				<p className="text-white/50 text-md max-w-3xl mx-auto leading-relaxed">
@@ -14,7 +14,7 @@ export function MechanicsContent() {
 				</p>
 			</div>
 
-			<div className="grid grid-cols-3 gap-3">
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
 				{/* HARVEST */}
 				<div className="cursor-target group relative bg-white/5 p-4 rounded-xl border border-white/10 hover:border-emerald-500/50 transition-all">
 					<div className="flex items-center gap-4 mb-6">

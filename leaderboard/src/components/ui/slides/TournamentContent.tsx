@@ -2,10 +2,10 @@ import { RefreshCw, Trophy, BarChart3, Scale } from "lucide-react";
 
 export function TournamentContent() {
 	return (
-		<div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-			<div className="flex items-start justify-between">
+		<div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+			<div className="flex flex-col md:flex-row items-start justify-between gap-4 md:gap-0">
 				<div className="space-y-2">
-					<h1 className="text-3xl font-black text-white uppercase tracking-tight flex items-center gap-4">
+					<h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight flex items-center gap-4">
 						<Trophy className="text-yellow-500" size={30} />
 						League Structure
 					</h1>
@@ -23,7 +23,7 @@ export function TournamentContent() {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				{/* Point System Card */}
 				<div className="cursor-target bg-white/5 border border-white/10 rounded-sm overflow-hidden">
 					<div className="bg-white/5 px-4 py-2 border-b border-white/10 flex items-center gap-2">
@@ -109,9 +109,9 @@ export function TournamentContent() {
 			</div>
 
 			{/* Operational Logic Footer */}
-			<div className="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-lg flex items-center gap-6">
-				<div className="shrink-0 w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500">
-					<RefreshCw size={24} />
+			<div className="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+				<div className="shrink-0 w-10 h-10 md:w-12 md:h-12 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500">
+					<RefreshCw size={24} className="w-5 h-5 md:w-6 md:h-6" />
 				</div>
 				<div>
 					<h4 className="text-white font-bold text-sm uppercase">

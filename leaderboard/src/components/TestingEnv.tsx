@@ -59,58 +59,73 @@ export function TestingEnv() {
 	return (
 		<div className="w-full flex flex-col bg-[#050505] border border-white/10 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm relative">
 			{/* Top Header with Pagination & Launch Button */}
-			<div className="h-20 border-b border-white/10 bg-black/40 flex items-center px-8 backdrop-blur-md z-10 w-full gap-8 shrink-0">
-				<h2 className="text-xl font-bold uppercase tracking-[0.2em] text-white flex items-center gap-3">
-					<BookOpen className="text-emerald-500" size={24} />
-					Rulebook
-				</h2>
-				{/* Previous Button */}
-				<button
-					onClick={prevSlide}
-					className="cursor-target flex items-center gap-3 text-white/40 hover:text-white transition-colors group px-4 py-2 hover:bg-white/5 border border-transparent hover:border-white/10"
-				>
-					<ChevronLeft
-						size={22}
-						className="group-hover:-translate-x-1 transition-transform"
-					/>
-					<span className="font-mono text-sm uppercase tracking-[0.2em] hidden md:block">
-						Prev
-					</span>
-				</button>
-
-				{/* Stretched Pagination Indicators */}
-				<div className="flex flex-1 items-center gap-3 h-12">
-					{slides.map((_, idx) => (
-						<button
-							key={idx}
-							onClick={() => setCurrentSlide(idx)}
-							className={`cursor-target h-2 flex-1 rounded-full transition-all duration-500 ${
-								currentSlide === idx
-									? "bg-emerald-500 opacity-100"
-									: "bg-white/30 hover:bg-white/20 opacity-50"
-							}`}
-							aria-label={`Go to slide ${idx + 1}`}
-						/>
-					))}
+			<div className="h-auto md:h-20 py-4 md:py-0 border-b border-white/10 bg-black/40 flex flex-col md:flex-row md:items-center px-4 md:px-8 backdrop-blur-md z-10 w-full gap-4 md:gap-8 shrink-0">
+				<div className="flex w-full md:w-auto justify-between items-center">
+					<h2 className="text-lg md:text-xl font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2 md:gap-3">
+						<BookOpen className="text-emerald-500 w-5 h-5 md:w-6 md:h-6" />
+						<span className="md:hidden">Rules</span>
+						<span className="hidden md:inline">Rulebook</span>
+					</h2>
+					{/* Launch Simulator Button Mobile */}
+					<button
+						onClick={() => window.open("/sim", "_blank")}
+						className="md:hidden cursor-target bg-emerald-600/90 hover:bg-emerald-500 text-white px-3 py-2 rounded-sm text-[10px] font-bold uppercase tracking-[0.1em] transition-all shadow-lg active:scale-95 flex items-center gap-2 border border-emerald-400/30"
+					>
+						<Activity size={14} className="animate-pulse" />
+						<span className="whitespace-nowrap">Sim</span>
+					</button>
 				</div>
 
-				{/* Next Button */}
-				<button
-					onClick={nextSlide}
-					className="cursor-target flex items-center gap-3 text-white/40 hover:text-white transition-colors group px-4 py-2 hover:bg-white/5 rounded-lg border border-transparent hover:border-white/10"
-				>
-					<span className="font-mono text-sm uppercase tracking-[0.2em] hidden md:block">
-						Next
-					</span>
-					<ChevronRight
-						size={22}
-						className="group-hover:translate-x-1 transition-transform"
-					/>
-				</button>
-				{/* Launch Simulator Button */}
+				<div className="flex w-full md:w-auto md:flex-1 items-center gap-2 md:gap-3">
+					{/* Previous Button */}
+					<button
+						onClick={prevSlide}
+						className="cursor-target flex items-center gap-1 md:gap-3 text-white/40 hover:text-white transition-colors group px-2 md:px-4 py-2 hover:bg-white/5 border border-transparent hover:border-white/10"
+					>
+						<ChevronLeft
+							size={22}
+							className="group-hover:-translate-x-1 transition-transform"
+						/>
+						<span className="font-mono text-sm uppercase tracking-[0.2em] hidden md:block">
+							Prev
+						</span>
+					</button>
+
+					{/* Stretched Pagination Indicators */}
+					<div className="flex flex-1 items-center gap-1 md:gap-3 h-8 md:h-12 w-full">
+						{slides.map((_, idx) => (
+							<button
+								key={idx}
+								onClick={() => setCurrentSlide(idx)}
+								className={`cursor-target h-1.5 md:h-2 flex-1 rounded-full transition-all duration-500 ${
+									currentSlide === idx
+										? "bg-emerald-500 opacity-100"
+										: "bg-white/30 hover:bg-white/20 opacity-50"
+								}`}
+								aria-label={`Go to slide ${idx + 1}`}
+							/>
+						))}
+					</div>
+
+					{/* Next Button */}
+					<button
+						onClick={nextSlide}
+						className="cursor-target flex items-center gap-1 md:gap-3 text-white/40 hover:text-white transition-colors group px-2 md:px-4 py-2 hover:bg-white/5 rounded-lg border border-transparent hover:border-white/10"
+					>
+						<span className="font-mono text-sm uppercase tracking-[0.2em] hidden md:block">
+							Next
+						</span>
+						<ChevronRight
+							size={22}
+							className="group-hover:translate-x-1 transition-transform"
+						/>
+					</button>
+				</div>
+
+				{/* Launch Simulator Button Desktop */}
 				<button
 					onClick={() => window.open("/sim", "_blank")}
-					className="cursor-target bg-emerald-600/90 hover:bg-emerald-500 text-white px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-[0.15em] transition-all shadow-lg hover:shadow-emerald-500/40 active:scale-95 flex items-center gap-3 border border-emerald-400/30 ml-4"
+					className="hidden md:flex cursor-target bg-emerald-600/90 hover:bg-emerald-500 text-white px-4 py-3 rounded-sm text-xs font-bold uppercase tracking-[0.15em] transition-all shadow-lg hover:shadow-emerald-500/40 active:scale-95 items-center gap-3 border border-emerald-400/30 ml-auto"
 				>
 					<Activity size={16} className="animate-pulse" />
 					<span className="whitespace-nowrap">Launch Simulator</span>
@@ -134,7 +149,7 @@ export function TestingEnv() {
 							if (swipe < -50) nextSlide();
 							else if (swipe > 50) prevSlide();
 						}}
-						className="w-full p-8 md:p-12 relative z-10"
+						className="w-full p-6 md:p-12 relative z-10"
 					>
 						<div className="max-w-4xl mx-auto flex flex-col pointer-events-none">
 							{/* Content Header */}

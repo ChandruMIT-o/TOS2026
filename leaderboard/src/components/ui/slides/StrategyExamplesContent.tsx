@@ -57,17 +57,17 @@ const hoarderCode = `def strat_hoarder(free, opp, mine, energy):
 
 export function StrategyExamplesContent() {
 	return (
-		<div className="space-y-8 animate-in fade-in zoom-in-95 duration-500 h-full flex flex-col">
+		<div className="space-y-6 md:space-y-8 animate-in fade-in zoom-in-95 duration-500 h-full flex flex-col pb-8 md:pb-0">
 			{/* HEADER */}
 			<div className="flex items-center gap-3">
-				<Cpu className="text-white/80" size={28} />
-				<h2 className="text-3xl font-black text-white uppercase tracking-tighter">
+				<Cpu className="text-white/80 w-6 h-6 md:w-7 md:h-7" />
+				<h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">
 					Example Strategies
 				</h2>
 			</div>
 
 			{/* DESCRIPTIONS */}
-			<div className="grid grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 				<div className="bg-[#F70001]/10 border border-[#F70001]/20 rounded-xl p-4">
 					<div className="flex items-center gap-2 mb-2">
 						<Crosshair size={16} className="text-[#F70001]" />
@@ -103,7 +103,7 @@ export function StrategyExamplesContent() {
 			</div>
 
 			{/* CODE GRID */}
-			<div className="grid grid-cols-2 gap-8 flex-1">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1">
 				{/* SNIPER */}
 				<div className="bg-black/50 border border-red-500/20 rounded-xl flex flex-col overflow-hidden">
 					<div className="bg-[#F70001]/10 px-4 py-3 border-b border-[#F70001]/20 flex items-center justify-between">

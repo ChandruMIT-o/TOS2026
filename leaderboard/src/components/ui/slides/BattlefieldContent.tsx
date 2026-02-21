@@ -19,11 +19,11 @@ export function BattlefieldContent() {
 	});
 
 	return (
-		<div className="space-y-8 h-full flex flex-col">
-			<div className="flex justify-between items-end">
+		<div className="space-y-6 md:space-y-8 h-full flex flex-col pb-8 md:pb-0">
+			<div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0">
 				<div>
-					<h1 className="text-3xl font-bold text-white uppercase tracking-tight flex items-center gap-3">
-						<Hexagon className="text-emerald-500" size={32} />
+					<h1 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-tight flex items-center gap-3">
+						<Hexagon className="text-emerald-500 w-6 h-6 md:w-8 md:h-8" />
 						The Arena
 					</h1>
 					<p className="text-white/50 mt-2 text-sm max-w-md">
@@ -34,7 +34,7 @@ export function BattlefieldContent() {
 
 				{/* Dynamic Info Panel */}
 				<div
-					className={`cursor-target w-64 p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${
+					className={`cursor-target w-full md:w-64 p-4 rounded-xl border backdrop-blur-md transition-all duration-300 ${
 						hoveredNode
 							? hoveredNode.type === "POWER"
 								? "bg-purple-500/10 border-purple-500/50"
@@ -101,51 +101,54 @@ export function BattlefieldContent() {
 			</div>
 
 			{/* Interactive Ring Visualization */}
-			<div className="flex-1 relative flex items-center justify-center min-h-[400px]">
-				{/* Ring Track */}
-				<div className="absolute w-[350px] h-[350px] rounded-full border-2 border-dashed border-white/5 animate-[spin_60s_linear_infinite]" />
+			<div className="flex-1 relative flex items-center justify-center min-h-[300px] md:min-h-[400px]">
+				{/* Container to scale map nicely on mobile */}
+				<div className="absolute inset-0 flex items-center justify-center scale-[0.75] md:scale-100 mt-4 md:mt-0">
+					{/* Ring Track */}
+					<div className="absolute w-[350px] h-[350px] rounded-full border-2 border-dashed border-white/5 animate-[spin_60s_linear_infinite]" />
 
-				{/* Center Decoration */}
-				<div className="absolute w-24 h-24 rounded-full bg-black/80 border border-white/10 flex flex-col items-center justify-center z-0 shadow-2xl">
-					<div className="text-white/30 text-[10px] font-mono">
-						NODES
+					{/* Center Decoration */}
+					<div className="absolute w-24 h-24 rounded-full bg-black/80 border border-white/10 flex flex-col items-center justify-center z-0 shadow-2xl">
+						<div className="text-white/30 text-[10px] font-mono">
+							NODES
+						</div>
+						<div className="text-2xl font-bold text-white">26</div>
 					</div>
-					<div className="text-2xl font-bold text-white">26</div>
-				</div>
 
-				{/* Nodes */}
-				<div className="absolute w-[350px] h-[350px]">
-					{nodes.map((node) => {
-						const x = Math.cos(node.angleRad) * 175 + 175 - 16; // 175 is radius, 16 is half size
-						const y = Math.sin(node.angleRad) * 175 + 175 - 16;
+					{/* Nodes */}
+					<div className="absolute w-[350px] h-[350px]">
+						{nodes.map((node) => {
+							const x = Math.cos(node.angleRad) * 175 + 175 - 16; // 175 is radius, 16 is half size
+							const y = Math.sin(node.angleRad) * 175 + 175 - 16;
 
-						let baseClasses =
-							"absolute w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all duration-300 hover:scale-110 z-10 shadow-lg";
-						let colorClasses =
-							"bg-black/80 border-white/20 text-white/40 hover:border-white hover:text-white hover:z-20";
+							let baseClasses =
+								"absolute w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all duration-300 hover:scale-110 z-10 shadow-lg";
+							let colorClasses =
+								"bg-black/80 border-white/20 text-white/40 hover:border-white hover:text-white hover:z-20";
 
-						if (node.type === "POWER")
-							colorClasses =
-								"bg-purple-500/20 border-purple-500/50 text-purple-200 hover:border-white hover:text-white shadow-[0_0_15px_rgba(168,85,247,0.3)]";
-						if (node.type === "HOME_P1")
-							colorClasses =
-								"bg-emerald-500/20 border-emerald-500/50 text-emerald-200 hover:border-white hover:text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]";
-						if (node.type === "HOME_P2")
-							colorClasses =
-								"bg-red-500/20 border-red-500/50 text-red-200 hover:border-white hover:text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]";
+							if (node.type === "POWER")
+								colorClasses =
+									"bg-purple-500/20 border-purple-500/50 text-purple-200 hover:border-white hover:text-white shadow-[0_0_15px_rgba(168,85,247,0.3)]";
+							if (node.type === "HOME_P1")
+								colorClasses =
+									"bg-emerald-500/20 border-emerald-500/50 text-emerald-200 hover:border-white hover:text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]";
+							if (node.type === "HOME_P2")
+								colorClasses =
+									"bg-red-500/20 border-red-500/50 text-red-200 hover:border-white hover:text-white shadow-[0_0_15px_rgba(239,68,68,0.3)]";
 
-						return (
-							<div
-								key={node.id}
-								style={{ left: `${x}px`, top: `${y}px` }}
-								className={`${baseClasses} ${colorClasses} cursor-target`}
-								onMouseEnter={() => setHoveredNode(node)}
-								onMouseLeave={() => setHoveredNode(null)}
-							>
-								{node.id}
-							</div>
-						);
-					})}
+							return (
+								<div
+									key={node.id}
+									style={{ left: `${x}px`, top: `${y}px` }}
+									className={`${baseClasses} ${colorClasses} cursor-target`}
+									onMouseEnter={() => setHoveredNode(node)}
+									onMouseLeave={() => setHoveredNode(null)}
+								>
+									{node.id}
+								</div>
+							);
+						})}
+					</div>
 				</div>
 			</div>
 		</div>

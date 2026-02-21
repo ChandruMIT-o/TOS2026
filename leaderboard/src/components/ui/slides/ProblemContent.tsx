@@ -3,7 +3,7 @@ import { Brain, Target, Zap } from "lucide-react";
 export function ProblemContent() {
 	return (
 		<div className="space-y-8 animate-in fade-in zoom-in duration-500">
-			<h1 className="text-3xl font-black text-white uppercase tracking-tight flex items-center gap-4">
+			<h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight flex items-center gap-4">
 				<Brain className="text-blue-500" size={30} />
 				Overall Operational Logic
 			</h1>
@@ -18,7 +18,7 @@ export function ProblemContent() {
 				</p>
 			</div>
 
-			<div className="grid grid-cols-2 gap-8">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 				<div className="space-y-4">
 					<h3 className="text-white font-bold uppercase tracking-wider flex items-center gap-2">
 						<Target size={18} className="text-emerald-500" />{" "}
